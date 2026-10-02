@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       `Buy ${beat.title} — ${beat.genre ?? "instrumental"} beat${beat.bpm ? ` at ${beat.bpm} BPM` : ""}. Instant delivery by email.`,
     openGraph: {
       title: beat.title,
-      images: beat.coverImage ? [beat.coverImage] : undefined,
+      images: beat.coverImage ? [{ url: beat.coverImage, alt: `${beat.title} artwork` }] : undefined,
       description: beat.description ?? undefined,
     },
   };

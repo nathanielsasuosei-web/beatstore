@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Let sandbox/preview hosts and proxies talk to the dev server.
+  allowedDevOrigins: ["*.e2b.app", "*.arena.ai", "*.vercel.app"],
   // Uploads are served from the local storage folder through /api/media, so
   // image optimisation is switched off: no sharp dependency, and uploads behave
   // identically on any host. Serve pre-sized artwork (1200px+ squares look best).

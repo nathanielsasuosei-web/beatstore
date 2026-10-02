@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { getSettings } from "@/lib/settings";
+import { siteUrl } from "@/lib/utils";
 import { getCurrentUser } from "@/lib/auth";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -15,7 +16,9 @@ export const viewport: Viewport = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
+  const base = siteUrl();
   return {
+    metadataBase: new URL(base),
     title: {
       default: `${settings.site_name} — buy Afrobeats, drill & amapiano beats`,
       template: `%s · ${settings.site_name}`,
@@ -35,7 +38,15 @@ export async function generateMetadata(): Promise<Metadata> {
       title: settings.site_name,
       description: settings.tagline,
       type: "website",
+      url: base,
+      siteName: settings.site_name,
     },
+    twitter: {
+      card: "summary_large_image",
+      title: settings.site_name,
+      description: settings.tagline,
+    },
+    alternates: { canonical: base },
   };
 }
 

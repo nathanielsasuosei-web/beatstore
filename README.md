@@ -159,18 +159,41 @@ references, so replacing a preview can't cost you the master your buyers downloa
 
 ## Deploying
 
-**Vercel** (easiest): push the repo, import it in Vercel, add the environment variables above.
-Two things to change for production:
+### Requirements (any host)
 
-1. **Database** — serverless filesystems are ephemeral. Use a managed Postgres and swap the
-   data layer: every query is plain SQL in `lib/data/*.ts` and `lib/db.ts` is the only file that
-   knows about `node:sqlite` (see the note at the bottom of that file). For SQLite-in-the-cloud,
-   Turso/libSQL is a drop-in alternative.
-2. **Uploads** — `storage/` is local disk. Point `saveUpload()` in `lib/storage.ts` at S3,
-   Cloudflare R2 or Supabase Storage, or run the app on a VPS with a mounted volume.
+- **Node.js 22.13 or newer** — the data layer uses the built-in `node:sqlite` module, which
+  only exists without a flag from 22.13+ (also fine on Node 24). On Node 20 or 22.0–22.12
+  every database route crashes at import time.
+- The env vars from `.env.example` (only `DATABASE_URL` + `AUTH_SECRET` are mandatory).
 
-**VPS / Docker**: `npm run build && npm start` behind Nginx works as-is; keep `storage/` on a
-persistent volume and set `NEXT_PUBLIC_SITE_URL` to your public domain (emails use it for links).
+### Vercel
+
+Push the repo, import it in Vercel, and add the environment variables above. Then:
+
+1. **Project → Settings → General → Node.js Version: 22.x or 24.x** (the requirement above).
+2. **Plan note:** this store takes payments, which Vercel classifies as commercial use —
+   the [Hobby plan is for non-commercial use only](https://vercel.com/docs/plans/hobby),
+   so a paying store belongs on Pro (otherwise the account can be paused).
+
+Serverless specifics — already handled, but important to understand:
+
+- Vercel's function filesystem is **read-only outside `/tmp`**. The app detects this and
+  automatically moves the SQLite database to `/tmp/beatstore/dev.db` and uploads to
+  `/tmp/beatstore/storage` (a warning is logged). It boots and serves, **but data in `/tmp`
+  is ephemeral** — it resets on every cold start/redeploy. That's fine to preview the site,
+  not fine for real sales.
+- For production, either:
+  - **Stay on Vercel** and swap the data layer: every query is plain SQL in `lib/data/*.ts`
+    and `lib/db.ts` is the only file that knows about `node:sqlite` (see the note at the
+    bottom of that file). Turso/libSQL is a drop-in SQLite-in-the-cloud replacement; use
+    Vercel Blob or S3/R2 for uploads (`saveUpload()` in `lib/storage.ts`).
+  - **Or run it on a host with a real disk** (below) and keep everything as-is.
+
+### VPS / Docker (recommended for this app)
+
+`npm run build && npm start` behind Nginx works as-is — SQLite and `storage/` behave exactly
+as they do locally. Keep `storage/` and the database file on a persistent volume, back them
+up, and set `NEXT_PUBLIC_SITE_URL` to your public domain (emails use it for links).
 
 ---
 

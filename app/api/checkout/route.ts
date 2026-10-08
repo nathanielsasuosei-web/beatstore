@@ -2,7 +2,7 @@ import { z } from "zod";
 import { createPendingOrder, resolveCart } from "@/lib/orders";
 import { paystackEnabled, initializeTransaction } from "@/lib/paystack";
 import { getSettings } from "@/lib/settings";
-import { jsonError, jsonOk, readJson } from "@/lib/http";
+import { apiHandler, jsonError, jsonOk, readJson } from "@/lib/http";
 import { absoluteUrl } from "@/lib/utils";
 import { sendEmail } from "@/lib/email";
 import { newOrderAdminEmail } from "@/lib/email-templates";
@@ -22,7 +22,7 @@ const schema = z.object({
   note: z.string().max(500).optional().nullable(),
 });
 
-export async function POST(request: Request) {
+export const POST = apiHandler(async (request: Request) => {
   const parsed = schema.safeParse(await readJson<unknown>(request));
   if (!parsed.success) return jsonError(parsed.error.issues[0]?.message ?? "Invalid checkout details", 422);
 
@@ -108,4 +108,4 @@ export async function POST(request: Request) {
     reference: order.reference,
     redirect: payUrl,
   });
-}
+});

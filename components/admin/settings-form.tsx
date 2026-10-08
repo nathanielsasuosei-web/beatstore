@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AlertCircle, CheckCircle2, Loader2, Save } from "lucide-react";
+import { safeJson } from "@/lib/api-client";
 
 type Group = { title: string; blurb: string; fields: { key: string; label: string; type?: "text" | "textarea" }[] };
 
@@ -93,7 +94,7 @@ export function SettingsForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       });
-      const json = await res.json();
+      const json = await safeJson(res);
       if (!res.ok || !json.ok) throw new Error(json.error ?? "Could not save settings.");
       setState("saved");
       setMessage(`Saved ${json.saved} settings.`);

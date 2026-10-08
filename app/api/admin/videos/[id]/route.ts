@@ -1,12 +1,12 @@
 import { assertAdmin, unauthorized } from "@/lib/admin-routes";
-import { jsonError, jsonOk, readJson } from "@/lib/http";
+import { apiHandler, jsonError, jsonOk, readJson } from "@/lib/http";
 import { deleteStoredFile } from "@/lib/storage";
 import { deleteVideo, getVideoById, updateVideo } from "@/lib/data/catalog";
 
 type Params = { params: Promise<{ id: string }> };
 
 /** Lightweight field updates (publish / feature toggles) via JSON. */
-export async function PATCH(request: Request, { params }: Params) {
+export const PATCH = apiHandler(async (request: Request, { params }: Params) => {
   if (!(await assertAdmin())) return unauthorized();
   const { id } = await params;
 
@@ -27,9 +27,9 @@ export async function PATCH(request: Request, { params }: Params) {
 
   updateVideo(id, values);
   return jsonOk({ video: getVideoById(id) });
-}
+});
 
-export async function DELETE(_request: Request, { params }: Params) {
+export const DELETE = apiHandler(async (_request: Request, { params }: Params) => {
   if (!(await assertAdmin())) return unauthorized();
   const { id } = await params;
 
@@ -41,4 +41,4 @@ export async function DELETE(_request: Request, { params }: Params) {
   deleteVideo(id);
 
   return jsonOk({ deleted: true });
-}
+});

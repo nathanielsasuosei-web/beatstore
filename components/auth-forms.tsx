@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AlertCircle, CheckCircle2, Loader2, LogIn, UserPlus } from "lucide-react";
+import { safeJson } from "@/lib/api-client";
 
 function Notice({ tone, children }: { tone: "error" | "success"; children: React.ReactNode }) {
   return (
@@ -40,9 +41,9 @@ export function LoginForm({ redirectTo }: { redirectTo?: string }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-      const json = await res.json();
+      const json = await safeJson(res);
       if (!res.ok || !json.ok) throw new Error(json.error ?? "Could not sign you in.");
-      router.push(redirectTo || json.redirect);
+      router.push(redirectTo || json.redirect || "/account");
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not sign you in.");
@@ -132,7 +133,7 @@ export function RegisterForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-      const json = await res.json();
+      const json = await safeJson(res);
       if (!res.ok || !json.ok) throw new Error(json.error ?? "Could not create your account.");
       router.push("/account?welcome=1");
       router.refresh();
@@ -265,7 +266,7 @@ export function ForgotForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-      const json = await res.json();
+      const json = await safeJson(res);
       if (!res.ok || !json.ok) throw new Error(json.error ?? "Could not send the reset link.");
       setDone(true);
     } catch (err) {
@@ -341,7 +342,7 @@ export function ResetForm({ token }: { token: string }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, password }),
       });
-      const json = await res.json();
+      const json = await safeJson(res);
       if (!res.ok || !json.ok) throw new Error(json.error ?? "Could not reset your password.");
       setDone(true);
       setTimeout(() => router.push("/login"), 1600);

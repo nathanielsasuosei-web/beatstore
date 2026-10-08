@@ -6,6 +6,7 @@ import { CheckCircle2, Loader2, Mail, RefreshCw, Search, Trash2, XCircle } from 
 import { formatMoney } from "@/lib/money";
 import { formatDate } from "@/lib/utils";
 import { ORDER_STATUS } from "@/lib/constants";
+import { safeJson } from "@/lib/api-client";
 
 export type AdminOrder = {
   id: string;
@@ -62,7 +63,7 @@ export function OrdersTable({ orders, currentFilter }: { orders: AdminOrder[]; c
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action, ...extra }),
       });
-      const json = await res.json();
+      const json = await safeJson(res);
       if (!res.ok || !json.ok) throw new Error(json.error ?? "Action failed");
       if (action === "mark_paid") setFlash("Marked as paid — the buyer's download email has been sent.");
       if (action === "resend_delivery") setFlash("Delivery email re-sent with fresh links.");

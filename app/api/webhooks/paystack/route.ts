@@ -1,13 +1,14 @@
 import { paystackEnabled, verifyWebhookSignature } from "@/lib/paystack";
 import { fulfilOrder } from "@/lib/fulfilment";
 import { getOrderByPaymentRef, getOrderByReference } from "@/lib/data/sales";
+import { apiHandler } from "@/lib/http";
 
 /**
  * Paystack webhook — the reliable path for confirming payment even if the
  * buyer closes the tab before the redirect back.
  * Configure this URL in the Paystack dashboard: https://your-domain/api/webhooks/paystack
  */
-export async function POST(request: Request) {
+export const POST = apiHandler(async (request: Request) => {
   if (!paystackEnabled()) return new Response("Paystack not configured", { status: 503 });
 
   const raw = await request.text();
@@ -32,4 +33,4 @@ export async function POST(request: Request) {
   }
 
   return Response.json({ received: true });
-}
+});

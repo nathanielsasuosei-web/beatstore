@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { assertAdmin, unauthorized } from "@/lib/admin-routes";
-import { jsonError, jsonOk, readJson } from "@/lib/http";
+import { apiHandler, jsonError, jsonOk, readJson } from "@/lib/http";
 import { deleteUser, getUserById, updateUser } from "@/lib/data/users";
 
 type Params = { params: Promise<{ id: string }> };
@@ -10,7 +10,7 @@ const schema = z.object({
   role: z.enum(["artist", "admin"]).optional(),
 });
 
-export async function PATCH(request: Request, { params }: Params) {
+export const PATCH = apiHandler(async (request: Request, { params }: Params) => {
   const admin = await assertAdmin();
   if (!admin) return unauthorized();
   const { id } = await params;
@@ -39,4 +39,4 @@ export async function PATCH(request: Request, { params }: Params) {
     default:
       return jsonError("Unsupported action", 422);
   }
-}
+});

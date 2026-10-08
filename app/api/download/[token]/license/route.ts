@@ -1,10 +1,11 @@
 import { downloadIsUsable, getDownloadContext } from "@/lib/downloads";
 import { buildLicensePdf } from "@/lib/license-pdf";
 import { getSettings } from "@/lib/settings";
+import { apiHandler } from "@/lib/http";
 
 type Params = { params: Promise<{ token: string }> };
 
-export async function GET(request: Request, { params }: Params) {
+export const GET = apiHandler(async (request: Request, { params }: Params) => {
   const { token } = await params;
   const context = getDownloadContext(token);
   if (!context) return new Response("Licence not found", { status: 404 });
@@ -53,4 +54,4 @@ export async function GET(request: Request, { params }: Params) {
       "X-Download-Id": download.id,
     },
   });
-}
+});

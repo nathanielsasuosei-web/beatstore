@@ -7,6 +7,7 @@ import { AlertCircle, Loader2, Music2, Save, Trash2, Upload } from "lucide-react
 import { GENRES, KEYS, MOODS, TIER_META, type LicenseTier } from "@/lib/constants";
 import { formatMoney } from "@/lib/money";
 import { cn, previewIsPlayable } from "@/lib/utils";
+import { safeJson } from "@/lib/api-client";
 
 export type BeatFormValues = {
   id?: string;
@@ -141,7 +142,7 @@ export function BeatForm({ initial }: { initial?: BeatFormValues }) {
         method: editing ? "PATCH" : "POST",
         body: form,
       });
-      const json = await res.json();
+      const json = await safeJson(res);
       if (!res.ok || !json.ok) throw new Error(json.error ?? "Could not save the beat.");
       router.push("/admin/beats");
       router.refresh();
@@ -158,7 +159,7 @@ export function BeatForm({ initial }: { initial?: BeatFormValues }) {
     setBusy(true);
     try {
       const res = await fetch(`/api/admin/beats/${values.id}`, { method: "DELETE" });
-      const json = await res.json();
+      const json = await safeJson(res);
       if (!res.ok || !json.ok) throw new Error(json.error ?? "Could not delete.");
       router.push("/admin/beats");
       router.refresh();

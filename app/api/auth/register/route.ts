@@ -4,7 +4,7 @@ import { createSessionToken, hashPassword, makeToken } from "@/lib/auth";
 import { createUser, getUserByEmail } from "@/lib/data/users";
 import { sendEmail } from "@/lib/email";
 import { welcomeEmail } from "@/lib/email-templates";
-import { jsonError, jsonOk, readJson } from "@/lib/http";
+import { apiHandler, jsonError, jsonOk, readJson } from "@/lib/http";
 import { absoluteUrl } from "@/lib/utils";
 import { SESSION_COOKIE, SESSION_DAYS } from "@/lib/constants";
 
@@ -17,7 +17,7 @@ const schema = z.object({
   country: z.string().max(60).optional().nullable(),
 });
 
-export async function POST(request: Request) {
+export const POST = apiHandler(async (request: Request) => {
   const parsed = schema.safeParse(await readJson<unknown>(request));
   if (!parsed.success) {
     return jsonError(parsed.error.issues[0]?.message ?? "Invalid details", 422);
@@ -57,4 +57,4 @@ export async function POST(request: Request) {
   await sendEmail({ to: user.email, subject: mail.subject, html: mail.html, type: "welcome" });
 
   return jsonOk({ user: { id: user.id, name: user.name, email: user.email, role: user.role } }, 201);
-}
+});

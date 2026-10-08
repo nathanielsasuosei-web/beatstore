@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { BeatGrid, type BeatCardData } from "@/components/beat-card";
 import { cn } from "@/lib/utils";
+import { safeJson } from "@/lib/api-client";
 
 type Props = {
   initialBeats: BeatCardData[];
@@ -46,7 +47,7 @@ export function BeatExplorer({ initialBeats, genres, moods, initialTotal, initia
     try {
       const params = new URLSearchParams({ sort: nextSort, limit: "60" });
       const res = await fetch(`/api/beats?${params.toString()}`);
-      const json = await res.json();
+      const json = await safeJson(res);
       if (json.ok) {
         setBeats(json.beats as BeatCardData[]);
         setTotal(json.total as number);

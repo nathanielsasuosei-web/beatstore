@@ -1,4 +1,6 @@
 import { promises as fs } from "node:fs";
+import fsSync from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { randomBytes } from "node:crypto";
 
@@ -17,9 +19,45 @@ const LIMITS: Record<MediaKind, number> = {
   stems: 800 * 1024 * 1024,
 };
 
+let resolvedRoot: string | null = null;
+
+function isWritableDir(dir: string): boolean {
+  try {
+    fsSync.accessSync(dir, fsSync.constants.W_OK);
+    const probe = path.join(dir, `.beatstore-probe-${process.pid}`);
+    fsSync.writeFileSync(probe, "ok");
+    fsSync.unlinkSync(probe);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function root() {
+  if (resolvedRoot) return resolvedRoot;
+
   const dir = process.env.STORAGE_DIR || "storage";
-  return path.isAbsolute(dir) ? dir : path.join(process.cwd(), dir);
+  let full = path.isAbsolute(dir) ? dir : path.join(process.cwd(), dir);
+  try {
+    fsSync.mkdirSync(full, { recursive: true });
+  } catch {
+    /* handled by the writability check below */
+  }
+
+  if (!isWritableDir(full)) {
+    // Serverless filesystems (Vercel, Lambda) are read-only outside /tmp, so
+    // uploads into the app directory would crash with EROFS. Fall back to
+    // tmp — loudly, because tmp uploads don't survive a redeploy/cold start.
+    full = path.join(os.tmpdir(), "beatstore", "storage");
+    fsSync.mkdirSync(full, { recursive: true });
+    console.warn(
+      `[storage] falling back to ${full} — the app directory is not writable. ` +
+        "Set STORAGE_DIR to a persisted location for production.",
+    );
+  }
+
+  resolvedRoot = full;
+  return full;
 }
 
 export function kindDir(kind: MediaKind) {

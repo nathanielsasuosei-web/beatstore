@@ -1,14 +1,14 @@
 import { z } from "zod";
 import { setSessionCookie, verifyPassword } from "@/lib/auth";
 import { getUserByEmail, updateUser } from "@/lib/data/users";
-import { jsonError, jsonOk, readJson } from "@/lib/http";
+import { apiHandler, jsonError, jsonOk, readJson } from "@/lib/http";
 
 const schema = z.object({
   email: z.string().email("Enter a valid email address"),
   password: z.string().min(1, "Enter your password"),
 });
 
-export async function POST(request: Request) {
+export const POST = apiHandler(async (request: Request) => {
   const parsed = schema.safeParse(await readJson<unknown>(request));
   if (!parsed.success) return jsonError(parsed.error.issues[0]?.message ?? "Invalid details", 422);
 
@@ -27,4 +27,4 @@ export async function POST(request: Request) {
     user: { id: user.id, name: user.name, email: user.email, role: user.role },
     redirect: user.role === "admin" ? "/admin" : "/account",
   });
-}
+});

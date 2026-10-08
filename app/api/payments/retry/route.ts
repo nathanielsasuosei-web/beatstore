@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { initializeTransaction, paystackEnabled } from "@/lib/paystack";
 import { getSettings } from "@/lib/settings";
-import { jsonError, jsonOk, readJson } from "@/lib/http";
+import { apiHandler, jsonError, jsonOk, readJson } from "@/lib/http";
 import { absoluteUrl } from "@/lib/utils";
 import { getOrderByReference, updateOrder } from "@/lib/data/sales";
 
@@ -11,7 +11,7 @@ const schema = z.object({ reference: z.string().min(3) });
  * Re-opens the Paystack checkout for an existing unpaid order (e.g. the buyer
  * picked a manual transfer and changed their mind).
  */
-export async function POST(request: Request) {
+export const POST = apiHandler(async (request: Request) => {
   if (!paystackEnabled()) return jsonError("Online payments are not configured on this store.", 503);
 
   const parsed = schema.safeParse(await readJson<unknown>(request));
@@ -36,4 +36,4 @@ export async function POST(request: Request) {
 
   updateOrder(order.id, { paymentRef: init.reference, paymentMethod: "paystack" });
   return jsonOk({ redirect: init.authorizationUrl });
-}
+});

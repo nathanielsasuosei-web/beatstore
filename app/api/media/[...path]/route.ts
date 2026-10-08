@@ -1,5 +1,5 @@
 import { contentTypeFor, isPublicKind, MEDIA_KINDS, resolveStoredFile, type MediaKind } from "@/lib/storage";
-import { serveFile } from "@/lib/http";
+import { apiHandler, serveFile } from "@/lib/http";
 import { downloadIsUsable } from "@/lib/downloads";
 import { getDownloadByToken } from "@/lib/data/sales";
 
@@ -10,7 +10,7 @@ type Params = { params: Promise<{ path: string[] }> };
  *  - covers / previews / videos are public (cacheable)
  *  - beat files and stems require a valid `?token=` download link
  */
-export async function GET(request: Request, { params }: Params) {
+export const GET = apiHandler(async (request: Request, { params }: Params) => {
   const { path } = await params;
   const [kindRaw, ...rest] = path;
   const name = rest.join("/");
@@ -43,4 +43,4 @@ export async function GET(request: Request, { params }: Params) {
     contentType: contentTypeFor(name),
     cacheSeconds: 60 * 60 * 24 * 7,
   });
-}
+});

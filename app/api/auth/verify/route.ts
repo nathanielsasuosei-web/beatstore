@@ -1,7 +1,8 @@
 import { getUserByVerifyToken, updateUser } from "@/lib/data/users";
 import { absoluteUrl } from "@/lib/utils";
+import { apiHandler } from "@/lib/http";
 
-export async function GET(request: Request) {
+export const GET = apiHandler(async (request: Request) => {
   const token = new URL(request.url).searchParams.get("token");
   if (!token) return Response.redirect(absoluteUrl("/account?verified=missing"), 302);
 
@@ -11,4 +12,4 @@ export async function GET(request: Request) {
   updateUser(user.id, { emailVerified: 1, verifyToken: null });
 
   return Response.redirect(absoluteUrl("/account?verified=1"), 302);
-}
+});

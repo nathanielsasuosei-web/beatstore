@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { getCurrentUser, hashPassword, verifyPassword } from "@/lib/auth";
 import { getUserById, updateUser } from "@/lib/data/users";
-import { jsonError, jsonOk, readJson } from "@/lib/http";
+import { apiHandler, jsonError, jsonOk, readJson } from "@/lib/http";
 
 const schema = z.object({
   name: z.string().min(2, "Please enter your name").max(80),
@@ -12,7 +12,7 @@ const schema = z.object({
   newPassword: z.string().min(8, "New password must be at least 8 characters").max(200).optional().nullable(),
 });
 
-export async function POST(request: Request) {
+export const POST = apiHandler(async (request: Request) => {
   const session = await getCurrentUser();
   if (!session) return jsonError("Please sign in first.", 401);
 
@@ -38,4 +38,4 @@ export async function POST(request: Request) {
 
   updateUser(session.id, values);
   return jsonOk({ message: newPassword ? "Profile and password updated." : "Profile updated." });
-}
+});

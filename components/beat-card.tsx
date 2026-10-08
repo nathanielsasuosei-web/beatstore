@@ -7,7 +7,7 @@ import { Headphones, Pause, Play, ShoppingBag } from "lucide-react";
 import { usePlayer, type Track } from "@/components/player-provider";
 import { useCart } from "@/components/cart-provider";
 import { formatMoney } from "@/lib/money";
-import { cn } from "@/lib/utils";
+import { cn, previewIsPlayable } from "@/lib/utils";
 
 export type BeatCardData = {
   id: string;
@@ -38,6 +38,7 @@ export function BeatCard({
   const [flash, setFlash] = useState<string | null>(null);
 
   const isThisPlaying = isCurrent(beat.slug) && playing;
+  const playable = previewIsPlayable(beat.previewFile);
   const cheapest = beat.licenses.length ? Math.min(...beat.licenses.map((l) => l.price)) : 0;
   const inCart = hasBeat(beat.id);
 
@@ -110,13 +111,23 @@ export function BeatCard({
         <button
           type="button"
           onClick={() => toggle(track, queueTracks.length ? queueTracks : undefined)}
+          disabled={!playable}
+          title={playable ? undefined : "Preview coming soon"}
           className={cn(
             "absolute bottom-2.5 left-2.5 grid h-11 w-11 place-items-center rounded-full shadow-lg transition-all",
-            isThisPlaying
-              ? "bg-lime-400 text-ink-950 scale-105"
-              : "bg-ink-950/85 text-white backdrop-blur hover:bg-lime-400 hover:text-ink-950"
+            !playable
+              ? "cursor-not-allowed bg-ink-950/70 text-zinc-500 backdrop-blur"
+              : isThisPlaying
+                ? "bg-lime-400 text-ink-950 scale-105"
+                : "bg-ink-950/85 text-white backdrop-blur hover:bg-lime-400 hover:text-ink-950"
           )}
-          aria-label={isThisPlaying ? `Pause ${beat.title}` : `Play ${beat.title}`}
+          aria-label={
+            !playable
+              ? `${beat.title} has no preview yet`
+              : isThisPlaying
+                ? `Pause ${beat.title}`
+                : `Play ${beat.title}`
+          }
         >
           {isThisPlaying ? (
             <Pause className="h-5 w-5" />

@@ -37,8 +37,19 @@ export async function POST(request: Request) {
     .filter(Boolean) as string[];
   if (errors.length) return jsonError(errors.join(" · "), 422);
 
-  if (!uploads.audio.url && !uploads.preview.url) {
-    return jsonError("Upload the beat file (and ideally a short preview clip artists can listen to).", 422);
+  if (!uploads.audio.url) {
+    return jsonError("Upload the beat file you deliver to buyers.", 422);
+  }
+
+  // The preview is what visitors hear in the store, and it has to live in a
+  // publicly-servable folder (`previews/`). Beat files are token-protected, so
+  // a beat can never fall back to its own master file as the public preview —
+  // that would either 401 every listen or expose the paid file.
+  if (!uploads.preview.url) {
+    return jsonError(
+      "Upload a public preview clip (a short tagged excerpt). Beat files are protected, so the store needs a separate preview to play.",
+      422
+    );
   }
 
   const licenses = parseLicenses(form.get("licenses"));
@@ -48,7 +59,7 @@ export async function POST(request: Request) {
     ...data,
     slug,
     audioFile: uploads.audio.url,
-    previewFile: uploads.preview.url ?? uploads.audio.url,
+    previewFile: uploads.preview.url,
     coverImage: uploads.cover.url,
     stemsFile: uploads.stems.url,
   });

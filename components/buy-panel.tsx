@@ -6,7 +6,7 @@ import { Check, Download, FileAudio, Lock, Mail, ShoppingBag, Zap } from "lucide
 import { useCart } from "@/components/cart-provider";
 import { usePlayer, type Track } from "@/components/player-provider";
 import { formatMoney } from "@/lib/money";
-import { cn } from "@/lib/utils";
+import { cn, previewIsPlayable } from "@/lib/utils";
 import type { BeatCardData } from "@/components/beat-card";
 
 export function BuyPanel({ beat, producer }: { beat: BeatCardData; producer: string }) {
@@ -139,9 +139,15 @@ export function BuyPanel({ beat, producer }: { beat: BeatCardData; producer: str
         <button
           type="button"
           onClick={() => toggle(track)}
-          className="btn btn-ghost btn-sm w-full"
+          disabled={!previewIsPlayable(beat.previewFile)}
+          title={previewIsPlayable(beat.previewFile) ? undefined : "Preview coming soon"}
+          className={cn("btn btn-ghost btn-sm w-full", !previewIsPlayable(beat.previewFile) && "opacity-50")}
         >
-          {isCurrent(beat.slug) && playing ? "Pause preview" : "Listen to the tagged preview"}
+          {!previewIsPlayable(beat.previewFile)
+            ? "No preview available yet"
+            : isCurrent(beat.slug) && playing
+              ? "Pause preview"
+              : "Listen to the tagged preview"}
         </button>
       </div>
 

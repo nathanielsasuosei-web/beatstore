@@ -150,6 +150,11 @@ artist picks a licence
 Files are never public: full beat files live in `storage/beats/` and are only served through
 `/api/media/beats/...?token=...` with a valid, unexpired download token. Previews are public.
 
+Because of that split, a beat needs its own preview clip: the store can't play a beat's master
+file (that URL only answers with a token), so **Admin → Beats** asks for a tagged 30–45s excerpt
+and won't publish a beat without one. Uploads and edits never delete a file a beat still
+references, so replacing a preview can't cost you the master your buyers download.
+
 ---
 
 ## Deploying

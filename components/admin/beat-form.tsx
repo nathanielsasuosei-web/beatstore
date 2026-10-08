@@ -6,7 +6,7 @@ import { useState } from "react";
 import { AlertCircle, Loader2, Music2, Save, Trash2, Upload } from "lucide-react";
 import { GENRES, KEYS, MOODS, TIER_META, type LicenseTier } from "@/lib/constants";
 import { formatMoney } from "@/lib/money";
-import { cn } from "@/lib/utils";
+import { cn, previewIsPlayable } from "@/lib/utils";
 
 export type BeatFormValues = {
   id?: string;
@@ -70,6 +70,10 @@ export function BeatForm({ initial }: { initial?: BeatFormValues }) {
 
   const editing = Boolean(values.id);
 
+  // A preview is playable in the store unless it points into a protected
+  // folder. Beats saved before this rule may point at their beat master file.
+  const hasPlayablePreview = Boolean(files.preview) || previewIsPlayable(values.previewFile);
+
   function set<K extends keyof BeatFormValues>(key: K, value: BeatFormValues[K]) {
     setValues((current) => ({ ...current, [key]: value }));
   }
@@ -90,6 +94,14 @@ export function BeatForm({ initial }: { initial?: BeatFormValues }) {
     setProgress("Uploading files…");
 
     try {
+      if (!values.title.trim()) throw new Error("Give the beat a title.");
+      if (!editing && !files.audio) throw new Error("Upload the beat file buyers will receive.");
+      if (values.published && !hasPlayablePreview) {
+        throw new Error(
+          "Upload a public preview clip (30–45s) before publishing — beat files are protected, so visitors cannot hear them."
+        );
+      }
+
       const form = new FormData();
       form.set("title", values.title);
       form.set("description", values.description);
@@ -418,11 +430,18 @@ export function BeatForm({ initial }: { initial?: BeatFormValues }) {
             />
             <FileField
               label="Public preview (tagged, 30–45s)"
-              hint="Leave empty to use the beat file as the preview"
+              hint="Required — this is what visitors hear. Beat files are protected, so the store plays this clip instead."
               accept=".mp3,.wav,.m4a,.ogg,audio/*"
-              current={values.previewFile}
+              current={hasPlayablePreview ? values.previewFile : null}
               onPick={(file) => setFiles({ ...files, preview: file })}
             />
+            {!hasPlayablePreview && values.previewFile && (
+              <p className="mt-2 flex items-start gap-2 rounded-xl border border-amber-900/60 bg-amber-950/30 px-3 py-2 text-[11px] text-amber-300">
+                <AlertCircle className="mt-0.5 h-3 w-3 shrink-0" />
+                This beat still points at its protected master file, so the store has no playable
+                preview. Upload a clip above to fix it.
+              </p>
+            )}
             <FileField
               label="Stems / trackout zip (exclusive)"
               hint="ZIP up to 800 MB"

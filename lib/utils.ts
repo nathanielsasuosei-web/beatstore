@@ -14,6 +14,19 @@ export function slugify(input: string) {
     .slice(0, 60);
 }
 
+/**
+ * Can visitors actually hear this preview in the store?
+ *
+ * Beat masters and stems live behind download tokens, so a beat whose
+ * `previewFile` points into one of those folders plays nothing but a 401.
+ * Everything else (the public `previews/` folder, bundled `/demo` clips,
+ * external URLs) is playable.
+ */
+export function previewIsPlayable(previewFile?: string | null): boolean {
+  if (!previewFile) return false;
+  return !/^\/api\/media\/(beats|stems)\//.test(previewFile);
+}
+
 export function randomRef(prefix = "NSO") {
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let out = "";

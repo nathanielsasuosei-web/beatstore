@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Pause, Play, ShoppingBag, Sparkles } from "lucide-react";
 import { usePlayer, type Track } from "@/components/player-provider";
 import { formatMoney } from "@/lib/money";
-import { cn } from "@/lib/utils";
+import { cn, previewIsPlayable } from "@/lib/utils";
 import type { BeatCardData } from "@/components/beat-card";
 
 export function HeroPlayer({
@@ -39,6 +39,7 @@ export function HeroPlayer({
   });
 
   const isPlaying = isCurrent(beat.slug) && playing;
+  const canPlay = previewIsPlayable(beat.previewFile);
   const popular = beat.licenses.find((l) => l.popular) ?? beat.licenses[0];
 
   return (
@@ -69,11 +70,15 @@ export function HeroPlayer({
           <button
             type="button"
             onClick={() => toggle(toTrack(beat), queue.map(toTrack))}
+            disabled={!canPlay}
+            title={canPlay ? undefined : "Preview coming soon"}
             className={cn(
               "absolute left-1/2 top-[42%] grid h-16 w-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full shadow-2xl transition",
-              isPlaying ? "bg-lime-400 text-ink-950" : "bg-ink-950/80 text-white backdrop-blur hover:bg-lime-400 hover:text-ink-950"
+              !canPlay
+                ? "cursor-not-allowed bg-ink-950/70 text-zinc-500 backdrop-blur"
+                : isPlaying ? "bg-lime-400 text-ink-950" : "bg-ink-950/80 text-white backdrop-blur hover:bg-lime-400 hover:text-ink-950"
             )}
-            aria-label={isPlaying ? "Pause preview" : "Play preview"}
+            aria-label={!canPlay ? "No preview available yet" : isPlaying ? "Pause preview" : "Play preview"}
           >
             {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6 translate-x-0.5" />}
           </button>
@@ -88,9 +93,10 @@ export function HeroPlayer({
             <button
               type="button"
               onClick={() => toggle(toTrack(beat), queue.map(toTrack))}
-              className="btn btn-secondary btn-sm"
+              disabled={!canPlay}
+              className={cn("btn btn-secondary btn-sm", !canPlay && "opacity-50")}
             >
-              {isPlaying ? "Pause" : "Preview"}
+              {!canPlay ? "No preview" : isPlaying ? "Pause" : "Preview"}
             </button>
             <Link href={`/beats/${beat.slug}`} className="btn btn-primary btn-sm">
               <ShoppingBag className="h-3.5 w-3.5" /> Buy licence

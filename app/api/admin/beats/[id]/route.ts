@@ -7,7 +7,7 @@ import {
   uniqueSlug,
 } from "@/lib/admin-routes";
 import { jsonError, jsonOk } from "@/lib/http";
-import { deleteStoredFile } from "@/lib/storage";
+import { deleteStoredFile, isPublicKind, kindFromUrl } from "@/lib/storage";
 import {
   createLicense,
   deactivateLicensesExcept,
@@ -42,19 +42,32 @@ export async function PATCH(request: Request, { params }: Params) {
     .filter(Boolean) as string[];
   if (errors.length) return jsonError(errors.join(" · "), 422);
 
-  // Remove replaced files only after the new one is safely on disk.
-  if (uploads.audio.url && beat.audioFile && beat.audioFile !== uploads.audio.url) {
-    await deleteStoredFile(beat.audioFile);
+  // Resolve every field first, then clean up. A beat may legitimately point
+  // several fields at one file, so we only ever delete a file the beat has
+  // stopped referencing — never one a remaining field still needs (deleting a
+  // file that is still `audioFile` would strip paid orders of their download).
+  const next = {
+    audioFile: uploads.audio.url ?? beat.audioFile,
+    previewFile: uploads.preview.url ?? beat.previewFile,
+    coverImage: uploads.cover.url ?? (removeCover ? null : beat.coverImage),
+    stemsFile: uploads.stems.url ?? beat.stemsFile,
+  };
+
+  // Playable in the store unless it points into a protected folder (beat
+  // masters, stems). Public preview folders, /demo assets and external URLs
+  // are all fine.
+  const previewKind = next.previewFile ? kindFromUrl(next.previewFile) : null;
+  const previewIsPublic = !!next.previewFile && (!previewKind || isPublicKind(previewKind));
+  if (data.published && !previewIsPublic) {
+    return jsonError(
+      "This beat has no public preview clip, so visitors have nothing to listen to. Upload a preview clip, or unpublish the beat until you can.",
+      422
+    );
   }
-  if (uploads.preview.url && beat.previewFile && beat.previewFile !== uploads.preview.url) {
-    await deleteStoredFile(beat.previewFile);
-  }
-  if (removeCover && beat.coverImage) await deleteStoredFile(beat.coverImage);
-  if (uploads.cover.url && beat.coverImage && beat.coverImage !== uploads.cover.url) {
-    await deleteStoredFile(beat.coverImage);
-  }
-  if (uploads.stems.url && beat.stemsFile && beat.stemsFile !== uploads.stems.url) {
-    await deleteStoredFile(beat.stemsFile);
+
+  const keptFiles = new Set(Object.values(next).filter(Boolean) as string[]);
+  for (const previous of [beat.audioFile, beat.previewFile, beat.coverImage, beat.stemsFile]) {
+    if (previous && !keptFiles.has(previous)) await deleteStoredFile(previous);
   }
 
   const slug = data.title !== beat.title ? await uniqueSlug(data.title, beat.id) : beat.slug;
@@ -70,10 +83,7 @@ export async function PATCH(request: Request, { params }: Params) {
     tags: data.tags,
     featured: data.featured ? 1 : 0,
     published: data.published ? 1 : 0,
-    audioFile: uploads.audio.url ?? beat.audioFile,
-    previewFile: uploads.preview.url ?? beat.previewFile,
-    coverImage: uploads.cover.url ?? (removeCover ? null : beat.coverImage),
-    stemsFile: uploads.stems.url ?? beat.stemsFile,
+    ...next,
   });
 
   const licenses = parseLicenses(form.get("licenses"));

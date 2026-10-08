@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { CheckCircle2, Loader2, Send } from "lucide-react";
+import { safeJson } from "@/lib/api-client";
 
 export function ClaimPaymentForm({
   reference,
@@ -26,7 +27,7 @@ export function ClaimPaymentForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ reference, ...form }),
       });
-      const json = await res.json();
+      const json = await safeJson(res);
       if (!res.ok || !json.ok) throw new Error(json.error ?? "Could not submit your payment details.");
       setState("sent");
       setDone(true);

@@ -1,10 +1,10 @@
 import { downloadIsUsable, getDownloadContext, registerDownloadUse } from "@/lib/downloads";
 import { contentTypeFor, resolveStoredFile } from "@/lib/storage";
-import { serveFile } from "@/lib/http";
+import { apiHandler, serveFile } from "@/lib/http";
 
 type Params = { params: Promise<{ token: string }> };
 
-export async function GET(request: Request, { params }: Params) {
+export const GET = apiHandler(async (request: Request, { params }: Params) => {
   const { token } = await params;
   const context = getDownloadContext(token);
 
@@ -40,4 +40,4 @@ export async function GET(request: Request, { params }: Params) {
   }
 
   return serveFile(request, { filePath, contentType: contentTypeFor(filePath) });
-}
+});

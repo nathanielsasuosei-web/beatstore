@@ -3,7 +3,7 @@ import { assertAdmin, unauthorized } from "@/lib/admin-routes";
 import { sendEmail } from "@/lib/email";
 import { replyEmail } from "@/lib/email-templates";
 import { getSettings } from "@/lib/settings";
-import { jsonError, jsonOk, readJson } from "@/lib/http";
+import { apiHandler, jsonError, jsonOk, readJson } from "@/lib/http";
 import { createMessage, deleteMessage, getMessageById, updateMessage } from "@/lib/data/inbox";
 
 type Params = { params: Promise<{ id: string }> };
@@ -13,7 +13,7 @@ const schema = z.object({
   replyBody: z.string().max(4000).optional(),
 });
 
-export async function PATCH(request: Request, { params }: Params) {
+export const PATCH = apiHandler(async (request: Request, { params }: Params) => {
   if (!(await assertAdmin())) return unauthorized();
   const { id } = await params;
 
@@ -76,4 +76,4 @@ export async function PATCH(request: Request, { params }: Params) {
     default:
       return jsonError("Unsupported action", 422);
   }
-}
+});

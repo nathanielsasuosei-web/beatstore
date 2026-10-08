@@ -76,3 +76,22 @@ export async function readJson<T>(request: Request): Promise<T | null> {
     return null;
   }
 }
+
+/**
+ * Wraps a route handler so an unexpected throw becomes a JSON 500 instead of
+ * Next.js' empty-body error response. An empty body makes every client-side
+ * `res.json()` throw "Failed to execute 'json' on 'Response': Unexpected end
+ * of JSON input", hiding the real error — so the API must always speak JSON.
+ */
+export function apiHandler<A extends unknown[]>(
+  handler: (...args: A) => Promise<Response> | Response,
+): (...args: A) => Promise<Response> {
+  return async (...args: A) => {
+    try {
+      return await handler(...args);
+    } catch (error) {
+      console.error("[api] route crashed:", error);
+      return jsonError("Something went wrong on our side. Please try again.", 500);
+    }
+  };
+}

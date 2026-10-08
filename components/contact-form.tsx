@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { CheckCircle2, Loader2, Send } from "lucide-react";
+import { safeJson } from "@/lib/api-client";
 
 type Topic = { id: string; label: string };
 
@@ -45,7 +46,7 @@ export function ContactForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-      const json = await res.json();
+      const json = await safeJson(res);
       if (!res.ok || !json.ok) throw new Error(json.error ?? "Could not send your message.");
       setState("sent");
       setMessage("Message sent — a copy is on its way to your inbox.");

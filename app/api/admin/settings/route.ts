@@ -1,11 +1,11 @@
 import { z } from "zod";
 import { assertAdmin, unauthorized } from "@/lib/admin-routes";
 import { setSettings } from "@/lib/settings";
-import { jsonError, jsonOk, readJson } from "@/lib/http";
+import { apiHandler, jsonError, jsonOk, readJson } from "@/lib/http";
 
 const schema = z.record(z.string().max(120), z.string().max(4000));
 
-export async function POST(request: Request) {
+export const POST = apiHandler(async (request: Request) => {
   if (!(await assertAdmin())) return unauthorized();
 
   const body = await readJson<unknown>(request);
@@ -24,4 +24,4 @@ export async function POST(request: Request) {
 
   await setSettings(cleaned);
   return jsonOk({ saved: Object.keys(cleaned).length });
-}
+});

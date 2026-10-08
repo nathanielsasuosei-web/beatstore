@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Info, Loader2, Lock, Smartphone, CreditCard, Building2, ShieldCheck } from "lucide-react";
 import { formatMoney } from "@/lib/money";
 import { cn } from "@/lib/utils";
+import { safeJson } from "@/lib/api-client";
 
 /**
  * Sandbox version of the hosted payment page, used when Paystack keys are not
@@ -41,7 +42,7 @@ export function DemoCheckout({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ reference, channel }),
         });
-        const json = await res.json();
+        const json = await safeJson(res);
         if (cancelled) return;
         if (!res.ok || !json.ok) throw new Error(json.error ?? "Test payment failed");
         setStage("done");

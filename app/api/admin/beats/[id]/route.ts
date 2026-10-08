@@ -6,7 +6,7 @@ import {
   unauthorized,
   uniqueSlug,
 } from "@/lib/admin-routes";
-import { jsonError, jsonOk } from "@/lib/http";
+import { apiHandler, jsonError, jsonOk } from "@/lib/http";
 import { deleteStoredFile, isPublicKind, kindFromUrl } from "@/lib/storage";
 import {
   createLicense,
@@ -20,7 +20,7 @@ import { ordersUsingBeat } from "@/lib/data/sales";
 
 type Params = { params: Promise<{ id: string }> };
 
-export async function PATCH(request: Request, { params }: Params) {
+export const PATCH = apiHandler(async (request: Request, { params }: Params) => {
   if (!(await assertAdmin())) return unauthorized();
   const { id } = await params;
 
@@ -122,9 +122,9 @@ export async function PATCH(request: Request, { params }: Params) {
   }
 
   return jsonOk({ beat: getBeatById(id) });
-}
+});
 
-export async function DELETE(_request: Request, { params }: Params) {
+export const DELETE = apiHandler(async (_request: Request, { params }: Params) => {
   if (!(await assertAdmin())) return unauthorized();
   const { id } = await params;
 
@@ -144,4 +144,4 @@ export async function DELETE(_request: Request, { params }: Params) {
   deleteBeat(id);
 
   return jsonOk({ deleted: true });
-}
+});

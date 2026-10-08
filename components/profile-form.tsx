@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AlertCircle, CheckCircle2, Loader2, Save } from "lucide-react";
+import { safeJson } from "@/lib/api-client";
 
 export function ProfileForm({
   defaults,
@@ -28,7 +29,7 @@ export function ProfileForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-      const json = await res.json();
+      const json = await safeJson(res);
       if (!res.ok || !json.ok) throw new Error(json.error ?? "Could not save your details.");
       setState("saved");
       setMessage(json.message ?? "Saved.");

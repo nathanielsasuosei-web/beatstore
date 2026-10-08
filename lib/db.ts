@@ -2,6 +2,7 @@ import "@/lib/quiet-warnings"; // must come before node:sqlite
 import { DatabaseSync } from "node:sqlite";
 import { randomUUID } from "node:crypto";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 
 /**
@@ -15,11 +16,43 @@ import path from "node:path";
 
 const globalForDb = globalThis as unknown as { __bsDb?: DatabaseSync; __bsSchemaReady?: boolean };
 
+function isWritableDir(dir: string): boolean {
+  try {
+    fs.accessSync(dir, fs.constants.W_OK);
+    const probe = path.join(dir, `.beatstore-probe-${process.pid}`);
+    fs.writeFileSync(probe, "ok");
+    fs.unlinkSync(probe);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function dbFile(): string {
   const url = process.env.DATABASE_URL || "file:./dev.db";
   const cleaned = url.replace(/^file:/, "").replace(/^\/\//, "");
-  const full = path.isAbsolute(cleaned) ? cleaned : path.join(process.cwd(), cleaned);
-  fs.mkdirSync(path.dirname(full), { recursive: true });
+  let full = path.isAbsolute(cleaned) ? cleaned : path.join(process.cwd(), cleaned);
+
+  const dir = path.dirname(full);
+  try {
+    fs.mkdirSync(dir, { recursive: true });
+  } catch {
+    /* handled by the writability check below */
+  }
+
+  if (!isWritableDir(dir)) {
+    // Serverless filesystems (Vercel, Lambda) are read-only outside /tmp, so a
+    // database in the app directory crashes every request with EROFS. Fall
+    // back to tmp so the app still runs — loudly, because tmp is ephemeral.
+    const fallbackDir = path.join(os.tmpdir(), "beatstore");
+    fs.mkdirSync(fallbackDir, { recursive: true });
+    full = path.join(fallbackDir, path.basename(full) || "beatstore.db");
+    console.warn(
+      `[db] "${dir}" is not writable — using ${full} instead. ` +
+        "Data in the temp directory is ephemeral; set DATABASE_URL to a persisted location for production.",
+    );
+  }
+
   return full;
 }
 

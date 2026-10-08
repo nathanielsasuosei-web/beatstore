@@ -1,8 +1,8 @@
 import { listBeats } from "@/lib/data/catalog";
-import { jsonOk } from "@/lib/http";
+import { apiHandler, jsonOk } from "@/lib/http";
 
 /** Public storefront feed used by the client-side filters on the catalogue. */
-export async function GET(request: Request) {
+export const GET = apiHandler(async (request: Request) => {
   const params = new URL(request.url).searchParams;
   const q = params.get("q")?.trim() ?? "";
   const genre = params.get("genre")?.trim() ?? "";
@@ -40,4 +40,4 @@ export async function GET(request: Request) {
     page: result.page,
     pages: result.pages,
   });
-}
+});

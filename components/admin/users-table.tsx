@@ -5,6 +5,7 @@ import { useState } from "react";
 import { BadgeCheck, Search, Shield, Trash2, User } from "lucide-react";
 import { formatMoney } from "@/lib/money";
 import { formatDate } from "@/lib/utils";
+import { safeJson } from "@/lib/api-client";
 
 export type AdminUser = {
   id: string;
@@ -43,7 +44,7 @@ export function UsersTable({ users }: { users: AdminUser[] }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
-    const json = await res.json();
+    const json = await safeJson(res);
     if (!res.ok || !json.ok) {
       setFlash(json.error ?? "Action failed");
       return;

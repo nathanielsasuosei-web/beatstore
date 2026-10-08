@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { simulationAllowed } from "@/lib/paystack";
 import { fulfilOrder } from "@/lib/fulfilment";
-import { jsonError, jsonOk, readJson } from "@/lib/http";
+import { apiHandler, jsonError, jsonOk, readJson } from "@/lib/http";
 import { getOrderByReference } from "@/lib/data/sales";
 
 const schema = z.object({
@@ -14,7 +14,7 @@ const schema = z.object({
  * buy → pay → email-delivery flow can be tested without live keys.
  * Disabled automatically once a real Paystack key is configured.
  */
-export async function POST(request: Request) {
+export const POST = apiHandler(async (request: Request) => {
   if (!simulationAllowed()) {
     return jsonError("Test payments are disabled on this store.", 403);
   }
@@ -35,4 +35,4 @@ export async function POST(request: Request) {
 
   if (!result.ok) return jsonError("Could not complete the test payment", 500);
   return jsonOk({ reference: order.reference });
-}
+});

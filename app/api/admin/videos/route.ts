@@ -1,14 +1,14 @@
 import { assertAdmin, saveMediaField, unauthorized } from "@/lib/admin-routes";
-import { jsonError, jsonOk } from "@/lib/http";
+import { apiHandler, jsonError, jsonOk } from "@/lib/http";
 import { ensureStorage } from "@/lib/storage";
 import { createVideo, listVideos } from "@/lib/data/catalog";
 
-export async function GET() {
+export const GET = apiHandler(async () => {
   if (!(await assertAdmin())) return unauthorized();
   return jsonOk({ videos: listVideos(true) });
-}
+});
 
-export async function POST(request: Request) {
+export const POST = apiHandler(async (request: Request) => {
   if (!(await assertAdmin())) return unauthorized();
   await ensureStorage();
 
@@ -43,4 +43,4 @@ export async function POST(request: Request) {
   });
 
   return jsonOk({ videoId: video.id }, 201);
-}
+});

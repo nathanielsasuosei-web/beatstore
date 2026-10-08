@@ -7,18 +7,18 @@ import {
   unauthorized,
   uniqueSlug,
 } from "@/lib/admin-routes";
-import { jsonError, jsonOk } from "@/lib/http";
+import { apiHandler, jsonError, jsonOk } from "@/lib/http";
 import { ensureStorage } from "@/lib/storage";
 import { createBeat, createLicense, listBeats } from "@/lib/data/catalog";
 
-export async function GET() {
+export const GET = apiHandler(async () => {
   if (!(await assertAdmin())) return unauthorized();
   const { beats } = listBeats({ includeUnpublished: true, limit: 100 });
   return jsonOk({ beats });
-}
+});
 
 /** Creates a beat (multipart form: fields + optional audio/preview/cover/stems files). */
-export async function POST(request: Request) {
+export const POST = apiHandler(async (request: Request) => {
   if (!(await assertAdmin())) return unauthorized();
 
   await ensureStorage();
@@ -79,4 +79,4 @@ export async function POST(request: Request) {
   }
 
   return jsonOk({ beatId: beat.id, slug: beat.slug }, 201);
-}
+});

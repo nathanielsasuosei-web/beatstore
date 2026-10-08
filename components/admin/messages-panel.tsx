@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Archive, CornerUpLeft, Loader2, Mail, MailOpen, Send, Trash2 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
+import { safeJson } from "@/lib/api-client";
 
 export type AdminMessage = {
   id: string;
@@ -37,7 +38,7 @@ export function MessagesPanel({ messages }: { messages: AdminMessage[] }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-      const json = await res.json();
+      const json = await safeJson(res);
       if (!res.ok || !json.ok) throw new Error(json.error ?? "Action failed");
       if (body.action === "reply") {
         setFlash(

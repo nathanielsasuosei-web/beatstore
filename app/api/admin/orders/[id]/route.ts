@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { assertAdmin, unauthorized } from "@/lib/admin-routes";
 import { fulfilOrder, markOrderStatus, resendDeliveryEmail } from "@/lib/fulfilment";
-import { jsonError, jsonOk, readJson } from "@/lib/http";
+import { apiHandler, jsonError, jsonOk, readJson } from "@/lib/http";
 import { deleteOrder, getOrderById } from "@/lib/data/sales";
 
 type Params = { params: Promise<{ id: string }> };
@@ -12,7 +12,7 @@ const schema = z.object({
   note: z.string().max(300).optional().nullable(),
 });
 
-export async function PATCH(request: Request, { params }: Params) {
+export const PATCH = apiHandler(async (request: Request, { params }: Params) => {
   if (!(await assertAdmin())) return unauthorized();
   const { id } = await params;
 
@@ -45,4 +45,4 @@ export async function PATCH(request: Request, { params }: Params) {
     default:
       return jsonError("Unsupported action", 422);
   }
-}
+});

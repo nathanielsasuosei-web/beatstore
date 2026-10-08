@@ -2,9 +2,10 @@ import { verifyTransaction, paystackEnabled } from "@/lib/paystack";
 import { fulfilOrder } from "@/lib/fulfilment";
 import { absoluteUrl } from "@/lib/utils";
 import { getOrderByPaymentRef, getOrderByReference, updateOrder } from "@/lib/data/sales";
+import { apiHandler } from "@/lib/http";
 
 /** Paystack redirects the buyer here after they finish paying. */
-export async function GET(request: Request) {
+export const GET = apiHandler(async (request: Request) => {
   const url = new URL(request.url);
   const reference = url.searchParams.get("reference") || url.searchParams.get("trxref");
 
@@ -30,4 +31,4 @@ export async function GET(request: Request) {
 
   updateOrder(order.id, { status: "failed", paymentRef: reference });
   return Response.redirect(absoluteUrl(`/checkout/failed?ref=${order.reference}&reason=${result.status}`), 302);
-}
+});

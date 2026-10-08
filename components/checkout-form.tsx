@@ -18,6 +18,7 @@ import { useCart } from "@/components/cart-provider";
 import { formatMoney } from "@/lib/money";
 import { PAYMENT_METHODS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { safeJson } from "@/lib/api-client";
 
 type Props = {
   user: { name: string; email: string } | null;
@@ -91,15 +92,17 @@ export function CheckoutForm({ user, paystackReady, demoMode, settings }: Props)
           note: form.note || null,
         }),
       });
-      const json = await res.json();
+      const json = await safeJson(res);
       if (!res.ok || !json.ok) throw new Error(json.error ?? "Checkout could not be started.");
 
       // Cart is now an order — clear it and follow the redirect.
       clear();
-      if (json.redirect.startsWith("http")) {
-        window.location.href = json.redirect;
+      const redirect = json.redirect;
+      if (!redirect) throw new Error("Checkout did not return a payment link.");
+      if (redirect.startsWith("http")) {
+        window.location.href = redirect;
       } else {
-        router.push(json.redirect);
+        router.push(redirect);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");

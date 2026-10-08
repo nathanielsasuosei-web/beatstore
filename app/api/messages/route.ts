@@ -3,7 +3,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { sendEmail } from "@/lib/email";
 import { contactAckEmail, customBeatAckEmail, newMessageAdminEmail } from "@/lib/email-templates";
 import { getSettings } from "@/lib/settings";
-import { jsonError, jsonOk, readJson } from "@/lib/http";
+import { apiHandler, jsonError, jsonOk, readJson } from "@/lib/http";
 import { createMessage } from "@/lib/data/inbox";
 import { getOrderByReference } from "@/lib/data/sales";
 
@@ -16,7 +16,7 @@ const schema = z.object({
   orderReference: z.string().max(40).optional().nullable(),
 });
 
-export async function POST(request: Request) {
+export const POST = apiHandler(async (request: Request) => {
   const parsed = schema.safeParse(await readJson<unknown>(request));
   if (!parsed.success) return jsonError(parsed.error.issues[0]?.message ?? "Invalid message", 422);
 
@@ -59,4 +59,4 @@ export async function POST(request: Request) {
   });
 
   return jsonOk({ id: message.id }, 201);
-}
+});

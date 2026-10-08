@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AlertCircle, Loader2, Plus, Trash2, Upload, Video } from "lucide-react";
 import { videoEmbedUrl } from "@/lib/utils";
+import { safeJson } from "@/lib/api-client";
 
 export type AdminVideo = {
   id: string;
@@ -49,7 +50,7 @@ export function VideoManager({ videos }: { videos: AdminVideo[] }) {
       if (thumb) data.set("thumbnail", thumb);
 
       const res = await fetch("/api/admin/videos", { method: "POST", body: data });
-      const json = await res.json();
+      const json = await safeJson(res);
       if (!res.ok || !json.ok) throw new Error(json.error ?? "Could not save the video.");
       setForm({ title: "", description: "", source: "youtube", url: "", featured: false, published: true });
       setFile(undefined);

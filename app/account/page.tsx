@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
   BadgeCheck,
+  CalendarClock,
   Clock,
   Download,
   FileText,
@@ -16,9 +17,11 @@ import { getSettings } from "@/lib/settings";
 import { downloadsForOrder, ordersForUser } from "@/lib/data/sales";
 import { getUserById } from "@/lib/data/users";
 import { messagesForUser } from "@/lib/data/inbox";
+import { listBookings } from "@/lib/data/bookings";
 import { formatMoney } from "@/lib/money";
 import { formatDate } from "@/lib/utils";
-import { ORDER_STATUS } from "@/lib/constants";
+import { formatBookingDate, formatHour } from "@/lib/schedule";
+import { BOOKING_STATUS, ORDER_STATUS } from "@/lib/constants";
 import { ProfileForm } from "@/components/profile-form";
 import { ContactForm } from "@/components/contact-form";
 import { Stat } from "@/components/section";
@@ -38,6 +41,7 @@ export default async function AccountPage({
   const orders = ordersForUser(user);
   const downloadsByOrder = new Map(orders.map((order) => [order.id, downloadsForOrder(order.id)]));
   const messages = messagesForUser(user);
+  const bookings = listBookings({ email: user.email, limit: 20 });
   const paidOrders = orders.filter((o) => o.status === "paid");
   const spent = paidOrders.reduce((sum, o) => sum + o.total, 0);
   const totalDownloads = paidOrders.length;
@@ -190,6 +194,76 @@ export default async function AccountPage({
                       );
                     })}
                   </ul>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      <section className="mt-12">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="flex items-center gap-2 text-lg font-bold">
+            <CalendarClock className="h-4 w-4 text-lime-400" /> Studio sessions
+          </h2>
+          <Link href="/studio" className="btn btn-secondary btn-sm">
+            Book studio time
+          </Link>
+        </div>
+        <p className="mt-1 text-sm text-zinc-400">
+          Recording, mixing and mastering slots you&apos;ve reserved — deposits are 50%, the balance is settled at the
+          studio.
+        </p>
+
+        {bookings.length === 0 ? (
+          <div className="surface-card mt-4 grid place-items-center gap-2 p-8 text-center">
+            <CalendarClock className="h-7 w-7 text-zinc-600" />
+            <p className="text-sm text-zinc-400">No sessions booked yet — the booth is waiting.</p>
+            <Link href="/studio" className="btn btn-primary btn-sm mt-1">
+              Pick a slot
+            </Link>
+          </div>
+        ) : (
+          <div className="mt-4 space-y-3">
+            {bookings.map((booking) => {
+              const status = BOOKING_STATUS[booking.status as keyof typeof BOOKING_STATUS];
+              const paid = booking.status === "confirmed" || booking.status === "completed";
+              return (
+                <div key={booking.id} className="surface-card flex flex-wrap items-center justify-between gap-3 p-4">
+                  <div>
+                    <p className="font-semibold">
+                      {booking.serviceName} · {formatBookingDate(booking.date)}
+                    </p>
+                    <p className="text-xs text-zinc-500">
+                      {formatHour(booking.startHour)} – {formatHour(booking.endHour)} · {booking.reference}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`badge ${
+                        paid
+                          ? "bg-lime-400/15 text-lime-300"
+                          : booking.status === "cancelled"
+                            ? "bg-red-500/15 text-red-300"
+                            : "bg-amber-500/15 text-amber-300"
+                      }`}
+                    >
+                      {status?.label ?? booking.status}
+                    </span>
+                    <div className="text-right">
+                      <p className="text-sm font-bold text-lime-300">
+                        {formatMoney(booking.amountDue, booking.currency)}
+                      </p>
+                      <p className="text-[11px] text-zinc-500">
+                        balance {formatMoney(booking.balanceAmount, booking.currency)} at studio
+                      </p>
+                    </div>
+                    {!paid && booking.status !== "cancelled" && (
+                      <Link href={`/studio/pay/${booking.reference}`} className="btn btn-secondary btn-sm">
+                        <Clock className="h-3.5 w-3.5" /> Pay deposit
+                      </Link>
+                    )}
+                  </div>
                 </div>
               );
             })}

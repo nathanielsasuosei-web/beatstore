@@ -37,6 +37,17 @@ export const ORDER_STATUS = {
   refunded: { label: "Refunded", tone: "sky" },
 } as const;
 
+export const BOOKING_STATUS = {
+  pending: { label: "Awaiting deposit", tone: "zinc" },
+  awaiting_verification: { label: "Verifying deposit", tone: "amber" },
+  confirmed: { label: "Confirmed", tone: "lime" },
+  completed: { label: "Completed", tone: "sky" },
+  cancelled: { label: "Cancelled", tone: "red" },
+} as const;
+
+/** Statuses that keep a studio slot blocked on the calendar. */
+export const BOOKING_SLOT_HOLDING_STATUSES = ["pending", "awaiting_verification", "confirmed"] as const;
+
 export const PAYMENT_METHODS = {
   paystack: {
     label: "Mobile Money / Card / Bank",
@@ -104,7 +115,7 @@ export const DOWNLOAD_TTL_DAYS = 30;
 export const DOWNLOAD_MAX = 15;
 
 export const DEFAULT_SETTINGS: Record<string, string> = {
-  site_name: "NSO Beats",
+  site_name: "Project 1",
   producer_name: "Nathaniel Sasu Osei",
   tagline: "Afrobeats, drill & amapiano instrumentals — mixed, mastered, ready.",
   bio: "I'm Nathaniel, a producer and mixing engineer from Accra. For the last eight years I've been building beats for artists across West Africa — from street anthems to late-night R&B. Every beat in this store is mixed and mastered, licensed properly, and delivered to your inbox within seconds of payment.",
@@ -129,6 +140,20 @@ export const DEFAULT_SETTINGS: Record<string, string> = {
   delivery_note:
     "Downloads are emailed to you immediately and also stay available in your artist dashboard for 30 days.",
   announcement: "New pack: 6 fresh Afrobeats + amapiano beats just dropped.",
+  // ── Studio bookings ──
+  studio_tagline:
+    "Recording, mixing and mastering with the producer. Pick a slot, pay the deposit with Mobile Money, and your confirmation is emailed instantly.",
+  studio_deposit_percent: "50",
+  studio_service_fee_percent: "10",
+  studio_policy:
+    "Please arrive 10 minutes before your session. The balance is payable at the studio before the session starts. Reschedule at least 24 hours in advance to keep your deposit.",
+  hours_sun: "Closed",
+  hours_mon: "10:00-20:00",
+  hours_tue: "10:00-20:00",
+  hours_wed: "10:00-20:00",
+  hours_thu: "10:00-20:00",
+  hours_fri: "10:00-20:00",
+  hours_sat: "12:00-20:00",
 };
 
 export const DEMO_ACCOUNTS = {

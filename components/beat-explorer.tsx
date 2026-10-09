@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { Search, SlidersHorizontal, X } from "lucide-react";
+import { Loader2, Search, SlidersHorizontal, X } from "lucide-react";
 import { BeatGrid, type BeatCardData } from "@/components/beat-card";
 import { cn } from "@/lib/utils";
 import { safeJson } from "@/lib/api-client";
@@ -11,8 +11,11 @@ type Props = {
   genres: string[];
   moods: string[];
   initialTotal: number;
+  initialPages: number;
   initialQuery?: string;
 };
+
+const PAGE_SIZE = 100;
 
 const SORTS = [
   { id: "newest", label: "Newest" },
@@ -20,14 +23,24 @@ const SORTS = [
   { id: "title", label: "A–Z" },
 ] as const;
 
-export function BeatExplorer({ initialBeats, genres, moods, initialTotal, initialQuery = "" }: Props) {
+export function BeatExplorer({
+  initialBeats,
+  genres,
+  moods,
+  initialTotal,
+  initialPages,
+  initialQuery = "",
+}: Props) {
   const [beats, setBeats] = useState(initialBeats);
   const [total, setTotal] = useState(initialTotal);
+  const [pages, setPages] = useState(initialPages);
+  const [page, setPage] = useState(1);
   const [query, setQuery] = useState(initialQuery);
   const [genre, setGenre] = useState("All");
   const [mood, setMood] = useState("All");
   const [sort, setSort] = useState<(typeof SORTS)[number]["id"]>("newest");
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   const filtered = useMemo(() => {
     return beats.filter((beat) => {
@@ -45,12 +58,14 @@ export function BeatExplorer({ initialBeats, genres, moods, initialTotal, initia
   const refresh = useCallback(async (nextSort: (typeof SORTS)[number]["id"]) => {
     setLoading(true);
     try {
-      const params = new URLSearchParams({ sort: nextSort, limit: "60" });
+      const params = new URLSearchParams({ sort: nextSort, limit: String(PAGE_SIZE), page: "1" });
       const res = await fetch(`/api/beats?${params.toString()}`);
       const json = await safeJson(res);
       if (json.ok) {
         setBeats(json.beats as BeatCardData[]);
         setTotal(json.total as number);
+        setPages(json.pages as number);
+        setPage(1);
       }
     } catch {
       /* keep the current list on failure */
@@ -58,6 +73,32 @@ export function BeatExplorer({ initialBeats, genres, moods, initialTotal, initia
       setLoading(false);
     }
   }, []);
+
+  // Appends the next page so every beat in the store is reachable, no matter
+  // how big the catalogue grows.
+  const loadMore = useCallback(async () => {
+    if (page >= pages) return;
+    setLoadingMore(true);
+    try {
+      const params = new URLSearchParams({ sort, limit: String(PAGE_SIZE), page: String(page + 1) });
+      const res = await fetch(`/api/beats?${params.toString()}`);
+      const json = await safeJson(res);
+      if (json.ok) {
+        const next = json.beats as BeatCardData[];
+        setBeats((current) => {
+          const seen = new Set(current.map((b) => b.id));
+          return [...current, ...next.filter((b) => !seen.has(b.id))];
+        });
+        setTotal(json.total as number);
+        setPages(json.pages as number);
+        setPage(page + 1);
+      }
+    } catch {
+      /* keep the current list on failure */
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [page, pages, sort]);
 
   // Sorting changes the server-side query; genre/mood/search filter the list locally
   // so typing stays instant.
@@ -67,6 +108,7 @@ export function BeatExplorer({ initialBeats, genres, moods, initialTotal, initia
   }
 
   const anyFilter = query.trim() || genre !== "All" || mood !== "All";
+  const moreAvailable = page < pages && !loadingMore;
 
   return (
     <div>
@@ -142,6 +184,23 @@ export function BeatExplorer({ initialBeats, genres, moods, initialTotal, initia
       <div className="mt-4">
         <BeatGrid beats={filtered} />
       </div>
+
+      {moreAvailable && (
+        <div className="mt-8 flex flex-col items-center gap-2">
+          <button type="button" onClick={() => void loadMore()} className="btn btn-secondary btn-lg">
+            {loadingMore ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" /> Loading beats…
+              </>
+            ) : (
+              <>Load more beats</>
+            )}
+          </button>
+          <p className="text-xs text-zinc-500">
+            Showing {beats.length} of {total} beats
+          </p>
+        </div>
+      )}
     </div>
   );
 }

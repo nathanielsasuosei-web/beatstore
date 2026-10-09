@@ -15,6 +15,7 @@ type Props = {
 const LINKS = [
   { href: "/beats", label: "Beats" },
   { href: "/videos", label: "Videos" },
+  { href: "/studio", label: "Studio" },
   { href: "/licensing", label: "Licensing" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },

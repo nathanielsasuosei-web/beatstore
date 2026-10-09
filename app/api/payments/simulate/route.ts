@@ -1,8 +1,10 @@
 import { z } from "zod";
 import { simulationAllowed } from "@/lib/paystack";
 import { fulfilOrder } from "@/lib/fulfilment";
+import { confirmBooking } from "@/lib/booking";
 import { apiHandler, jsonError, jsonOk, readJson } from "@/lib/http";
 import { getOrderByReference } from "@/lib/data/sales";
+import { getBookingByReference } from "@/lib/data/bookings";
 
 const schema = z.object({
   reference: z.string().min(3),
@@ -10,9 +12,9 @@ const schema = z.object({
 });
 
 /**
- * Demo-mode "payment gateway": instantly confirms an order so the whole
- * buy → pay → email-delivery flow can be tested without live keys.
- * Disabled automatically once a real Paystack key is configured.
+ * Demo-mode "payment gateway": instantly confirms an order or a studio
+ * booking deposit so the whole pay → email flow can be tested without live
+ * keys. Disabled automatically once a real Paystack key is configured.
  */
 export const POST = apiHandler(async (request: Request) => {
   if (!simulationAllowed()) {
@@ -23,16 +25,35 @@ export const POST = apiHandler(async (request: Request) => {
   if (!parsed.success) return jsonError("Invalid request", 422);
 
   const order = getOrderByReference(parsed.data.reference);
-  if (!order) return jsonError("Order not found", 404);
-  if (order.status === "paid") return jsonOk({ alreadyPaid: true, reference: order.reference });
+  if (order) {
+    if (order.status === "paid") return jsonOk({ alreadyPaid: true, reference: order.reference });
 
-  const result = await fulfilOrder({
-    orderId: order.id,
-    paymentRef: `TEST-${order.reference}`,
-    // keep the order's own payment method so the receipt reflects what was chosen
-    channel: parsed.data.channel ?? null,
-  });
+    const result = await fulfilOrder({
+      orderId: order.id,
+      paymentRef: `TEST-${order.reference}`,
+      // keep the order's own payment method so the receipt reflects what was chosen
+      channel: parsed.data.channel ?? null,
+    });
 
-  if (!result.ok) return jsonError("Could not complete the test payment", 500);
-  return jsonOk({ reference: order.reference });
+    if (!result.ok) return jsonError("Could not complete the test payment", 500);
+    return jsonOk({ reference: order.reference, kind: "order" });
+  }
+
+  const booking = getBookingByReference(parsed.data.reference);
+  if (booking) {
+    if (booking.status === "confirmed" || booking.status === "completed") {
+      return jsonOk({ alreadyPaid: true, reference: booking.reference, kind: "booking" });
+    }
+
+    const result = await confirmBooking({
+      bookingId: booking.id,
+      paymentRef: `TEST-${booking.reference}`,
+      channel: parsed.data.channel ?? null,
+    });
+
+    if (!result.ok) return jsonError("Could not complete the test payment", 500);
+    return jsonOk({ reference: booking.reference, kind: "booking" });
+  }
+
+  return jsonError("Order not found", 404);
 });

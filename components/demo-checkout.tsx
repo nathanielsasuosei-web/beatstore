@@ -18,13 +18,19 @@ export function DemoCheckout({
   currency,
   email,
   items,
+  doneHref,
+  kind = "Order",
 }: {
   reference: string;
   total: number;
   currency: string;
   email: string;
   items: { title: string; licenseName: string; price: number }[];
+  /** Where to send the buyer after the sandbox payment clears. */
+  doneHref?: string;
+  kind?: string;
 }) {
+  const done = doneHref ?? `/checkout/success/${reference}`;
   const router = useRouter();
   const [channel, setChannel] = useState<"mobile_money" | "card" | "bank_transfer">("mobile_money");
   const [stage, setStage] = useState<"form" | "prompt" | "confirming" | "done" | "error">("form");
@@ -46,7 +52,7 @@ export function DemoCheckout({
         if (cancelled) return;
         if (!res.ok || !json.ok) throw new Error(json.error ?? "Test payment failed");
         setStage("done");
-        setTimeout(() => router.push(`/checkout/success/${reference}`), 1200);
+        setTimeout(() => router.push(done), 1200);
       } catch (err) {
         if (cancelled) return;
         setError(err instanceof Error ? err.message : "Test payment failed");
@@ -58,7 +64,7 @@ export function DemoCheckout({
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [stage, reference, channel, router]);
+  }, [stage, reference, channel, router, done]);
 
   return (
     <div className="mx-auto grid max-w-4xl gap-6 lg:grid-cols-[1.15fr_0.85fr]">
@@ -175,7 +181,7 @@ export function DemoCheckout({
               <Loader2 className="h-8 w-8 animate-spin text-lime-400" />
               <p className="text-sm font-medium">Confirming your payment…</p>
               <p className="text-xs text-zinc-500">
-                Matching transaction for order {reference}
+                Matching transaction for {kind.toLowerCase()} {reference}
               </p>
             </div>
           )}
@@ -200,7 +206,7 @@ export function DemoCheckout({
       </div>
 
       <aside className="surface-card h-fit p-5">
-        <h2 className="font-semibold">Order {reference}</h2>
+        <h2 className="font-semibold">{kind} {reference}</h2>
         <ul className="mt-4 space-y-2.5 text-sm">
           {items.map((item) => (
             <li key={item.title} className="flex justify-between gap-3">

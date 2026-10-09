@@ -104,7 +104,7 @@ export const DOWNLOAD_TTL_DAYS = 30;
 export const DOWNLOAD_MAX = 15;
 
 export const DEFAULT_SETTINGS: Record<string, string> = {
-  site_name: "NSO Beats",
+  site_name: "Project 1",
   producer_name: "Nathaniel Sasu Osei",
   tagline: "Afrobeats, drill & amapiano instrumentals — mixed, mastered, ready.",
   bio: "I'm Nathaniel, a producer and mixing engineer from Accra. For the last eight years I've been building beats for artists across West Africa — from street anthems to late-night R&B. Every beat in this store is mixed and mastered, licensed properly, and delivered to your inbox within seconds of payment.",

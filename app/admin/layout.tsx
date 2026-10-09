@@ -4,6 +4,7 @@ import { getSettings } from "@/lib/settings";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { messageCounts } from "@/lib/data/inbox";
 import { listOrders } from "@/lib/data/sales";
+import { bookingCounts } from "@/lib/data/bookings";
 import { emailMode } from "@/lib/email";
 import { paystackEnabled } from "@/lib/paystack";
 
@@ -17,12 +18,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const [settings] = await Promise.all([getSettings()]);
   const counts = messageCounts();
   const { total: pendingOrders } = listOrders({ status: "awaiting_verification", limit: 1 });
+  const bookings = bookingCounts();
 
   return (
     <AdminShell
       user={{ name: user.name, email: user.email }}
       siteName={settings.site_name}
-      badges={{ messages: counts.new, orders: pendingOrders }}
+      badges={{ messages: counts.new, orders: pendingOrders, bookings: bookings.todo }}
       status={{
         paystack: paystackEnabled(),
         email: emailMode(),

@@ -333,3 +333,197 @@ export function customBeatAckEmail({ name }: { name: string }) {
 export function beatstoreSignature() {
   return SIGN;
 }
+
+/* ── Studio bookings ───────────────────────────────────────── */
+
+export type BookingEmailSummary = {
+  reference: string;
+  name: string;
+  email: string;
+  phone?: string | null;
+  serviceName: string;
+  dateLabel: string;
+  timeLabel: string;
+  hours: number;
+  pricePerHour: number;
+  sessionTotal: number;
+  depositPercent: number;
+  depositAmount: number;
+  serviceFeePercent: number;
+  serviceFeeAmount: number;
+  amountDue: number;
+  balanceAmount: number;
+  currency: string;
+  notes?: string | null;
+  status?: string;
+  paymentMethod?: string;
+};
+
+export function bookingConfirmationEmail({
+  booking,
+  policy,
+  supportEmail,
+  producerName,
+}: {
+  booking: BookingEmailSummary;
+  policy: string;
+  supportEmail: string;
+  producerName: string;
+}) {
+  const body = `
+    <p style="margin:0 0 12px;">Hi ${escapeHtml(booking.name.split(" ")[0] || booking.name)},</p>
+    <p style="margin:0 0 12px;">Your studio session is locked in. Your deposit of <strong>${formatMoney(
+      booking.amountDue,
+      booking.currency
+    )}</strong> has been received — see you at the studio.</p>
+    ${emailLines([
+      ["Reference", booking.reference],
+      ["Session", `${booking.serviceName} (${booking.hours} hr${booking.hours === 1 ? "" : "s"})`],
+      ["Date", booking.dateLabel],
+      ["Time", booking.timeLabel],
+      ["Session total", formatMoney(booking.sessionTotal, booking.currency)],
+      [`Deposit paid (${booking.depositPercent}%)`, formatMoney(booking.depositAmount, booking.currency)],
+      ...(booking.serviceFeeAmount
+        ? ([[`Service fee (${booking.serviceFeePercent}%)`, formatMoney(booking.serviceFeeAmount, booking.currency)] as [string, string]])
+        : []),
+      ["Balance at the studio", formatMoney(booking.balanceAmount, booking.currency)],
+    ])}
+    <div style="margin:14px 0;padding:12px 16px;background:#27272a;border-radius:12px;font-size:13px;color:#d4d4d8;line-height:1.6;">
+      ${escapeHtml(policy)}
+    </div>
+    <p style="margin:0;font-size:13px;color:#a1a1aa;">Need to move your session? Reply to this email at least 24 hours ahead. — ${escapeHtml(
+      producerName
+    )}</p>
+  `;
+  return {
+    subject: `Studio confirmed — ${booking.serviceName} on ${booking.dateLabel} (${booking.reference})`,
+    html: emailShell({
+      title: "Your session is booked",
+      preheader: `${booking.serviceName} · ${booking.dateLabel} · ${booking.timeLabel}`,
+      body,
+      cta: { url: absoluteUrl("/studio"), label: "View studio details" },
+      footerNote: `Questions? ${supportEmail}`,
+    }),
+  };
+}
+
+export function bookingReceivedEmail({
+  booking,
+  payInstructions,
+  supportEmail,
+}: {
+  booking: BookingEmailSummary;
+  payInstructions: string;
+  supportEmail: string;
+}) {
+  const body = `
+    <p style="margin:0 0 12px;">Hi ${escapeHtml(booking.name.split(" ")[0] || booking.name)},</p>
+    <p style="margin:0 0 12px;">Your slot is held, but it's not confirmed until your <strong>${formatMoney(
+      booking.amountDue,
+      booking.currency
+    )}</strong> deposit lands. Pay, then submit your transaction ID on the payment page:</p>
+    ${emailLines([
+      ["Reference", booking.reference],
+      ["Session", `${booking.serviceName} (${booking.hours} hr${booking.hours === 1 ? "" : "s"})`],
+      ["Date", booking.dateLabel],
+      ["Time", booking.timeLabel],
+      ["Deposit to pay now", formatMoney(booking.amountDue, booking.currency)],
+      ["Balance at the studio", formatMoney(booking.balanceAmount, booking.currency)],
+    ])}
+    <p style="margin:14px 0 12px;font-size:13px;color:#a1a1aa;">${escapeHtml(payInstructions)}</p>
+    ${emailButton(absoluteUrl(`/studio/pay/${booking.reference}`), "Open payment page")}
+  `;
+  return {
+    subject: `Hold your slot — pay the ${booking.reference} deposit`,
+    html: emailShell({
+      title: "Almost there — pay your deposit",
+      preheader: `${formatMoney(booking.amountDue, booking.currency)} confirms your ${booking.dateLabel} session`,
+      body,
+      footerNote: `Questions? ${supportEmail}`,
+    }),
+  };
+}
+
+export function bookingAdminEmail({ booking }: { booking: BookingEmailSummary }) {
+  const body = `
+    <p style="margin:0 0 12px;">Studio booking update.</p>
+    ${emailLines([
+      ["Reference", booking.reference],
+      ["Artist", `${booking.name} (${booking.email})`],
+      ["Phone", booking.phone || "—"],
+      ["Session", `${booking.serviceName} · ${booking.hours} hr${booking.hours === 1 ? "" : "s"}`],
+      ["When", `${booking.dateLabel} · ${booking.timeLabel}`],
+      ["Deposit paid", formatMoney(booking.amountDue, booking.currency)],
+      ["Balance at studio", formatMoney(booking.balanceAmount, booking.currency)],
+      ["Paid with", booking.paymentMethod ?? "—"],
+      ...(booking.notes ? ([["Notes", booking.notes]] as [string, string][]) : []),
+    ])}
+    ${emailButton(absoluteUrl("/admin/bookings"), "Open bookings")}
+  `;
+  return {
+    subject: `[Studio] ${booking.serviceName} — ${booking.dateLabel} (${booking.reference})`,
+    html: emailShell({ title: "Studio booking", preheader: booking.reference, body }),
+  };
+}
+
+export function bookingClaimedAdminEmail({ booking }: { booking: BookingEmailSummary }) {
+  const body = `
+    <p style="margin:0 0 12px;">An artist says they've sent the deposit for a studio session — verify it to confirm the slot.</p>
+    ${emailLines([
+      ["Reference", booking.reference],
+      ["Artist", `${booking.name} (${booking.email})`],
+      ["Session", `${booking.serviceName} · ${booking.dateLabel} · ${booking.timeLabel}`],
+      ["Deposit due", formatMoney(booking.amountDue, booking.currency)],
+      ["They submitted", booking.notes || "—"],
+    ])}
+    ${emailButton(absoluteUrl("/admin/bookings"), "Verify deposit")}
+  `;
+  return {
+    subject: `[Studio] Verify deposit for ${booking.reference}`,
+    html: emailShell({ title: "Deposit to verify", preheader: booking.reference, body }),
+  };
+}
+
+export function bookingStatusEmail({
+  booking,
+  status,
+  note,
+  supportEmail,
+}: {
+  booking: BookingEmailSummary;
+  status: "cancelled" | "completed";
+  note?: string | null;
+  supportEmail: string;
+}) {
+  const cancelled = status === "cancelled";
+  const body = `
+    <p style="margin:0 0 12px;">Hi ${escapeHtml(booking.name.split(" ")[0] || booking.name)},</p>
+    <p style="margin:0 0 12px;">${
+      cancelled
+        ? `Your ${booking.serviceName} session on ${booking.dateLabel} (${booking.timeLabel}) has been cancelled.`
+        : `Your ${booking.serviceName} session on ${booking.dateLabel} is wrapped — thanks for coming through!`
+    }</p>
+    ${note ? `<p style="margin:0 0 12px;font-size:13.5px;color:#d4d4d8;">${escapeHtml(note)}</p>` : ""}
+    ${emailLines([
+      ["Reference", booking.reference],
+      ["Session", booking.serviceName],
+      ["Was", `${booking.dateLabel} · ${booking.timeLabel}`],
+    ])}
+    <p style="margin:12px 0 0;font-size:13px;color:#a1a1aa;">${
+      cancelled
+        ? "If you already paid a deposit, reply to this email and we'll sort your refund."
+        : "Ready for the next one? Book another slot any time."
+    }</p>
+  `;
+  return {
+    subject: cancelled
+      ? `Session cancelled — ${booking.reference}`
+      : `Thanks for the session — ${booking.reference}`,
+    html: emailShell({
+      title: cancelled ? "Session cancelled" : "Session complete",
+      preheader: booking.reference,
+      body,
+      footerNote: `Questions? ${supportEmail}`,
+    }),
+  };
+}

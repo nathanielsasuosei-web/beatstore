@@ -3,6 +3,7 @@ import Image from "next/image";
 import {
   ArrowUpRight,
   Banknote,
+  CalendarClock,
   Clock,
   Download,
   Mail,
@@ -15,9 +16,10 @@ import {
 import { beatCounts } from "@/lib/data/catalog";
 import { listOrders, salesStats } from "@/lib/data/sales";
 import { messageCounts } from "@/lib/data/inbox";
-import { listUsers } from "@/lib/data/users";
+import { bookingCounts, upcomingBookings } from "@/lib/data/bookings";
 import { formatMoney } from "@/lib/money";
 import { formatDate } from "@/lib/utils";
+import { formatBookingDate, formatHour } from "@/lib/schedule";
 import { ORDER_STATUS, TIER_META } from "@/lib/constants";
 import { Stat } from "@/components/section";
 
@@ -25,7 +27,8 @@ export default function AdminDashboard() {
   const stats = salesStats();
   const beats = beatCounts();
   const messages = messageCounts();
-  const users = listUsers();
+  const bookings = bookingCounts();
+  const upcoming = upcomingBookings(5);
   const { orders: recentOrders } = listOrders({ limit: 5 });
   const awaiting = listOrders({ status: "awaiting_verification", limit: 5 }).orders;
 
@@ -35,7 +38,7 @@ export default function AdminDashboard() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Studio overview</h1>
           <p className="mt-1 text-sm text-zinc-400">
-            Everything happening on the store right now — sales, payments to verify and messages.
+            Everything happening on the store right now — sales, bookings, payments to verify and messages.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -65,11 +68,49 @@ export default function AdminDashboard() {
           hint={`${beats.total} total · ${beats.plays.toLocaleString()} plays`}
         />
         <Stat
-          label="Artists"
-          value={String(users.filter((u) => u.role === "artist").length)}
-          hint={`${messages.new} unread messages`}
+          label="Studio bookings"
+          value={String(bookings.confirmed + bookings.todo)}
+          hint={`${bookings.todo} deposit${bookings.todo === 1 ? "" : "s"} to verify`}
         />
       </div>
+
+      {upcoming.length > 0 && (
+        <section className="surface-card p-5">
+          <div className="flex items-center justify-between">
+            <h2 className="flex items-center gap-2 font-semibold">
+              <CalendarClock className="h-4 w-4 text-lime-400" /> Next studio sessions
+            </h2>
+            <Link href="/admin/bookings" className="text-xs text-lime-300 hover:underline">
+              All bookings →
+            </Link>
+          </div>
+          <ul className="mt-4 divide-y divide-ink-800">
+            {upcoming.map((booking) => (
+              <li key={booking.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
+                <div>
+                  <p className="text-sm font-semibold">
+                    {booking.serviceName} · {formatBookingDate(booking.date)} · {formatHour(booking.startHour)}–
+                    {formatHour(booking.endHour)}
+                  </p>
+                  <p className="text-xs text-zinc-500">
+                    {booking.name} · {booking.email}
+                    {booking.status === "confirmed"
+                      ? ` · deposit paid ${formatMoney(booking.amountDue, booking.currency)}`
+                      : ` · awaiting ${formatMoney(booking.amountDue, booking.currency)} deposit`}
+                  </p>
+                </div>
+                <span
+                  className={`badge ${
+                    booking.status === "confirmed" ? "bg-lime-400/15 text-lime-300" : "bg-amber-500/15 text-amber-300"
+                  }`}
+                >
+                  {booking.status === "confirmed" ? "Confirmed" : booking.status === "pending" ? "Unpaid" : "Verifying"}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {awaiting.length > 0 && (
         <section className="rounded-2xl border border-amber-900/50 bg-amber-950/20 p-5">

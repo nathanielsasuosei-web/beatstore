@@ -150,3 +150,53 @@ export type EmailLog = {
   orderId: string | null;
   createdAt: Date;
 };
+
+export type StudioService = {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  pricePerHour: number;
+  minHours: number;
+  maxHours: number;
+  active: boolean;
+  sortOrder: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type Booking = {
+  id: string;
+  reference: string;
+  serviceId: string | null;
+  serviceName: string;
+  userId: string | null;
+  email: string;
+  name: string;
+  phone: string | null;
+  /** Session date as YYYY-MM-DD (studio's local time). */
+  date: string;
+  /** First hour of the session, 24h clock (e.g. 14 = 2 PM). */
+  startHour: number;
+  hours: number;
+  endHour: number;
+  pricePerHour: number;
+  sessionTotal: number;
+  depositPercent: number;
+  depositAmount: number;
+  serviceFeePercent: number;
+  serviceFeeAmount: number;
+  /** What the artist pays online now: deposit + service fee. */
+  amountDue: number;
+  /** Remaining balance, settled at the studio. */
+  balanceAmount: number;
+  currency: string;
+  notes: string | null;
+  status: string;
+  paymentMethod: string;
+  paymentRef: string | null;
+  payerNote: string | null;
+  paidAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+};

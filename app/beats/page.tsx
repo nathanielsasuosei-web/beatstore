@@ -16,7 +16,7 @@ export default async function BeatsPage({
 }) {
   const { q } = await searchParams;
   const search = (q ?? "").trim();
-  const { beats, total } = listBeats({ q: search || undefined, limit: 60 });
+  const { beats, total, pages } = listBeats({ q: search || undefined, limit: 100 });
   const genres = beatGenres();
 
   return (
@@ -24,7 +24,7 @@ export default async function BeatsPage({
       <SectionHeading
         eyebrow={`${total} beats in the store`}
         title="Find your next record"
-        blurb="Previews are tagged, so you know exactly what the beat sounds like. Add a licence and check out with mobile money, bank transfer or card."
+        blurb="Every beat is listed and every preview plays right here — tagged, so you know exactly what you're buying. Add a licence and check out with mobile money, bank transfer or card."
       />
       <div className="mt-8">
         <BeatExplorer
@@ -32,6 +32,7 @@ export default async function BeatsPage({
           genres={genres}
           moods={[...MOODS]}
           initialTotal={total}
+          initialPages={pages}
           initialQuery={search}
         />
       </div>

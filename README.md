@@ -14,9 +14,11 @@ Paystack for payments and Resend for email. No native build steps, no ORM binari
 
 **Public store**
 - Landing page with a featured-beat player, how-it-works, licence comparison and producer bio
-- Catalogue with search, genre/mood filters and sort
+- Catalogue with search, genre/mood filters and sort — **every published beat is listed with a playable
+  tagged preview** (paged with a "Load more" button, so nothing is hidden no matter how big the store grows)
 - Beat pages with a global sticky audio player, tagged previews, licence picker and facts (BPM, key, duration)
 - Videos page (YouTube/Vimeo embeds or uploaded files)
+- **Studio booking page** (`/studio`) — recording, mixing and mastering sessions with live availability
 - Licensing/FAQ page written in plain English
 - About + Contact (writes to the producer's inbox and auto-acknowledges the sender)
 
@@ -37,13 +39,28 @@ Paystack for payments and Resend for email. No native build steps, no ORM binari
 - Profile editing (the name that lands on licences) and password change
 - Guest checkout still works — emails carry the downloads
 
+**Studio bookings** (`/studio`, meetbeatz-style)
+- Services (Recording / Mixing / Mastering by default) priced **per hour**, each with min/max session
+  lengths — managed from Admin → Bookings
+- Artists pick a service, a date, a duration and a free start time (taken slots are greyed out live;
+  opening hours are set per weekday in Settings)
+- **50% deposit locks the slot** — a small configurable service fee is shown up front, the balance is
+  settled at the studio
+- Same three payment rails as beats: Paystack (MoMo/card/bank, instant confirmation), or manual MoMo /
+  bank transfer with a transaction-ID claim the producer verifies
+- Double-booking is impossible: overlapping slots are rejected server-side, and unpaid slots stay held
+- Confirmation, instruction, cancellation and admin notification emails for every booking — all in the outbox
+- Artist dashboard lists upcoming sessions; admin dashboard shows the next sessions and deposits to verify
+
 **Admin dashboard** (`/admin`)
-- Sales overview: revenue, paid/pending/awaiting counts, best sellers, recent orders
+- Sales overview: revenue, paid/pending/awaiting counts, best sellers, recent orders, upcoming studio sessions
 - Beat uploader: drag in audio + tagged preview + cover + stems, set BPM/key/genre/mood/tags,
   price the basic/premium/exclusive tiers, feature or unpublish
 - Videos manager, orders manager (verify MoMo/bank payments in one click, resend delivery,
-  refunds), inbox (reply by email without leaving the page), artist list with roles,
+  refunds), **studio bookings manager** (verify deposits, complete/cancel sessions, edit bookable
+  services), inbox (reply by email without leaving the page), artist list with roles,
   **email outbox** (read the exact email every customer received), settings
+- Settings covers the studio too: deposit %, service fee %, opening hours per weekday and the booking policy
 - Everything is protected server-side; admin pages redirect non-admins to their own dashboard
 
 ---

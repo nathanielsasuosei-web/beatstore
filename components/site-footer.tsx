@@ -64,6 +64,7 @@ export function SiteFooter({ settings }: { settings: Record<string, string> }) {
           <ul className="mt-4 space-y-2.5 text-sm text-zinc-400">
             <li><Link href="/beats" className="hover:text-lime-300">All beats</Link></li>
             <li><Link href="/videos" className="hover:text-lime-300">Videos</Link></li>
+            <li><Link href="/studio" className="hover:text-lime-300">Book studio time</Link></li>
             <li><Link href="/licensing" className="hover:text-lime-300">Licensing &amp; FAQ</Link></li>
             <li><Link href="/cart" className="hover:text-lime-300">Cart</Link></li>
             <li><Link href="/account" className="hover:text-lime-300">My downloads</Link></li>

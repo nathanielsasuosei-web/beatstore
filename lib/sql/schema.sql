@@ -174,3 +174,59 @@ CREATE TABLE IF NOT EXISTS settings (
   value     TEXT NOT NULL,
   updatedAt INTEGER NOT NULL
 );
+
+-- ─────────────────────────────────────────────────────────────
+-- Studio bookings (recording / mixing / mastering sessions)
+-- Artists reserve a slot by paying a deposit (default 50% of the
+-- session cost); the balance is settled at the studio.
+-- ─────────────────────────────────────────────────────────────
+
+CREATE TABLE IF NOT EXISTS studio_services (
+  id           TEXT PRIMARY KEY,
+  slug         TEXT NOT NULL UNIQUE,
+  name         TEXT NOT NULL,
+  description  TEXT,
+  pricePerHour INTEGER NOT NULL,
+  minHours     INTEGER NOT NULL DEFAULT 1,
+  maxHours     INTEGER NOT NULL DEFAULT 8,
+  active       INTEGER NOT NULL DEFAULT 1,
+  sortOrder    INTEGER NOT NULL DEFAULT 0,
+  createdAt    INTEGER NOT NULL,
+  updatedAt    INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS bookings (
+  id               TEXT PRIMARY KEY,
+  reference        TEXT NOT NULL UNIQUE,
+  serviceId        TEXT REFERENCES studio_services(id) ON DELETE SET NULL,
+  serviceName      TEXT NOT NULL,
+  userId           TEXT REFERENCES users(id) ON DELETE SET NULL,
+  email            TEXT NOT NULL,
+  name             TEXT NOT NULL,
+  phone            TEXT,
+  date             TEXT NOT NULL,
+  startHour        INTEGER NOT NULL,
+  hours            INTEGER NOT NULL,
+  endHour          INTEGER NOT NULL,
+  pricePerHour     INTEGER NOT NULL,
+  sessionTotal     INTEGER NOT NULL,
+  depositPercent   INTEGER NOT NULL DEFAULT 50,
+  depositAmount    INTEGER NOT NULL,
+  serviceFeePercent INTEGER NOT NULL DEFAULT 0,
+  serviceFeeAmount INTEGER NOT NULL,
+  amountDue        INTEGER NOT NULL,
+  balanceAmount    INTEGER NOT NULL,
+  currency         TEXT NOT NULL DEFAULT 'GHS',
+  notes            TEXT,
+  status           TEXT NOT NULL DEFAULT 'pending',
+  paymentMethod    TEXT NOT NULL DEFAULT 'paystack',
+  paymentRef       TEXT,
+  payerNote        TEXT,
+  paidAt           INTEGER,
+  createdAt        INTEGER NOT NULL,
+  updatedAt        INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_bookings_status ON bookings(status, createdAt);
+CREATE INDEX IF NOT EXISTS idx_bookings_date ON bookings(date, startHour);
+CREATE INDEX IF NOT EXISTS idx_bookings_email ON bookings(email);
+CREATE INDEX IF NOT EXISTS idx_bookings_user ON bookings(userId);

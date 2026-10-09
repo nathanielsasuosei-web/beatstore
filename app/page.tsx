@@ -1,7 +1,21 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, BadgeCheck, Banknote, Clock, Mail, Play, Smartphone, Sparkles, Zap } from "lucide-react";
+import {
+  ArrowRight,
+  BadgeCheck,
+  Banknote,
+  CalendarClock,
+  Clock,
+  Mail,
+  Mic,
+  Music4,
+  Play,
+  Smartphone,
+  Sparkles,
+  Zap,
+} from "lucide-react";
 import { listBeats, listVideos } from "@/lib/data/catalog";
+import { listServices } from "@/lib/data/bookings";
 import { getSettings } from "@/lib/settings";
 import { BeatGrid } from "@/components/beat-card";
 import { HeroPlayer } from "@/components/hero-player";
@@ -9,13 +23,17 @@ import { SectionHeading, Stat } from "@/components/section";
 import { TIER_META } from "@/lib/constants";
 import { formatMoney } from "@/lib/money";
 
+const SERVICE_ICONS = [Mic, Music4, CalendarClock];
+
 export default async function HomePage() {
   const settings = await getSettings();
-  const { beats } = listBeats({ limit: 8 });
+  const { beats, total } = listBeats({ limit: 8 });
   const featured = beats.filter((b) => b.featured).slice(0, 4);
   const showcase = (featured.length ? featured : beats).slice(0, 4);
   const hero = beats[0];
   const videos = listVideos().slice(0, 3);
+  const services = listServices(true).slice(0, 3);
+  const depositPercent = Math.min(Math.max(Number(settings.studio_deposit_percent) || 50, 0), 100);
   const totalPlays = beats.reduce((sum, b) => sum + b.plays, 0);
 
   return (
@@ -47,14 +65,14 @@ export default async function HomePage() {
               <Link href="/beats" className="btn btn-primary btn-lg">
                 Browse beats <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link href="/licensing" className="btn btn-secondary btn-lg">
-                How licensing works
+              <Link href="/studio" className="btn btn-secondary btn-lg">
+                <CalendarClock className="h-4 w-4" /> Book studio time
               </Link>
             </div>
 
             <dl className="mt-10 grid max-w-lg grid-cols-3 gap-6">
               {[
-                { label: "Beats online", value: `${beats.length}` },
+                { label: "Beats online", value: `${total}` },
                 { label: "Preview plays", value: totalPlays.toLocaleString() },
                 { label: "Delivery", value: "Instant" },
               ].map((item) => (
@@ -174,6 +192,40 @@ export default async function HomePage() {
           ))}
         </div>
       </section>
+
+      {/* ── studio booking ───────────────────────────────────── */}
+      {services.length > 0 && (
+        <section className="border-y border-ink-700 bg-ink-950">
+          <div className="container-page py-16">
+            <SectionHeading
+              eyebrow="More than beats"
+              title="Book studio time"
+              blurb={`Recording, mixing and mastering in a treated room with the producer behind the boards. Reserve any slot with a ${depositPercent}% deposit — the balance is settled at the studio.`}
+              action={{ href: "/studio", label: "Pick a slot" }}
+            />
+            <div className="mt-8 grid gap-5 md:grid-cols-3">
+              {services.map((service, index) => {
+                const Icon = SERVICE_ICONS[index % SERVICE_ICONS.length];
+                return (
+                  <div key={service.id} className="surface-card p-6">
+                    <span className="grid h-10 w-10 place-items-center rounded-xl bg-lime-400/10 text-lime-300">
+                      <Icon className="h-5 w-5" />
+                    </span>
+                    <h3 className="mt-4 font-bold">{service.name}</h3>
+                    <p className="mt-1.5 text-sm leading-relaxed text-zinc-400">{service.description}</p>
+                    <p className="mt-4 flex items-baseline gap-2">
+                      <span className="text-xl font-extrabold text-lime-300">
+                        {formatMoney(service.pricePerHour, settings.currency)}
+                      </span>
+                      <span className="text-xs text-zinc-500">/ hour · {depositPercent}% deposit</span>
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ── videos ───────────────────────────────────────────── */}
       {videos.length > 0 && (

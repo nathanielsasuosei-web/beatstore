@@ -1,6 +1,8 @@
 import { paystackEnabled, verifyWebhookSignature } from "@/lib/paystack";
 import { fulfilOrder } from "@/lib/fulfilment";
+import { confirmBooking, paidInFull } from "@/lib/booking";
 import { getOrderByPaymentRef, getOrderByReference } from "@/lib/data/sales";
+import { getBookingByPaymentRef, getBookingByReference } from "@/lib/data/bookings";
 import { apiHandler } from "@/lib/http";
 
 /**
@@ -26,9 +28,22 @@ export const POST = apiHandler(async (request: Request) => {
 
   if (event.event === "charge.success" && event.data?.reference) {
     const reference = event.data.reference;
+
     const order = getOrderByReference(reference) ?? getOrderByPaymentRef(reference);
     if (order && order.status !== "paid") {
       await fulfilOrder({ orderId: order.id, paymentRef: reference, channel: event.data.channel ?? null });
+      return Response.json({ received: true });
+    }
+
+    const booking = getBookingByReference(reference) ?? getBookingByPaymentRef(reference);
+    if (
+      booking &&
+      booking.status !== "confirmed" &&
+      booking.status !== "completed" &&
+      event.data.status === "success" &&
+      paidInFull(booking, event.data.amount ?? booking.amountDue)
+    ) {
+      await confirmBooking({ bookingId: booking.id, paymentRef: reference, channel: event.data.channel ?? null });
     }
   }
 

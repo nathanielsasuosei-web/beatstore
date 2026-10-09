@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import {
   BarChart3,
+  CalendarClock,
   Eye,
   Inbox,
   LayoutDashboard,
@@ -25,6 +26,7 @@ const NAV = [
   { href: "/admin/beats", label: "Beats", icon: Music2 },
   { href: "/admin/videos", label: "Videos", icon: Video },
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart, badgeKey: "orders" as const },
+  { href: "/admin/bookings", label: "Bookings", icon: CalendarClock, badgeKey: "bookings" as const },
   { href: "/admin/messages", label: "Messages", icon: Inbox, badgeKey: "messages" as const },
   { href: "/admin/users", label: "Artists", icon: Users },
   { href: "/admin/outbox", label: "Email outbox", icon: Package },
@@ -40,7 +42,7 @@ export function AdminShell({
 }: {
   user: { name: string; email: string };
   siteName: string;
-  badges: { messages: number; orders: number };
+  badges: { messages: number; orders: number; bookings: number };
   status: { paystack: boolean; email: "resend" | "outbox" };
   children: React.ReactNode;
 }) {

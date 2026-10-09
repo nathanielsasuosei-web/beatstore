@@ -61,6 +61,24 @@ const GROUPS: Group[] = [
       { key: "delivery_note", label: "Delivery note", type: "textarea" },
     ],
   },
+  {
+    title: "Studio bookings",
+    blurb:
+      "Rules for the /studio booking page. Deposit and fee are percentages; hours use \"10:00-20:00\" format or \"Closed\". Add or edit the bookable services from Bookings in the sidebar.",
+    fields: [
+      { key: "studio_tagline", label: "Studio page intro", type: "textarea" },
+      { key: "studio_deposit_percent", label: "Deposit (% of session cost)" },
+      { key: "studio_service_fee_percent", label: "Service fee (% added to the deposit)" },
+      { key: "hours_sun", label: "Sunday hours" },
+      { key: "hours_mon", label: "Monday hours" },
+      { key: "hours_tue", label: "Tuesday hours" },
+      { key: "hours_wed", label: "Wednesday hours" },
+      { key: "hours_thu", label: "Thursday hours" },
+      { key: "hours_fri", label: "Friday hours" },
+      { key: "hours_sat", label: "Saturday hours" },
+      { key: "studio_policy", label: "Booking policy", type: "textarea" },
+    ],
+  },
 ];
 
 export function SettingsForm({

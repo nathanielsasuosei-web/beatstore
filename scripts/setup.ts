@@ -52,6 +52,8 @@ if (FORCE) {
     "downloads",
     "order_items",
     "orders",
+    "bookings",
+    "studio_services",
     "messages",
     "email_logs",
     "beat_licenses",
@@ -232,6 +234,52 @@ for (const [index, beat] of DEMO_BEATS.entries()) {
 }
 console.log(`• ${sorted} beats with basic / premium / exclusive licences`);
 
+/* ── studio services (for /studio bookings) ────────────────── */
+const STUDIO_SERVICES = [
+  {
+    slug: "recording",
+    name: "Recording",
+    description: "Vocal recording in a treated booth with a session engineer. Includes a rough mix at the end of your session.",
+    pricePerHour: 15000,
+    minHours: 1,
+    maxHours: 8,
+  },
+  {
+    slug: "mixing",
+    name: "Mixing",
+    description: "Full mix-down of your record — levels, EQ, compression, effects and a radio-ready master bus.",
+    pricePerHour: 20000,
+    minHours: 2,
+    maxHours: 6,
+  },
+  {
+    slug: "mastering",
+    name: "Mastering",
+    description: "Final polish for streaming and distribution. Loudness-matched, with a free revision within 7 days.",
+    pricePerHour: 30000,
+    minHours: 1,
+    maxHours: 4,
+  },
+];
+let serviceSort = 0;
+for (const service of STUDIO_SERVICES) {
+  const existing = one("SELECT id FROM studio_services WHERE slug = ?", [service.slug]);
+  if (existing) {
+    run(
+      "UPDATE studio_services SET name=?, description=?, pricePerHour=?, minHours=?, maxHours=?, active=1, updatedAt=? WHERE id=?",
+      [service.name, service.description, service.pricePerHour, service.minHours, service.maxHours, now, existing.id as string]
+    );
+  } else {
+    run(
+      `INSERT INTO studio_services (id, slug, name, description, pricePerHour, minHours, maxHours, active, sortOrder, createdAt, updatedAt)
+       VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?)`,
+      [newId(), service.slug, service.name, service.description, service.pricePerHour, service.minHours, service.maxHours, serviceSort, now, now]
+    );
+  }
+  serviceSort++;
+}
+console.log("• studio services: recording, mixing, mastering (50% deposit bookings on /studio)");
+
 /* ── video ─────────────────────────────────────────────────── */
 const videoFile = path.join(publicDemo, "videos", DEMO_VIDEO.file);
 if (fs.existsSync(videoFile) && !one("SELECT id FROM videos LIMIT 1")) {
@@ -334,6 +382,105 @@ if (!one("SELECT id FROM orders LIMIT 1")) {
       [newId(), orderId, trapPastor.id, basic.id, trapPastor.title, basic.name, basic.price, basic.fileFormat]
     );
     console.log(`• demo order ${reference} awaiting MoMo verification (try "Mark as paid" in admin)`);
+  }
+}
+
+/* ── demo studio bookings, so the calendar has real data ───── */
+if (!one("SELECT id FROM bookings LIMIT 1")) {
+  const recording = one("SELECT id, name FROM studio_services WHERE slug = 'recording'") as
+    | { id: string; name: string }
+    | undefined;
+
+  if (recording) {
+    // Next weekday that isn't Sunday (the studio is closed then in the defaults).
+    function futureDate(daysAhead: number) {
+      const d = new Date(now + daysAhead * 86400000);
+      if (d.getUTCDay() === 0) d.setTime(d.getTime() + 86400000);
+      return d.toISOString().slice(0, 10);
+    }
+
+    // 1) Confirmed booking for the artist account (deposit paid).
+    {
+      const date = futureDate(3);
+      const startHour = 14;
+      const hours = 2;
+      const pricePerHour = 15000;
+      const sessionTotal = pricePerHour * hours;
+      const depositAmount = Math.round(sessionTotal * 0.5);
+      const serviceFeeAmount = Math.round(depositAmount * 0.1);
+      const bookingId = newId();
+      const reference = `BKG-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+      run(
+        `INSERT INTO bookings (id, reference, serviceId, serviceName, userId, email, name, phone, date, startHour,
+          hours, endHour, pricePerHour, sessionTotal, depositPercent, depositAmount, serviceFeePercent,
+          serviceFeeAmount, amountDue, balanceAmount, currency, notes, status, paymentMethod, paymentRef, paidAt,
+          createdAt, updatedAt)
+         VALUES (?, ?, ?, ?, ?, 'artist@nsobeats.test', 'Kojo Wavez', '+233 24 111 2222', ?, ?, ?, ?, ?, ?, 50, ?,
+          10, ?, ?, ?, 'GHS', 'Tracking vocals for a two-song EP — rough mix at the end please.', 'confirmed',
+          'paystack', ?, ?, ?, ?)`,
+        [
+          bookingId,
+          reference,
+          recording.id,
+          recording.name,
+          artistId,
+          date,
+          startHour,
+          hours,
+          startHour + hours,
+          pricePerHour,
+          sessionTotal,
+          depositAmount,
+          serviceFeeAmount,
+          depositAmount + serviceFeeAmount,
+          sessionTotal - depositAmount,
+          `TEST-${reference}`,
+          now - 3600000,
+          now - 3600000,
+          now - 3600000,
+        ]
+      );
+      console.log(`• demo studio booking ${reference} confirmed (${date} ${startHour}:00)`);
+    }
+
+    // 2) Booking with a deposit claim waiting for verification.
+    {
+      const date = futureDate(5);
+      const startHour = 11;
+      const hours = 3;
+      const pricePerHour = 15000;
+      const sessionTotal = pricePerHour * hours;
+      const depositAmount = Math.round(sessionTotal * 0.5);
+      const serviceFeeAmount = Math.round(depositAmount * 0.1);
+      const bookingId = newId();
+      const reference = `BKG-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+      run(
+        `INSERT INTO bookings (id, reference, serviceId, serviceName, email, name, phone, date, startHour,
+          hours, endHour, pricePerHour, sessionTotal, depositPercent, depositAmount, serviceFeePercent,
+          serviceFeeAmount, amountDue, balanceAmount, currency, status, paymentMethod, payerNote, createdAt, updatedAt)
+         VALUES (?, ?, ?, ?, 'efya.mensah@example.com', 'Efya Mensah', '+233 20 777 3311', ?, ?, ?, ?, ?, ?, 50, ?,
+          10, ?, ?, ?, 'GHS', 'awaiting_verification', 'mobile_money', 'MTN MoMo ref 77319022 · from Efya M.', ?, ?)`,
+        [
+          bookingId,
+          reference,
+          recording.id,
+          recording.name,
+          date,
+          startHour,
+          hours,
+          startHour + hours,
+          pricePerHour,
+          sessionTotal,
+          depositAmount,
+          serviceFeeAmount,
+          depositAmount + serviceFeeAmount,
+          sessionTotal - depositAmount,
+          now - 1800000,
+          now - 1800000,
+        ]
+      );
+      console.log(`• demo studio booking ${reference} awaiting deposit verification (try "Confirm deposit" in admin)`);
+    }
   }
 }
 

@@ -15,9 +15,9 @@ export default async function RetryPage({ params }: { params: Promise<{ referenc
   return (
     <div className="container-page py-16">
       <div className="surface-card mx-auto max-w-lg p-8 text-center">
-        <h1 className="text-2xl font-bold">Pay online instead</h1>
-        <p className="mt-3 text-sm text-zinc-400">
-          Order <strong className="text-zinc-200">{order.reference}</strong> ·{" "}
+        <h1 className="headline text-2xl text-ash-50">Pay online instead</h1>
+        <p className="mt-3 text-sm text-ash-400">
+          Order <strong className="text-ash-200">{order.reference}</strong> ·{" "}
           {formatMoney(order.total, order.currency)}. Paying now releases your files instantly.
         </p>
         <div className="mt-6">

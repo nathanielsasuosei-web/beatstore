@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { AlertCircle, Loader2, Plus, Trash2, Upload, Video } from "lucide-react";
+import { AlertCircle, Loader2, Trash2, Upload, Video } from "lucide-react";
 import { videoEmbedUrl } from "@/lib/utils";
 import { safeJson } from "@/lib/api-client";
 
@@ -52,7 +52,14 @@ export function VideoManager({ videos }: { videos: AdminVideo[] }) {
       const res = await fetch("/api/admin/videos", { method: "POST", body: data });
       const json = await safeJson(res);
       if (!res.ok || !json.ok) throw new Error(json.error ?? "Could not save the video.");
-      setForm({ title: "", description: "", source: "youtube", url: "", featured: false, published: true });
+      setForm({
+        title: "",
+        description: "",
+        source: "youtube",
+        url: "",
+        featured: false,
+        published: true,
+      });
       setFile(undefined);
       setThumb(undefined);
       router.refresh();
@@ -81,9 +88,7 @@ export function VideoManager({ videos }: { videos: AdminVideo[] }) {
   return (
     <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
       <form onSubmit={submit} className="surface-card h-fit p-5">
-        <h2 className="flex items-center gap-2 font-semibold">
-          <Plus className="h-4 w-4 text-lime-400" /> Add a video
-        </h2>
+        <h2 className="headline text-sm text-ash-50">Add a video</h2>
 
         <div className="mt-5 space-y-4">
           <div>
@@ -119,10 +124,10 @@ export function VideoManager({ videos }: { videos: AdminVideo[] }) {
                   key={source}
                   type="button"
                   onClick={() => setForm({ ...form, source })}
-                  className={`flex-1 rounded-xl border px-3 py-2 text-xs transition ${
+                  className={`flex-1 border px-3 py-2 text-xs transition ${
                     form.source === source
-                      ? "border-lime-400/60 bg-lime-400/10 text-lime-200"
-                      : "border-ink-700 bg-ink-850 text-zinc-400"
+                      ? "border-accent-400/60 bg-accent-400/10 text-accent-200"
+                      : "border-ink-700 bg-ink-850 text-ash-400"
                   }`}
                 >
                   {source === "youtube" ? "YouTube / Vimeo link" : "Upload a file"}
@@ -144,7 +149,9 @@ export function VideoManager({ videos }: { videos: AdminVideo[] }) {
                 placeholder="https://youtube.com/watch?v=..."
               />
               {form.url && videoEmbedUrl(form.url) && (
-                <p className="mt-1 text-[11px] text-lime-300">Recognised — will embed on the site.</p>
+                <p className="mt-1 text-[11px] text-accent-300">
+                  Recognised — will embed on the site.
+                </p>
               )}
             </div>
           ) : (
@@ -154,9 +161,9 @@ export function VideoManager({ videos }: { videos: AdminVideo[] }) {
                 type="file"
                 accept="video/*"
                 onChange={(e) => setFile(e.target.files?.[0])}
-                className="input file:mr-3 file:rounded-lg file:border-0 file:bg-ink-700 file:px-3 file:py-1.5 file:text-xs"
+                className="input file:mr-3 file: file:border-0 file:bg-ink-700 file:px-3 file:py-1.5 file:text-xs"
               />
-              <p className="mt-1 text-[11px] text-zinc-500">MP4 / MOV / WebM up to 600 MB.</p>
+              <p className="mt-1 text-[11px] text-ash-500">MP4 / MOV / WebM up to 600 MB.</p>
             </div>
           )}
 
@@ -166,7 +173,7 @@ export function VideoManager({ videos }: { videos: AdminVideo[] }) {
               type="file"
               accept="image/*"
               onChange={(e) => setThumb(e.target.files?.[0])}
-              className="input file:mr-3 file:rounded-lg file:border-0 file:bg-ink-700 file:px-3 file:py-1.5 file:text-xs"
+              className="input file:mr-3 file: file:border-0 file:bg-ink-700 file:px-3 file:py-1.5 file:text-xs"
             />
           </div>
 
@@ -174,7 +181,7 @@ export function VideoManager({ videos }: { videos: AdminVideo[] }) {
             <label className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
-                className="h-4 w-4 accent-lime-400"
+                className="h-4 w-4 accent-accent-400"
                 checked={form.published}
                 onChange={(e) => setForm({ ...form, published: e.target.checked })}
               />
@@ -183,7 +190,7 @@ export function VideoManager({ videos }: { videos: AdminVideo[] }) {
             <label className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
-                className="h-4 w-4 accent-lime-400"
+                className="h-4 w-4 accent-accent-400"
                 checked={form.featured}
                 onChange={(e) => setForm({ ...form, featured: e.target.checked })}
               />
@@ -193,7 +200,7 @@ export function VideoManager({ videos }: { videos: AdminVideo[] }) {
         </div>
 
         {error && (
-          <p className="mt-4 flex items-start gap-2 rounded-xl border border-red-900/60 bg-red-950/40 px-3 py-2 text-xs text-red-300">
+          <p className="mt-4 flex items-start gap-2 border border-red-900/60 bg-red-950/40 px-3 py-2 text-xs text-red-300">
             <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" /> {error}
           </p>
         )}
@@ -207,39 +214,39 @@ export function VideoManager({ videos }: { videos: AdminVideo[] }) {
       <div className="space-y-3">
         {videos.map((video) => (
           <div key={video.id} className="surface-card flex gap-4 p-4">
-            <span className="relative h-20 w-32 shrink-0 overflow-hidden rounded-xl bg-ink-800">
+            <span className="relative h-20 w-32 shrink-0 overflow-hidden bg-ink-800">
               {video.thumbnail ? (
                 <Image src={video.thumbnail} alt="" fill sizes="128px" className="object-cover" />
               ) : (
-                <span className="grid h-full place-items-center text-zinc-600">
+                <span className="grid h-full place-items-center text-ash-600">
                   <Video className="h-5 w-5" />
                 </span>
               )}
             </span>
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-semibold">{video.title}</p>
-              <p className="mt-0.5 truncate text-xs text-zinc-500">
+              <p className="mt-0.5 truncate text-xs text-ash-500">
                 {video.source === "youtube" ? video.url : video.fileUrl?.split("/").pop()}
               </p>
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <button
                   type="button"
                   onClick={() => patch(video.id, { published: video.published ? "false" : "true" })}
-                  className={`badge ${video.published ? "bg-lime-400/15 text-lime-300" : "bg-ink-700 text-zinc-400"}`}
+                  className={`badge ${video.published ? "bg-accent-400/15 text-accent-300" : "bg-ink-700 text-ash-400"}`}
                 >
                   {video.published ? "Published" : "Hidden"}
                 </button>
                 <button
                   type="button"
                   onClick={() => patch(video.id, { featured: video.featured ? "false" : "true" })}
-                  className={`badge ${video.featured ? "bg-amber-500/15 text-amber-300" : "bg-ink-700 text-zinc-400"}`}
+                  className={`badge ${video.featured ? "bg-amber-500/15 text-amber-300" : "bg-ink-700 text-ash-400"}`}
                 >
                   {video.featured ? "Featured" : "Not featured"}
                 </button>
                 <button
                   type="button"
                   onClick={() => remove(video.id)}
-                  className="ml-auto text-zinc-500 hover:text-red-400"
+                  className="ml-auto text-ash-500 hover:text-accent"
                   aria-label="Delete video"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -249,7 +256,7 @@ export function VideoManager({ videos }: { videos: AdminVideo[] }) {
           </div>
         ))}
         {videos.length === 0 && (
-          <div className="surface-card grid place-items-center py-12 text-sm text-zinc-500">
+          <div className="surface-card grid place-items-center py-12 text-sm text-ash-500">
             No videos yet.
           </div>
         )}

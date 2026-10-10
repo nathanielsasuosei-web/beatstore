@@ -22,9 +22,9 @@ export default async function BeatsPage({
   return (
     <div className="container-page py-12">
       <SectionHeading
-        eyebrow={`${total} beats in the store`}
+        index={`Catalogue — ${String(total).padStart(2, "0")} beats`}
         title="Find your next record"
-        blurb="Every beat is listed and every preview plays right here — tagged, so you know exactly what you're buying. Add a licence and check out with mobile money, bank transfer or card."
+        blurb="Every beat in the store is listed here and every preview plays on the spot. Previews are tagged, so what you hear is the mix you get."
       />
       <div className="mt-8">
         <BeatExplorer

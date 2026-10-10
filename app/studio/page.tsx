@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CalendarClock, Clock, CreditCard, Headphones, Mic, Music4, Smartphone, Wallet } from "lucide-react";
 import { getSettings } from "@/lib/settings";
 import { getCurrentUser } from "@/lib/auth";
 import { getUserById } from "@/lib/data/users";
@@ -16,8 +15,6 @@ export const metadata: Metadata = {
     "Recording, mixing and mastering sessions. Pick a slot, pay the deposit with mobile money and your confirmation is emailed instantly.",
 };
 
-const SERVICE_ICONS = [Mic, Music4, Headphones, CalendarClock];
-
 export default async function StudioPage() {
   const sessionUser = await getCurrentUser();
   const [settings, user] = await Promise.all([
@@ -26,28 +23,25 @@ export default async function StudioPage() {
   ]);
   const services = listServices(true);
   const depositPercent = Math.min(Math.max(Number(settings.studio_deposit_percent) || 50, 0), 100);
-  const serviceFeePercent = Math.min(Math.max(Number(settings.studio_service_fee_percent) || 0, 0), 50);
+  const serviceFeePercent = Math.min(
+    Math.max(Number(settings.studio_service_fee_percent) || 0, 0),
+    50,
+  );
   const hours = openingHoursTable(settings);
 
   return (
     <div className="container-page py-12">
-      {/* ── hero ─────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden rounded-3xl border border-ink-700 bg-ink-900/60 px-6 py-12 sm:px-10">
-        <div
-          className="pointer-events-none absolute -top-32 right-0 h-72 w-[520px] rounded-full opacity-20 blur-3xl"
-          style={{ background: "radial-gradient(circle, #a3e635 0%, transparent 65%)" }}
-        />
-        <div className="relative max-w-2xl">
-          <span className="chip chip-accent">
-            <CalendarClock className="h-3.5 w-3.5" /> Studio bookings · Accra, Ghana
-          </span>
-          <h1 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl">Book your session.</h1>
-          <p className="mt-4 text-base leading-relaxed text-zinc-400">{settings.studio_tagline}</p>
-          <div className="mt-6 flex flex-wrap items-center gap-2 text-xs text-zinc-400">
-            <span className="badge bg-ink-800 text-lime-300">{depositPercent}% deposit to lock a slot</span>
-            <span className="badge bg-ink-800 text-zinc-300">Pay with MoMo · Telecel · AT · Card</span>
-            <span className="badge bg-ink-800 text-zinc-300">Instant email confirmation</span>
-          </div>
+      {/* ── masthead ──────────────────────────────────────────── */}
+      <section className="border-b border-ink-700 pb-10 pt-4">
+        <p className="mono-sm text-accent">Studio bookings · Accra, Ghana</p>
+        <h1 className="display mt-4 text-[clamp(2.5rem,8vw,5rem)] text-ash-50">Book the room.</h1>
+        <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-ash-300">
+          {settings.studio_tagline}
+        </p>
+        <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
+          <span className="mono-sm text-accent-300">{depositPercent}% deposit locks the slot</span>
+          <span className="mono-sm text-ash-400">MoMo · Telecel · AT · Card</span>
+          <span className="mono-sm text-ash-400">Instant email confirmation</span>
         </div>
       </section>
 
@@ -55,30 +49,27 @@ export default async function StudioPage() {
       {services.length > 0 ? (
         <section className="mt-12">
           <SectionHeading
-            eyebrow="What we can do for you"
+            index="Services"
             title="Pick a service"
-            blurb={`Every session is priced per hour with a ${depositPercent}% deposit paid online to lock your slot. The balance is settled at the studio.`}
+            blurb={`Priced per hour. A ${depositPercent}% deposit paid online holds your slot; the balance is settled at the studio.`}
           />
-          <div className="mt-6 grid gap-4 sm:grid-cols-3">
-            {services.map((service, index) => {
-              const Icon = SERVICE_ICONS[index % SERVICE_ICONS.length];
-              return (
-                <div key={service.id} className="surface-card flex flex-col p-6">
-                  <span className="grid h-10 w-10 place-items-center rounded-xl bg-lime-400/10 text-lime-300">
-                    <Icon className="h-5 w-5" />
-                  </span>
-                  <h3 className="mt-4 text-lg font-bold">{service.name}</h3>
-                  <p className="mt-1 text-sm leading-relaxed text-zinc-400">{service.description}</p>
-                  <p className="mt-4 text-2xl font-extrabold text-lime-300">
-                    {formatMoney(service.pricePerHour, settings.currency)}
-                    <span className="text-sm font-medium text-zinc-500"> / hour</span>
-                  </p>
-                  <p className="mt-1 text-xs text-zinc-500">
-                    {service.minHours}–{service.maxHours} hrs per session · {depositPercent}% deposit
-                  </p>
-                </div>
-              );
-            })}
+          <div className="mt-8 grid gap-x-8 gap-y-8 sm:grid-cols-3">
+            {services.map((service, index) => (
+              <div key={service.id} className="border-t border-ink-600 pt-3">
+                <span className="mono-sm nums text-accent">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <h3 className="headline mt-2 text-xl text-ash-50">{service.name}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-ash-400">{service.description}</p>
+                <p className="headline nums mt-4 text-2xl text-accent-300">
+                  {formatMoney(service.pricePerHour, settings.currency)}
+                  <span className="mono-sm ml-1.5 text-ash-500">/ hour</span>
+                </p>
+                <p className="mono-sm nums mt-1.5 text-ash-500">
+                  {service.minHours}–{service.maxHours} hrs per session
+                </p>
+              </div>
+            ))}
           </div>
         </section>
       ) : null}
@@ -87,7 +78,7 @@ export default async function StudioPage() {
       {services.length > 0 ? (
         <section id="book" className="mt-12 scroll-mt-24">
           <SectionHeading
-            eyebrow="Reserve your slot"
+            index="02 — Reserve"
             title="Choose a date and time"
             blurb="Slots update live — greyed-out times are already taken."
           />
@@ -110,12 +101,12 @@ export default async function StudioPage() {
         </section>
       ) : (
         <section className="mt-12">
-          <div className="surface-card grid place-items-center gap-3 p-12 text-center">
-            <Clock className="h-8 w-8 text-zinc-600" />
-            <h3 className="text-lg font-semibold">Bookings are being set up</h3>
-            <p className="max-w-md text-sm text-zinc-400">
-              The producer hasn&apos;t published any studio services yet — check back soon or{" "}
-              <Link href="/contact" className="text-lime-300 hover:underline">
+          <div className="border border-dashed border-ink-600 px-6 py-16 text-center">
+            <p className="mono-sm text-ash-500">Not open yet</p>
+            <p className="headline mt-2 text-lg text-ash-100">Bookings are being set up</p>
+            <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-ash-400">
+              The producer hasn&apos;t published any studio services yet — check back soon or{""}
+              <Link href="/contact" className="text-accent-300 hover:underline">
                 send a message
               </Link>
               .
@@ -126,15 +117,22 @@ export default async function StudioPage() {
 
       {/* ── hours + policy ───────────────────────────────────── */}
       <section className="mt-14 grid gap-6 lg:grid-cols-2">
-        <div className="surface-card p-6">
-          <h2 className="flex items-center gap-2 text-lg font-bold">
-            <Clock className="h-4.5 w-4.5 text-lime-400" /> Opening hours
-          </h2>
-          <ul className="mt-4 divide-y divide-ink-800 text-sm">
+        <div>
+          <p className="section-head mono-sm text-ash-500">Opening hours</p>
+          <ul className="mt-4">
             {hours.map((row) => (
-              <li key={row.day} className="flex items-center justify-between py-2.5">
-                <span className="text-zinc-300">{row.day}</span>
-                <span className={row.label === "Closed" ? "text-zinc-600" : "font-medium text-lime-300"}>
+              <li
+                key={row.day}
+                className="flex items-center justify-between border-b border-ink-800 py-2.5 text-sm"
+              >
+                <span className="mono-sm text-ash-300">{row.day}</span>
+                <span
+                  className={
+                    row.label === "Closed"
+                      ? "mono-sm nums text-ash-600"
+                      : "mono-sm nums text-accent-300"
+                  }
+                >
                   {row.label}
                 </span>
               </li>
@@ -142,29 +140,34 @@ export default async function StudioPage() {
           </ul>
         </div>
 
-        <div className="surface-card p-6">
-          <h2 className="flex items-center gap-2 text-lg font-bold">
-            <Wallet className="h-4.5 w-4.5 text-lime-400" /> Booking policy
-          </h2>
-          <p className="mt-4 text-sm leading-relaxed text-zinc-400">{settings.studio_policy}</p>
-          <div className="mt-5 grid gap-3 text-sm text-zinc-400">
-            <p className="flex items-start gap-2.5">
-              <Smartphone className="mt-0.5 h-4 w-4 shrink-0 text-lime-400" />
-              Deposits can be paid with MTN MoMo, Telecel Cash, AirtelTigo Money or card — the {depositPercent}%
-              deposit holds your slot the moment it lands.
-            </p>
-            <p className="flex items-start gap-2.5">
-              <CreditCard className="mt-0.5 h-4 w-4 shrink-0 text-lime-400" />
+        <div>
+          <p className="mono-sm border-b border-ink-700 pb-2 text-ash-500">Booking policy</p>
+          <p className="mt-4 text-sm leading-relaxed text-ash-300">{settings.studio_policy}</p>
+          <ul className="mt-5 grid gap-3">
+            <li className="flex gap-3 border-t border-ink-800 pt-3 text-sm leading-relaxed text-ash-400">
+              <span className="mono-sm shrink-0 text-accent">01</span>
+              Deposits can be paid with MTN MoMo, Telecel Cash, AirtelTigo Money or card — the{" "}
+              {depositPercent}% deposit holds your slot the moment it lands.
+            </li>
+            <li className="flex gap-3 border-t border-ink-800 pt-3 text-sm leading-relaxed text-ash-400">
+              <span className="mono-sm shrink-0 text-accent">02</span>
               The remaining balance is paid at the studio before your session starts.
-            </p>
-          </div>
-          <p className="mt-5 text-xs text-zinc-500">
-            Questions? Call{" "}
-            <a href={`tel:${settings.support_phone.replace(/\s/g, "")}`} className="text-lime-300 hover:underline">
+            </li>
+          </ul>
+          <p className="mt-5 text-xs text-ash-500">
+            Questions? Call{""}
+            <a
+              href={`tel:${settings.support_phone.replace(/\s/g, "")}`}
+              className="text-accent-300 hover:underline"
+            >
               {settings.support_phone}
-            </a>{" "}
-            or email{" "}
-            <a href={`mailto:${settings.support_email}`} className="text-lime-300 hover:underline">
+            </a>
+            {""}
+            or email{""}
+            <a
+              href={`mailto:${settings.support_email}`}
+              className="text-accent-300 hover:underline"
+            >
               {settings.support_email}
             </a>
             .

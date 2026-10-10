@@ -20,9 +20,9 @@ export default async function TestBookingCheckoutPage({
       <div className="container-page py-16">
         <div className="surface-card mx-auto max-w-lg p-8 text-center">
           <h1 className="text-xl font-bold">Test payments are disabled</h1>
-          <p className="mt-2 text-sm text-zinc-400">
-            This store has live payment keys configured. Please go back and pay your deposit with mobile money or
-            card.
+          <p className="mt-2 text-sm text-ash-400">
+            This store has live payment keys configured. Please go back and pay your deposit with
+            mobile money or card.
           </p>
         </div>
       </div>

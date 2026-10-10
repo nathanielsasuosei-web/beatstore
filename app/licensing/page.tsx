@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Check, HelpCircle, Minus } from "lucide-react";
+import { Check, Minus } from "lucide-react";
 import { TIER_META } from "@/lib/constants";
 import { formatMoney } from "@/lib/money";
 import { getSettings } from "@/lib/settings";
@@ -12,8 +12,18 @@ export const metadata: Metadata = {
     "Plain-English licence terms: what you can do with a basic, premium or exclusive beat, and answers to the usual questions.",
 };
 
-const MATRIX: { label: string; basic: string | boolean; premium: string | boolean; exclusive: string | boolean }[] = [
-  { label: "Files delivered", basic: "MP3 320kbps", premium: "WAV + MP3", exclusive: "WAV + MP3 + stems" },
+const MATRIX: {
+  label: string;
+  basic: string | boolean;
+  premium: string | boolean;
+  exclusive: string | boolean;
+}[] = [
+  {
+    label: "Files delivered",
+    basic: "MP3 320kbps",
+    premium: "WAV + MP3",
+    exclusive: "WAV + MP3 + stems",
+  },
   { label: "Streams / views", basic: "Up to 10,000", premium: "Unlimited", exclusive: "Unlimited" },
   { label: "Monetise on YouTube", basic: false, premium: true, exclusive: true },
   { label: "Distribute to Spotify / Apple", basic: "Limited", premium: true, exclusive: true },
@@ -66,66 +76,50 @@ export default async function LicensingPage() {
   return (
     <div className="container-page py-12">
       <SectionHeading
-        eyebrow="Licensing"
+        index="Licensing"
         title="One beat, three ways to release it"
         blurb="Every purchase generates a signed PDF licence agreement with your name, the beat details and the order reference on it. Here's exactly what each tier lets you do."
       />
 
-      <div className="mt-10 grid gap-5 md:grid-cols-3">
-        {Object.entries(TIER_META).map(([tier, meta]) => (
-          <div key={tier} className="surface-card p-6">
-            <h2 className="text-lg font-bold">{meta.label}</h2>
-            <p className="mt-2 text-2xl font-extrabold text-lime-300">
-              {formatMoney(meta.defaultPrice)}
-              <span className="ml-1 text-xs font-medium text-zinc-500">from</span>
-            </p>
-            <p className="mt-3 text-sm leading-relaxed text-zinc-400">{meta.blurb}</p>
-            <ul className="mt-5 space-y-2 text-sm">
-              {MATRIX.map((row) => {
-                const value = row[tier as "basic" | "premium" | "exclusive"];
-                return (
-                  <li key={row.label} className="flex items-start gap-2">
-                    {value === true ? (
-                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-lime-400" />
-                    ) : value === false ? (
-                      <Minus className="mt-0.5 h-4 w-4 shrink-0 text-zinc-600" />
-                    ) : (
-                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-lime-400" />
-                    )}
-                    <span className="text-zinc-300">
-                      {row.label}
-                      {typeof value === "string" && <span className="text-zinc-500"> — {value}</span>}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        ))}
-      </div>
-
-      <div className="surface-card mt-10 overflow-x-auto">
-        <table className="table-clean min-w-[640px]">
+      <div className="mt-10 overflow-x-auto border border-ink-700">
+        <table className="table-clean min-w-[680px]">
           <thead>
             <tr>
-              <th>Rights</th>
-              <th>Basic</th>
-              <th>Premium</th>
-              <th>Exclusive</th>
+              <th className="w-[30%]">Rights</th>
+              {(["basic", "premium", "exclusive"] as const).map((tier) => (
+                <th key={tier} scope="col">
+                  <span
+                    className={
+                      tier === "premium"
+                        ? "headline block text-sm normal-case tracking-normal text-accent-300"
+                        : "headline block text-sm normal-case tracking-normal text-ash-100"
+                    }
+                  >
+                    {TIER_META[tier].label}
+                  </span>
+                  <span className="mt-1 block text-sm normal-case tracking-normal text-ash-500">
+                    from {formatMoney(TIER_META[tier].defaultPrice)}
+                  </span>
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
             {MATRIX.map((row) => (
               <tr key={row.label}>
-                <td className="text-zinc-300">{row.label}</td>
+                <td className="mono-sm text-ash-300">{row.label}</td>
                 {(["basic", "premium", "exclusive"] as const).map((tier) => {
                   const value = row[tier];
                   return (
-                    <td key={tier} className="text-zinc-400">
+                    <td key={tier} className="text-sm text-ash-400">
                       {value === true ? (
-                        <span className="text-lime-400">Included</span>
+                        <span className="inline-flex items-center gap-1.5 text-accent-300">
+                          <Check className="h-3.5 w-3.5" strokeWidth={3} /> Yes
+                        </span>
                       ) : value === false ? (
-                        <span className="text-zinc-600">Not included</span>
+                        <span className="inline-flex items-center gap-1.5 text-ash-600">
+                          <Minus className="h-3.5 w-3.5" strokeWidth={3} /> No
+                        </span>
                       ) : (
                         value
                       )}
@@ -138,26 +132,32 @@ export default async function LicensingPage() {
         </table>
       </div>
 
+      <p className="mono-sm mt-3 text-ash-600">
+        {TIER_META.basic.blurb} · {TIER_META.premium.blurb} · {TIER_META.exclusive.blurb}
+      </p>
+
       <section className="mt-14">
-        <SectionHeading eyebrow="FAQ" title="Everything else people ask" />
-        <div className="mt-6 grid gap-3 md:grid-cols-2">
+        <SectionHeading index="FAQ" title="Everything else people ask" />
+        <div className="mt-6 border-t border-ink-700 md:grid md:grid-cols-2 md:gap-x-10">
           {FAQ.map((item) => (
-            <details key={item.q} className="surface-card group p-5">
-              <summary className="flex cursor-pointer items-start gap-3 text-sm font-semibold marker:content-['']">
-                <HelpCircle className="mt-0.5 h-4 w-4 shrink-0 text-lime-400" />
-                {item.q}
+            <details key={item.q} className="group border-b border-ink-700">
+              <summary className="flex cursor-pointer items-start justify-between gap-4 py-4 text-sm text-ash-100 marker:content-['']">
+                <span className="headline">{item.q}</span>
+                <span className="mono-sm shrink-0 text-accent group-open:hidden">Open</span>
+                <span className="mono-sm hidden shrink-0 text-ash-500 group-open:block">Close</span>
               </summary>
-              <p className="mt-3 pl-7 text-sm leading-relaxed text-zinc-400">{item.a}</p>
+              <p className="pb-5 pr-8 text-sm leading-relaxed text-ash-400">{item.a}</p>
             </details>
           ))}
         </div>
       </section>
 
-      <div className="surface-card mt-12 flex flex-wrap items-center justify-between gap-4 p-6">
+      <div className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-ink-700 pt-8">
         <div>
-          <h3 className="font-semibold">Still not sure which licence fits?</h3>
-          <p className="mt-1 text-sm text-zinc-400">
-            Send the producer a message with your release plan — you&apos;ll get a straight answer, not a sales pitch.
+          <h3 className="headline text-lg text-ash-50">Still not sure which licence fits?</h3>
+          <p className="mt-1 text-sm text-ash-400">
+            Send the producer a message with your release plan — you&apos;ll get a straight answer,
+            not a sales pitch.
           </p>
         </div>
         <div className="flex gap-2">
@@ -170,9 +170,9 @@ export default async function LicensingPage() {
         </div>
       </div>
 
-      <p className="mt-6 text-xs text-zinc-500">
-        Questions about a specific order? Email {settings.support_email} with your order reference and it gets
-        looked at the same day.
+      <p className="mono-sm mt-6 text-ash-500">
+        Questions about a specific order? Email {settings.support_email} with your order reference
+        and it gets looked at the same day.
       </p>
     </div>
   );

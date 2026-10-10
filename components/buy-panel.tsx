@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Check, Download, FileAudio, Lock, Mail, ShoppingBag, Zap } from "lucide-react";
+import { Check, ShoppingBag } from "lucide-react";
 import { useCart } from "@/components/cart-provider";
 import { usePlayer, type Track } from "@/components/player-provider";
 import { formatMoney } from "@/lib/money";
@@ -12,7 +12,7 @@ import type { BeatCardData } from "@/components/beat-card";
 export function BuyPanel({ beat, producer }: { beat: BeatCardData; producer: string }) {
   const licenses = beat.licenses;
   const [selected, setSelected] = useState(
-    licenses.find((l) => l.popular)?.id ?? licenses[0]?.id ?? ""
+    licenses.find((l) => l.popular)?.id ?? licenses[0]?.id ?? "",
   );
   const [flash, setFlash] = useState<string | null>(null);
   const { add, has } = useCart();
@@ -65,31 +65,32 @@ export function BuyPanel({ beat, producer }: { beat: BeatCardData; producer: str
 
   if (!licenses.length) {
     return (
-      <div className="surface-card p-5 text-sm text-zinc-400">
-        This beat is not currently for sale. <a href="/contact" className="link-accent">Message the producer</a>
-        {" "}about a custom version.
+      <div className="border border-ink-700 bg-ink-850 p-5 text-sm text-ash-400">
+        This beat is not currently for sale.{" "}
+        <a href="/contact" className="link-accent">
+          Message the producer
+        </a>
+        {""}about a custom version.
       </div>
     );
   }
 
   return (
-    <div className="surface-card p-5">
-      <div className="flex items-center justify-between">
-        <h2 className="font-semibold">Choose your licence</h2>
-        <span className="text-xs text-zinc-500">{licenses.length} options</span>
+    <div className="border border-ink-700 bg-ink-850">
+      <div className="flex items-center justify-between border-b border-ink-700 px-4 py-3">
+        <h2 className="headline text-sm text-ash-50">Choose your licence</h2>
+        <span className="mono-sm text-ash-500">{licenses.length} options</span>
       </div>
 
-      <div className="mt-4 space-y-2.5">
+      <div className="divide-y divide-ink-700">
         {licenses.map((option) => {
           const active = option.id === selected;
           return (
             <label
               key={option.id}
               className={cn(
-                "flex cursor-pointer items-start gap-3 rounded-2xl border p-3.5 transition",
-                active
-                  ? "border-lime-400/60 bg-lime-400/[0.06]"
-                  : "border-ink-700 bg-ink-850 hover:border-ink-600"
+                "relative flex cursor-pointer items-start gap-3 px-4 py-3.5 transition-colors",
+                active ? "bg-accent-600/10" : "hover:bg-ink-800",
               )}
             >
               <input
@@ -99,28 +100,29 @@ export function BuyPanel({ beat, producer }: { beat: BeatCardData; producer: str
                 checked={active}
                 onChange={() => setSelected(option.id)}
               />
+              {active && <span className="absolute bottom-0 left-0 top-0 w-0.5 bg-accent" />}
               <span
                 className={cn(
-                  "mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full border",
-                  active ? "border-lime-400 bg-lime-400 text-ink-950" : "border-ink-600"
+                  "mt-0.5 grid h-4 w-4 shrink-0 place-items-center border",
+                  active ? "border-accent bg-accent text-ash-50" : "border-ink-600",
                 )}
               >
                 {active && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
               </span>
               <span className="min-w-0 flex-1">
                 <span className="flex items-center justify-between gap-3">
-                  <span className="flex items-center gap-2 text-sm font-semibold">
+                  <span className="headline text-sm text-ash-50">
                     {option.name}
                     {option.popular && (
-                      <span className="badge bg-lime-400/15 text-lime-300">Popular</span>
+                      <span className="mono-sm ml-2 text-accent-300">Most taken</span>
                     )}
                   </span>
-                  <span className="shrink-0 text-sm font-bold text-lime-300">{formatMoney(option.price)}</span>
+                  <span className="headline nums shrink-0 text-sm text-accent-300">
+                    {formatMoney(option.price)}
+                  </span>
                 </span>
                 {option.fileFormat && (
-                  <span className="mt-1.5 flex items-center gap-1.5 text-xs text-zinc-400">
-                    <FileAudio className="h-3.5 w-3.5" /> {option.fileFormat}
-                  </span>
+                  <span className="mono-sm mt-1.5 block text-ash-500">{option.fileFormat}</span>
                 )}
               </span>
             </label>
@@ -128,12 +130,12 @@ export function BuyPanel({ beat, producer }: { beat: BeatCardData; producer: str
         })}
       </div>
 
-      <div className="mt-5 grid gap-2">
+      <div className="grid gap-2 border-t border-ink-700 p-4">
         <button type="button" onClick={buyNow} className="btn btn-primary btn-lg w-full">
-          <Zap className="h-4 w-4" /> Buy now · {formatMoney(license?.price ?? 0)}
+          Buy now · {formatMoney(license?.price ?? 0)}
         </button>
         <button type="button" onClick={addToCart} className="btn btn-secondary w-full">
-          <ShoppingBag className="h-4 w-4" />
+          <ShoppingBag className="h-3.5 w-3.5" />
           {license && has(license.id) ? "In cart — add another licence" : "Add to cart"}
         </button>
         <button
@@ -141,7 +143,10 @@ export function BuyPanel({ beat, producer }: { beat: BeatCardData; producer: str
           onClick={() => toggle(track)}
           disabled={!previewIsPlayable(beat.previewFile)}
           title={previewIsPlayable(beat.previewFile) ? undefined : "Preview coming soon"}
-          className={cn("btn btn-ghost btn-sm w-full", !previewIsPlayable(beat.previewFile) && "opacity-50")}
+          className={cn(
+            "btn btn-ghost btn-sm w-full",
+            !previewIsPlayable(beat.previewFile) && "opacity-50",
+          )}
         >
           {!previewIsPlayable(beat.previewFile)
             ? "No preview available yet"
@@ -151,22 +156,22 @@ export function BuyPanel({ beat, producer }: { beat: BeatCardData; producer: str
         </button>
       </div>
 
-      {flash && <p className="mt-3 text-xs text-lime-300">{flash}</p>}
-
-      <ul className="mt-5 space-y-2.5 border-t border-ink-700 pt-5 text-xs text-zinc-400">
-        <li className="flex gap-2">
-          <Mail className="mt-0.5 h-3.5 w-3.5 shrink-0 text-lime-400" />
-          Download links + licence PDF are emailed the moment payment clears.
-        </li>
-        <li className="flex gap-2">
-          <Download className="mt-0.5 h-3.5 w-3.5 shrink-0 text-lime-400" />
-          Links stay valid for 30 days, and live in your artist dashboard too.
-        </li>
-        <li className="flex gap-2">
-          <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-lime-400" />
-          Mobile money, bank transfer or card. Files are never shared without payment.
-        </li>
-      </ul>
+      <div className="border-t border-ink-700 px-4 py-3">
+        {flash && (
+          <p className="mono-sm mb-2 text-accent-300" role="status">
+            {flash}
+          </p>
+        )}
+        <ul className="divide-y divide-ink-700 text-xs leading-relaxed text-ash-400">
+          <li className="py-2 first:pt-0">
+            Download links and your licence PDF are emailed the moment payment clears.
+          </li>
+          <li className="py-2">Links stay valid 30 days, and live in your artist dashboard.</li>
+          <li className="py-2">
+            Mobile money, bank transfer or card. Files are never shared before payment.
+          </li>
+        </ul>
+      </div>
     </div>
   );
 }

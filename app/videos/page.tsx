@@ -14,7 +14,7 @@ export default async function VideosPage() {
   return (
     <div className="container-page py-12">
       <SectionHeading
-        eyebrow="Behind the beats"
+        index="Behind the beats"
         title="Studio sessions & visuals"
         blurb="Watch how the beats are built — drum patterns, mix chains and the odd studio session."
       />

@@ -18,7 +18,7 @@ function Reveal({
   children: React.ReactNode;
 }) {
   return (
-    <div className={cn("animate-field-in", className)} style={{ animationDelay: `${delay}ms` }}>
+    <div className={cn("", className)} style={{ animationDelay: `${delay}ms` }}>
       {children}
     </div>
   );
@@ -28,11 +28,11 @@ function Notice({ tone, children }: { tone: "error" | "success"; children: React
   return (
     <div
       className={cn(
-        "flex items-start gap-2 rounded-xl border px-3 py-2.5 text-xs",
-        tone === "error" ? "animate-notice-error" : "animate-notice",
+        "flex items-start gap-2 border px-3 py-2.5 text-xs",
+        tone === "error" ? "" : "",
         tone === "error"
           ? "border-red-900/60 bg-red-950/40 text-red-300"
-          : "border-lime-400/30 bg-lime-400/10 text-lime-200"
+          : "border-accent-400/30 bg-accent-400/10 text-accent-200",
       )}
     >
       {tone === "error" ? (
@@ -79,10 +79,10 @@ export function LoginForm({ redirectTo }: { redirectTo?: string }) {
   }
 
   return (
-    <form onSubmit={submit} className="animate-card-in surface-card p-6 sm:p-7">
-      <div className="animate-field-in">
-        <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
-        <p className="mt-1.5 text-sm text-zinc-400">
+    <form onSubmit={submit} className="border border-ink-700 bg-ink-850 p-6 sm:p-7">
+      <div className="">
+        <h1 className="headline text-2xl text-ash-50">Welcome back</h1>
+        <p className="mt-1.5 text-sm text-ash-400">
           Sign in to grab your downloads, licences and receipts.
         </p>
       </div>
@@ -135,12 +135,12 @@ export function LoginForm({ redirectTo }: { redirectTo?: string }) {
         <button
           type="submit"
           disabled={busy || succeeded}
-          className={cn("btn btn-primary btn-lg mt-6 w-full", busy && "btn-sheen")}
+          className={cn("btn btn-primary btn-lg mt-6 w-full", busy && "")}
         >
           {busy ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : succeeded ? (
-            <CheckCircle2 className="animate-pop h-4 w-4" />
+            <CheckCircle2 className="h-4 w-4" />
           ) : (
             <LogIn className="h-4 w-4" />
           )}
@@ -149,11 +149,11 @@ export function LoginForm({ redirectTo }: { redirectTo?: string }) {
       </Reveal>
 
       <Reveal delay={340}>
-        <div className="mt-4 flex items-center justify-between text-xs text-zinc-500">
-          <Link href="/forgot-password" className="hover:text-lime-300">
+        <div className="mt-4 flex items-center justify-between text-xs text-ash-500">
+          <Link href="/forgot-password" className="hover:text-accent-300">
             Forgot password?
           </Link>
-          <Link href="/register" className="hover:text-lime-300">
+          <Link href="/register" className="hover:text-accent-300">
             Create an artist account
           </Link>
         </div>
@@ -203,10 +203,10 @@ export function RegisterForm() {
   }
 
   return (
-    <form onSubmit={submit} className="animate-card-in surface-card p-6 sm:p-7">
-      <div className="animate-field-in">
-        <h1 className="text-2xl font-bold tracking-tight">Create your artist account</h1>
-        <p className="mt-1.5 text-sm text-zinc-400">
+    <form onSubmit={submit} className="border border-ink-700 bg-ink-850 p-6 sm:p-7">
+      <div className="">
+        <h1 className="headline text-2xl text-ash-50">Create your artist account</h1>
+        <p className="mt-1.5 text-sm text-ash-400">
           Free, no spam. Keeps every beat, licence and receipt in one place — checkout works as a
           guest too.
         </p>
@@ -317,12 +317,12 @@ export function RegisterForm() {
         <button
           type="submit"
           disabled={busy || succeeded}
-          className={cn("btn btn-primary btn-lg mt-6 w-full", busy && "btn-sheen")}
+          className={cn("btn btn-primary btn-lg mt-6 w-full", busy && "")}
         >
           {busy ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : succeeded ? (
-            <CheckCircle2 className="animate-pop h-4 w-4" />
+            <CheckCircle2 className="h-4 w-4" />
           ) : (
             <UserPlus className="h-4 w-4" />
           )}
@@ -331,7 +331,7 @@ export function RegisterForm() {
       </Reveal>
 
       <Reveal delay={480}>
-        <p className="mt-4 text-xs text-zinc-500">
+        <p className="mt-4 text-xs text-ash-500">
           A confirmation email is sent straight away. Already have an account?{" "}
           <Link href="/login" className="link-accent">
             Sign in
@@ -370,10 +370,10 @@ export function ForgotForm() {
   }
 
   return (
-    <form onSubmit={submit} className="animate-card-in surface-card p-6 sm:p-7">
-      <div className="animate-field-in">
-        <h1 className="text-2xl font-bold tracking-tight">Reset your password</h1>
-        <p className="mt-1.5 text-sm text-zinc-400">
+    <form onSubmit={submit} className="border border-ink-700 bg-ink-850 p-6 sm:p-7">
+      <div className="">
+        <h1 className="headline text-2xl text-ash-50">Reset your password</h1>
+        <p className="mt-1.5 text-sm text-ash-400">
           Enter the email you signed up with and a reset link lands in your inbox within a minute.
         </p>
       </div>
@@ -416,7 +416,7 @@ export function ForgotForm() {
             <button
               type="submit"
               disabled={busy}
-              className={cn("btn btn-primary btn-lg mt-6 w-full", busy && "btn-sheen")}
+              className={cn("btn btn-primary btn-lg mt-6 w-full", busy && "")}
             >
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
               {busy ? "Sending…" : "Send reset link"}
@@ -462,9 +462,9 @@ export function ResetForm({ token }: { token: string }) {
   }
 
   return (
-    <form onSubmit={submit} className="animate-card-in surface-card p-6 sm:p-7">
-      <div className="animate-field-in">
-        <h1 className="text-2xl font-bold tracking-tight">Choose a new password</h1>
+    <form onSubmit={submit} className="border border-ink-700 bg-ink-850 p-6 sm:p-7">
+      <div className="">
+        <h1 className="headline text-2xl text-ash-50">Choose a new password</h1>
       </div>
 
       {done ? (
@@ -518,7 +518,7 @@ export function ResetForm({ token }: { token: string }) {
             <button
               type="submit"
               disabled={busy}
-              className={cn("btn btn-primary btn-lg mt-6 w-full", busy && "btn-sheen")}
+              className={cn("btn btn-primary btn-lg mt-6 w-full", busy && "")}
             >
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
               {busy ? "Saving…" : "Set new password"}

@@ -10,9 +10,10 @@ export default async function EditBeatPage({ params }: { params: Promise<{ id: s
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Edit “{beat.title}”</h1>
-        <p className="mt-1 text-sm text-zinc-400">
-          Uploading a new file replaces the old one; licences that are unchecked simply stop being sold.
+        <h1 className="headline text-2xl text-ash-50">Edit “{beat.title}”</h1>
+        <p className="mt-1 text-sm text-ash-400">
+          Uploading a new file replaces the old one; licences that are unchecked simply stop being
+          sold.
         </p>
       </div>
       <BeatForm

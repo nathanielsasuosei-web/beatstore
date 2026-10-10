@@ -141,33 +141,33 @@ export function emailShell({
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>${escapeHtml(title)}</title>
 </head>
-<body style="margin:0;padding:0;background:#09090b;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#e4e4e7;">
+<body style="margin:0;padding:0;background:#0b0b0a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#eeece3;">
 ${preheader ? `<div style="display:none;max-height:0;overflow:hidden;opacity:0;">${escapeHtml(preheader)}</div>` : ""}
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#09090b;padding:28px 12px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0b0b0a;padding:28px 12px;">
   <tr><td align="center">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#111113;border:1px solid #27272a;border-radius:18px;overflow:hidden;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#121110;border:1px solid #2c2b25;overflow:hidden;">
       <tr>
-        <td style="padding:24px 28px;border-bottom:1px solid #27272a;background:linear-gradient(135deg,#18181b,#111113);">
-          <a href="${base}" style="color:#fafafa;text-decoration:none;font-size:18px;font-weight:700;letter-spacing:-0.4px;">
-            <span style="display:inline-block;width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,#a3e635,#22c55e);vertical-align:-6px;margin-right:10px;"></span>
-            ${escapeHtml(title)}
+        <td style="padding:22px 28px;border-bottom:1px solid #2c2b25;">
+          <p style="margin:0 0 6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#e23108;">${escapeHtml(title)}</p>
+          <a href="${base}" style="color:#f6f4ee;text-decoration:none;font-size:17px;font-weight:800;letter-spacing:-0.3px;">
+            <span style="display:inline-block;width:14px;height:14px;border:2px solid #e23108;vertical-align:-2px;margin-right:9px;"></span>${escapeHtml(base.replace(/^https?:\/\//, ""))}
           </a>
         </td>
       </tr>
-      <tr><td style="padding:28px;font-size:15px;line-height:1.65;color:#d4d4d8;">${body}</td></tr>
+      <tr><td style="padding:28px;font-size:15px;line-height:1.65;color:#d9d5c8;">${body}</td></tr>
       ${
         cta
           ? `<tr><td style="padding:0 28px 28px;">
-        <a href="${cta.url}" style="display:inline-block;background:#a3e635;color:#0a0a0a;font-weight:700;text-decoration:none;padding:13px 24px;border-radius:999px;font-size:15px;">${escapeHtml(
+        <a href="${cta.url}" style="display:inline-block;background:#e23108;color:#f6f4ee;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;text-decoration:none;padding:13px 24px;font-size:13px;">${escapeHtml(
             cta.label
           )}</a>
       </td></tr>`
           : ""
       }
       <tr>
-        <td style="padding:20px 28px;border-top:1px solid #27272a;color:#71717a;font-size:12.5px;line-height:1.6;">
+        <td style="padding:20px 28px;border-top:1px solid #2c2b25;color:#747166;font-size:12.5px;line-height:1.6;">
           ${footerNote ? `<p style="margin:0 0 10px;">${escapeHtml(footerNote)}</p>` : ""}
-          <p style="margin:0;">You're receiving this because you bought beats or signed up at <a href="${base}" style="color:#a3e635;">${escapeHtml(
+          <p style="margin:0;">You're receiving this because you bought beats or signed up at <a href="${base}" style="color:#e23108;">${escapeHtml(
             base.replace(/^https?:\/\//, "")
           )}</a>.</p>
         </td>
@@ -188,22 +188,22 @@ export function escapeHtml(value: string) {
 }
 
 export function emailButton(url: string, label: string) {
-  return `<a href="${url}" style="display:inline-block;background:#a3e635;color:#0a0a0a;font-weight:700;text-decoration:none;padding:12px 22px;border-radius:999px;font-size:15px;margin:6px 0;">${escapeHtml(
+  return `<a href="${url}" style="display:inline-block;background:#e23108;color:#f6f4ee;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;text-decoration:none;padding:12px 22px;font-size:13px;margin:6px 0;">${escapeHtml(
     label
   )}</a>`;
 }
 
 export function emailLines(rows: [string, string][]) {
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:16px 0;background:#18181b;border:1px solid #27272a;border-radius:12px;overflow:hidden;">
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:16px 0;background:#171614;border:1px solid #2c2b25;overflow:hidden;">
     ${rows
       .map(
         ([k, v], i) =>
           `<tr>
-            <td style="padding:10px 16px;color:#a1a1aa;font-size:13px;${
-              i > 0 ? "border-top:1px solid #27272a;" : ""
+            <td style="padding:10px 16px;color:#918e80;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;${
+              i > 0 ? "border-top:1px solid #2c2b25;" : ""
             }">${escapeHtml(k)}</td>
-            <td style="padding:10px 16px;color:#fafafa;font-size:13px;text-align:right;font-weight:600;${
-              i > 0 ? "border-top:1px solid #27272a;" : ""
+            <td style="padding:10px 16px;color:#f6f4ee;font-size:13px;text-align:right;font-weight:700;${
+              i > 0 ? "border-top:1px solid #2c2b25;" : ""
             }">${escapeHtml(v)}</td>
           </tr>`
       )

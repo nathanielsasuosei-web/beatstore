@@ -43,7 +43,7 @@ export function ProfileForm({
   }
 
   return (
-    <form onSubmit={submit} className="surface-card p-5">
+    <form onSubmit={submit} className="border border-ink-700 bg-ink-850 p-5">
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className="label" htmlFor="profile-name">
@@ -93,7 +93,7 @@ export function ProfileForm({
       </div>
 
       {showPassword ? (
-        <div className="mt-4 grid gap-4 rounded-2xl border border-ink-700 bg-ink-850 p-4 sm:grid-cols-2">
+        <div className="mt-4 grid gap-4 border border-ink-700 bg-ink-850 p-4 sm:grid-cols-2">
           <div>
             <label className="label" htmlFor="current-password">
               Current password
@@ -124,25 +124,29 @@ export function ProfileForm({
         <button
           type="button"
           onClick={() => setShowPassword(true)}
-          className="mt-4 text-xs text-zinc-400 hover:text-lime-300"
+          className="mt-4 text-xs text-ash-400 hover:text-accent-300"
         >
           Change password
         </button>
       )}
 
       {state === "error" && (
-        <p className="mt-4 flex items-center gap-2 rounded-xl border border-red-900/60 bg-red-950/40 px-3 py-2 text-xs text-red-300">
+        <p className="mt-4 flex items-center gap-2 border border-red-900/60 bg-red-950/40 px-3 py-2 text-xs text-red-300">
           <AlertCircle className="h-3.5 w-3.5" /> {message}
         </p>
       )}
       {state === "saved" && (
-        <p className="mt-4 flex items-center gap-2 rounded-xl border border-lime-400/30 bg-lime-400/10 px-3 py-2 text-xs text-lime-200">
+        <p className="mt-4 flex items-center gap-2 border border-accent-400/30 bg-accent-400/10 px-3 py-2 text-xs text-accent-200">
           <CheckCircle2 className="h-3.5 w-3.5" /> {message}
         </p>
       )}
 
       <button type="submit" disabled={state === "saving"} className="btn btn-primary mt-5">
-        {state === "saving" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+        {state === "saving" ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <Save className="h-4 w-4" />
+        )}
         Save changes
       </button>
     </form>

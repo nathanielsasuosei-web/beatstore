@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { AlertCircle, Loader2, Music2, Save, Trash2, Upload } from "lucide-react";
+import { AlertCircle, Loader2, Save, Trash2, Upload } from "lucide-react";
 import { GENRES, KEYS, MOODS, TIER_META, type LicenseTier } from "@/lib/constants";
 import { formatMoney } from "@/lib/money";
 import { cn, previewIsPlayable } from "@/lib/utils";
@@ -63,7 +63,9 @@ const EMPTY: BeatFormValues = {
 export function BeatForm({ initial }: { initial?: BeatFormValues }) {
   const router = useRouter();
   const [values, setValues] = useState<BeatFormValues>(initial ?? EMPTY);
-  const [files, setFiles] = useState<{ cover?: File; audio?: File; preview?: File; stems?: File }>({});
+  const [files, setFiles] = useState<{ cover?: File; audio?: File; preview?: File; stems?: File }>(
+    {},
+  );
   const [removeCover, setRemoveCover] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -83,7 +85,7 @@ export function BeatForm({ initial }: { initial?: BeatFormValues }) {
     setValues((current) => ({
       ...current,
       licenses: current.licenses.map((license) =>
-        license.tier === tier ? { ...license, ...patch } : license
+        license.tier === tier ? { ...license, ...patch } : license,
       ),
     }));
   }
@@ -99,7 +101,7 @@ export function BeatForm({ initial }: { initial?: BeatFormValues }) {
       if (!editing && !files.audio) throw new Error("Upload the beat file buyers will receive.");
       if (values.published && !hasPlayablePreview) {
         throw new Error(
-          "Upload a public preview clip (30–45s) before publishing — beat files are protected, so visitors cannot hear them."
+          "Upload a public preview clip (30–45s) before publishing — beat files are protected, so visitors cannot hear them.",
         );
       }
 
@@ -129,8 +131,8 @@ export function BeatForm({ initial }: { initial?: BeatFormValues }) {
               active: license.active,
               popular: license.popular,
               sortOrder: index,
-            }))
-        )
+            })),
+        ),
       );
 
       if (files.cover) form.set("cover", files.cover);
@@ -174,9 +176,7 @@ export function BeatForm({ initial }: { initial?: BeatFormValues }) {
       <div className="grid gap-6 lg:grid-cols-[1.4fr_0.6fr]">
         <div className="space-y-6">
           <section className="surface-card p-5">
-            <h2 className="flex items-center gap-2 font-semibold">
-              <Music2 className="h-4 w-4 text-lime-400" /> Beat details
-            </h2>
+            <h2 className="headline text-sm text-ash-50">Beat details</h2>
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <label className="label" htmlFor="title">
@@ -195,7 +195,12 @@ export function BeatForm({ initial }: { initial?: BeatFormValues }) {
                 <label className="label" htmlFor="genre">
                   Genre
                 </label>
-                <select id="genre" className="select" value={values.genre} onChange={(e) => set("genre", e.target.value)}>
+                <select
+                  id="genre"
+                  className="select"
+                  value={values.genre}
+                  onChange={(e) => set("genre", e.target.value)}
+                >
                   {GENRES.map((genre) => (
                     <option key={genre} value={genre}>
                       {genre}
@@ -207,7 +212,12 @@ export function BeatForm({ initial }: { initial?: BeatFormValues }) {
                 <label className="label" htmlFor="mood">
                   Mood
                 </label>
-                <select id="mood" className="select" value={values.mood} onChange={(e) => set("mood", e.target.value)}>
+                <select
+                  id="mood"
+                  className="select"
+                  value={values.mood}
+                  onChange={(e) => set("mood", e.target.value)}
+                >
                   {MOODS.map((mood) => (
                     <option key={mood} value={mood}>
                       {mood}
@@ -278,7 +288,7 @@ export function BeatForm({ initial }: { initial?: BeatFormValues }) {
               <label className="flex items-center gap-2 text-sm">
                 <input
                   type="checkbox"
-                  className="h-4 w-4 accent-lime-400"
+                  className="h-4 w-4 accent-accent-400"
                   checked={values.published}
                   onChange={(e) => set("published", e.target.checked)}
                 />
@@ -287,7 +297,7 @@ export function BeatForm({ initial }: { initial?: BeatFormValues }) {
               <label className="flex items-center gap-2 text-sm">
                 <input
                   type="checkbox"
-                  className="h-4 w-4 accent-lime-400"
+                  className="h-4 w-4 accent-accent-400"
                   checked={values.featured}
                   onChange={(e) => set("featured", e.target.checked)}
                 />
@@ -297,16 +307,16 @@ export function BeatForm({ initial }: { initial?: BeatFormValues }) {
           </section>
 
           <section className="surface-card p-5">
-            <h2 className="font-semibold">Licence pricing</h2>
-            <p className="mt-1 text-xs text-zinc-500">
+            <h2 className="headline text-sm text-ash-50">Licence pricing</h2>
+            <p className="mt-1 text-xs text-ash-500">
               Prices are in {`GH₵`} (the store currency). Uncheck a tier to stop selling it.
             </p>
             <div className="mt-4 space-y-4">
               {values.licenses.map((license) => (
-                <div key={license.tier} className="rounded-2xl border border-ink-700 bg-ink-850 p-4">
+                <div key={license.tier} className=" border border-ink-700 bg-ink-850 p-4">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
-                      <span className="badge bg-ink-700 text-zinc-300">{license.tier}</span>
+                      <span className="badge bg-ink-700 text-ash-300">{license.tier}</span>
                       <input
                         className="input h-9 w-48"
                         value={license.name}
@@ -318,7 +328,7 @@ export function BeatForm({ initial }: { initial?: BeatFormValues }) {
                       <label className="flex items-center gap-1.5">
                         <input
                           type="checkbox"
-                          className="h-3.5 w-3.5 accent-lime-400"
+                          className="h-3.5 w-3.5 accent-accent-400"
                           checked={license.active}
                           onChange={(e) => setLicense(license.tier, { active: e.target.checked })}
                         />
@@ -327,11 +337,9 @@ export function BeatForm({ initial }: { initial?: BeatFormValues }) {
                       <label className="flex items-center gap-1.5">
                         <input
                           type="checkbox"
-                          className="h-3.5 w-3.5 accent-lime-400"
+                          className="h-3.5 w-3.5 accent-accent-400"
                           checked={license.popular}
-                          onChange={(e) =>
-                            setLicense(license.tier, { popular: e.target.checked })
-                          }
+                          onChange={(e) => setLicense(license.tier, { popular: e.target.checked })}
                         />
                         Most popular
                       </label>
@@ -348,10 +356,12 @@ export function BeatForm({ initial }: { initial?: BeatFormValues }) {
                         className="input"
                         value={(license.price / 100).toString()}
                         onChange={(e) =>
-                          setLicense(license.tier, { price: Math.round(Number(e.target.value) * 100) })
+                          setLicense(license.tier, {
+                            price: Math.round(Number(e.target.value) * 100),
+                          })
                         }
                       />
-                      <p className="mt-1 text-[11px] text-zinc-500">
+                      <p className="mt-1 text-[11px] text-ash-500">
                         Displays as {formatMoney(license.price)}
                       </p>
                     </div>
@@ -380,15 +390,19 @@ export function BeatForm({ initial }: { initial?: BeatFormValues }) {
 
         <div className="space-y-6">
           <section className="surface-card p-5">
-            <h2 className="font-semibold">Files</h2>
+            <h2 className="headline text-sm text-ash-50">Files</h2>
 
             <div className="mt-4">
               <label className="label">Cover artwork</label>
               <div className="flex items-center gap-3">
-                <span className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-ink-800">
+                <span className="relative h-20 w-20 shrink-0 overflow-hidden bg-ink-800">
                   {!removeCover && (files.cover || values.coverImage) ? (
                     <Image
-                      src={files.cover ? URL.createObjectURL(files.cover) : (values.coverImage as string)}
+                      src={
+                        files.cover
+                          ? URL.createObjectURL(files.cover)
+                          : (values.coverImage as string)
+                      }
                       alt=""
                       fill
                       sizes="80px"
@@ -396,7 +410,9 @@ export function BeatForm({ initial }: { initial?: BeatFormValues }) {
                       unoptimized
                     />
                   ) : (
-                    <span className="grid h-full place-items-center text-xs text-zinc-600">none</span>
+                    <span className="grid h-full place-items-center text-xs text-ash-600">
+                      none
+                    </span>
                   )}
                 </span>
                 <div className="flex-1">
@@ -407,13 +423,13 @@ export function BeatForm({ initial }: { initial?: BeatFormValues }) {
                       setFiles({ ...files, cover: e.target.files?.[0] });
                       setRemoveCover(false);
                     }}
-                    className="input file:mr-3 file:rounded-lg file:border-0 file:bg-ink-700 file:px-3 file:py-1.5 file:text-xs file:text-zinc-200"
+                    className="input file:mr-3 file: file:border-0 file:bg-ink-700 file:px-3 file:py-1.5 file:text-xs file:text-ash-200"
                   />
                   {values.coverImage && (
                     <button
                       type="button"
                       onClick={() => setRemoveCover((v) => !v)}
-                      className="mt-2 text-xs text-zinc-500 hover:text-red-400"
+                      className="mt-2 text-xs text-ash-500 hover:text-accent"
                     >
                       {removeCover ? "Keep existing cover" : "Remove cover on save"}
                     </button>
@@ -437,7 +453,7 @@ export function BeatForm({ initial }: { initial?: BeatFormValues }) {
               onPick={(file) => setFiles({ ...files, preview: file })}
             />
             {!hasPlayablePreview && values.previewFile && (
-              <p className="mt-2 flex items-start gap-2 rounded-xl border border-amber-900/60 bg-amber-950/30 px-3 py-2 text-[11px] text-amber-300">
+              <p className="mt-2 flex items-start gap-2 border border-amber-900/60 bg-amber-950/30 px-3 py-2 text-[11px] text-amber-300">
                 <AlertCircle className="mt-0.5 h-3 w-3 shrink-0" />
                 This beat still points at its protected master file, so the store has no playable
                 preview. Upload a clip above to fix it.
@@ -453,13 +469,13 @@ export function BeatForm({ initial }: { initial?: BeatFormValues }) {
           </section>
 
           <section className="surface-card p-5">
-            <h2 className="font-semibold">Save</h2>
+            <h2 className="headline text-sm text-ash-50">Save</h2>
             {error && (
-              <p className="mt-3 flex items-start gap-2 rounded-xl border border-red-900/60 bg-red-950/40 px-3 py-2 text-xs text-red-300">
+              <p className="mt-3 flex items-start gap-2 border border-red-900/60 bg-red-950/40 px-3 py-2 text-xs text-red-300">
                 <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" /> {error}
               </p>
             )}
-            {progress && <p className="mt-3 text-xs text-zinc-400">{progress}</p>}
+            {progress && <p className="mt-3 text-xs text-ash-400">{progress}</p>}
 
             <button type="submit" disabled={busy} className="btn btn-primary btn-lg mt-4 w-full">
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
@@ -477,10 +493,10 @@ export function BeatForm({ initial }: { initial?: BeatFormValues }) {
               </button>
             )}
 
-            <p className="mt-4 text-[11px] leading-relaxed text-zinc-500">
+            <p className="mt-4 text-[11px] leading-relaxed text-ash-500">
               Large files upload straight to the server&apos;s storage folder. On a fresh clone,
-              <code className="mx-1 rounded bg-ink-800 px-1">npm run media:demo</code> generates sample audio
-              if you want something to test with.
+              <code className="mx-1 rounded bg-ink-800 px-1">npm run media:demo</code> generates
+              sample audio if you want something to test with.
             </p>
           </section>
         </div>
@@ -508,11 +524,11 @@ function FileField({
     <div className="mt-5">
       <label className="label">{label}</label>
       {current && (
-        <p className="mb-2 truncate text-xs text-zinc-500">
-          Current: <span className="text-zinc-300">{current.split("/").pop()}</span>
+        <p className="mb-2 truncate text-xs text-ash-500">
+          Current: <span className="text-ash-300">{current.split("/").pop()}</span>
         </p>
       )}
-      <div className={cn("flex items-center gap-2", !current && "text-zinc-400")}>
+      <div className={cn("flex items-center gap-2", !current && "text-ash-400")}>
         <input
           type="file"
           accept={accept}
@@ -521,12 +537,12 @@ function FileField({
             onPick(file);
             setName(file?.name ?? null);
           }}
-          className="input file:mr-3 file:rounded-lg file:border-0 file:bg-ink-700 file:px-3 file:py-1.5 file:text-xs file:text-zinc-200"
+          className="input file:mr-3 file: file:border-0 file:bg-ink-700 file:px-3 file:py-1.5 file:text-xs file:text-ash-200"
         />
       </div>
-      <p className="mt-1 text-[11px] text-zinc-500">
+      <p className="mt-1 text-[11px] text-ash-500">
         {name ? (
-          <span className="text-lime-300">
+          <span className="text-accent-300">
             <Upload className="mr-1 inline h-3 w-3" />
             {name} ready to upload
           </span>

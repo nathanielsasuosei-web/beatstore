@@ -21,10 +21,10 @@ export default async function AdminBookingsPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Studio bookings</h1>
-        <p className="mt-1 text-sm text-zinc-400">
-          {counts.total} booking{counts.total === 1 ? "" : "s"} total. Confirming a deposit emails the artist their
-          session confirmation instantly.
+        <h1 className="headline text-2xl text-ash-50">Studio bookings</h1>
+        <p className="mt-1 text-sm text-ash-400">
+          {counts.total} booking{counts.total === 1 ? "" : "s"} total. Confirming a deposit emails
+          the artist their session confirmation instantly.
         </p>
       </div>
 
@@ -32,7 +32,11 @@ export default async function AdminBookingsPage({
         <Stat label="To verify" value={String(counts.todo)} hint="Manual MoMo / bank deposits" />
         <Stat label="Confirmed" value={String(counts.confirmed)} hint="Upcoming paid sessions" />
         <Stat label="Completed" value={String(counts.completed)} hint="Sessions finished" />
-        <Stat label="Deposits collected" value={formatMoney(counts.deposits, currency)} hint="Confirmed + completed" />
+        <Stat
+          label="Deposits collected"
+          value={formatMoney(counts.deposits, currency)}
+          hint="Confirmed + completed"
+        />
       </div>
 
       <BookingsTable
@@ -65,9 +69,13 @@ export default async function AdminBookingsPage({
 
       <section>
         <h2 className="text-lg font-bold tracking-tight">Services bookable on /studio</h2>
-        <p className="mt-1 text-sm text-zinc-400">
-          Prices, session lengths and descriptions for the public booking page. Opening hours, deposit % and the
-          service fee live in <a href="/admin/settings" className="link-accent">Settings</a>.
+        <p className="mt-1 text-sm text-ash-400">
+          Prices, session lengths and descriptions for the public booking page. Opening hours,
+          deposit % and the service fee live in{" "}
+          <a href="/admin/settings" className="link-accent">
+            Settings
+          </a>
+          .
         </p>
         <div className="mt-4">
           <ServicesManager

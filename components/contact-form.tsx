@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, Loader2, Send } from "lucide-react";
+import { Loader2, Send } from "lucide-react";
 import { safeJson } from "@/lib/api-client";
 
 type Topic = { id: string; label: string };
@@ -59,10 +59,10 @@ export function ContactForm({
 
   if (state === "sent") {
     return (
-      <div className="surface-card grid place-items-center gap-3 p-10 text-center">
-        <CheckCircle2 className="h-10 w-10 text-lime-400" />
-        <h2 className="text-lg font-semibold">Message received</h2>
-        <p className="max-w-md text-sm text-zinc-400">{message}</p>
+      <div className="border border-ink-700 bg-ink-850 p-10 text-center">
+        <p className="mono-sm text-accent">Sent</p>
+        <h2 className="headline mt-3 text-lg text-ash-50">Message received</h2>
+        <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-ash-400">{message}</p>
         <button type="button" onClick={() => setState("idle")} className="btn btn-secondary btn-sm">
           Send another
         </button>
@@ -71,10 +71,11 @@ export function ContactForm({
   }
 
   return (
-    <form onSubmit={submit} className="surface-card p-5 sm:p-6">
-      <h2 className="font-semibold">Send a message</h2>
-      <p className="mt-1 text-xs text-zinc-500">
-        You&apos;ll get an email copy of your message straight away, and the reply lands in your inbox.
+    <form onSubmit={submit} className="border border-ink-700 bg-ink-850 p-5 sm:p-6">
+      <h2 className="headline text-lg text-ash-50">Send a message</h2>
+      <p className="mono-sm mt-1.5 leading-relaxed text-ash-500">
+        You&apos;ll get an email copy of your message straight away, and the reply lands in your
+        inbox.
       </p>
 
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -169,12 +170,16 @@ export function ContactForm({
       </div>
 
       {state === "error" && (
-        <p className="mt-4 rounded-xl border border-red-900/60 bg-red-950/40 px-3 py-2 text-xs text-red-300">
+        <p className="mt-4 border border-red-900/60 bg-red-950/40 px-3 py-2 text-xs text-red-300">
           {message}
         </p>
       )}
 
-      <button type="submit" disabled={state === "sending"} className="btn btn-primary btn-lg mt-5 w-full">
+      <button
+        type="submit"
+        disabled={state === "sending"}
+        className="btn btn-primary btn-lg mt-5 w-full"
+      >
         {state === "sending" ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" /> Sending…

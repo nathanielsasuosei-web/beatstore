@@ -44,7 +44,7 @@ export function MessagesPanel({ messages }: { messages: AdminMessage[] }) {
         setFlash(
           json.delivered === "sent"
             ? "Reply sent by email."
-            : "Reply saved. Email delivery is in preview mode — open the Outbox to see it."
+            : "Reply saved. Email delivery is in preview mode — open the Outbox to see it.",
         );
         setReply("");
       }
@@ -68,24 +68,34 @@ export function MessagesPanel({ messages }: { messages: AdminMessage[] }) {
               if (message.status === "new") void act(message.id, { action: "read" });
             }}
             className={`surface-card w-full p-4 text-left transition ${
-              openId === message.id ? "border-lime-400/50 ring-1 ring-lime-400/20" : "hover:border-ink-600"
+              openId === message.id
+                ? "border-accent-400/50 ring-1 ring-accent-400/20"
+                : "hover:border-ink-600"
             }`}
           >
             <div className="flex items-center justify-between gap-2">
               <p className="truncate text-sm font-semibold">{message.name}</p>
-              <span className="shrink-0 text-[11px] text-zinc-500">{formatDate(message.createdAt)}</span>
+              <span className="shrink-0 text-[11px] text-ash-500">
+                {formatDate(message.createdAt)}
+              </span>
             </div>
-            <p className="mt-1 truncate text-xs text-zinc-400">{message.subject}</p>
+            <p className="mt-1 truncate text-xs text-ash-400">{message.subject}</p>
             <div className="mt-2 flex items-center gap-2">
               <span className="chip">{message.topic}</span>
-              {message.status === "new" && <span className="badge bg-lime-400 text-ink-950">New</span>}
-              {message.status === "replied" && <span className="badge bg-ink-700 text-zinc-400">Replied</span>}
-              {message.status === "archived" && <span className="badge bg-ink-700 text-zinc-500">Archived</span>}
+              {message.status === "new" && (
+                <span className="badge bg-accent-400 text-ink-950">New</span>
+              )}
+              {message.status === "replied" && (
+                <span className="badge bg-ink-700 text-ash-400">Replied</span>
+              )}
+              {message.status === "archived" && (
+                <span className="badge bg-ink-700 text-ash-500">Archived</span>
+              )}
             </div>
           </button>
         ))}
         {inbound.length === 0 && (
-          <div className="surface-card grid place-items-center py-14 text-sm text-zinc-500">
+          <div className="surface-card grid place-items-center py-14 text-sm text-ash-500">
             The inbox is empty.
           </div>
         )}
@@ -93,21 +103,21 @@ export function MessagesPanel({ messages }: { messages: AdminMessage[] }) {
 
       <div className="surface-card h-fit p-5">
         {!open ? (
-          <p className="text-sm text-zinc-500">Select a message to read it.</p>
+          <p className="text-sm text-ash-500">Select a message to read it.</p>
         ) : (
           <>
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <h2 className="text-lg font-semibold">{open.subject}</h2>
-                <p className="mt-1 text-xs text-zinc-400">
-                  From <span className="text-zinc-200">{open.name}</span> ·{" "}
-                  <a href={`mailto:${open.email}`} className="hover:text-lime-300">
+                <p className="mt-1 text-xs text-ash-400">
+                  From <span className="text-ash-200">{open.name}</span> ·{" "}
+                  <a href={`mailto:${open.email}`} className="hover:text-accent-300">
                     {open.email}
                   </a>{" "}
                   · {formatDate(open.createdAt, true)}
                 </p>
                 {open.orderReference && (
-                  <p className="mt-1 text-xs text-zinc-500">Order: {open.orderReference}</p>
+                  <p className="mt-1 text-xs text-ash-500">Order: {open.orderReference}</p>
                 )}
               </div>
               <div className="flex gap-1.5">
@@ -133,7 +143,7 @@ export function MessagesPanel({ messages }: { messages: AdminMessage[] }) {
                   type="button"
                   onClick={() => act(open.id, { action: "delete" })}
                   disabled={busy}
-                  className="btn btn-ghost btn-sm text-zinc-500 hover:text-red-400"
+                  className="btn btn-ghost btn-sm text-ash-500 hover:text-accent"
                   title="Delete"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
@@ -141,12 +151,12 @@ export function MessagesPanel({ messages }: { messages: AdminMessage[] }) {
               </div>
             </div>
 
-            <div className="mt-4 whitespace-pre-line rounded-2xl border border-ink-700 bg-ink-850 p-4 text-sm leading-relaxed text-zinc-300">
+            <div className="mt-4 whitespace-pre-line border border-ink-700 bg-ink-850 p-4 text-sm leading-relaxed text-ash-300">
               {open.body}
             </div>
 
             {open.direction === "outbound" ? (
-              <p className="mt-4 text-xs text-zinc-500">
+              <p className="mt-4 text-xs text-ash-500">
                 This entry is a reply you sent. Find the original above to continue the thread.
               </p>
             ) : (
@@ -163,7 +173,7 @@ export function MessagesPanel({ messages }: { messages: AdminMessage[] }) {
                   placeholder={`Hi ${open.name.split(" ")[0]}, thanks for reaching out…`}
                 />
                 {flash && (
-                  <p className="mt-3 rounded-xl border border-lime-400/30 bg-lime-400/10 px-3 py-2 text-xs text-lime-200">
+                  <p className="mt-3 border border-accent-400/30 bg-accent-400/10 px-3 py-2 text-xs text-accent-200">
                     {flash}
                   </p>
                 )}
@@ -174,7 +184,11 @@ export function MessagesPanel({ messages }: { messages: AdminMessage[] }) {
                     disabled={busy || !reply.trim()}
                     className="btn btn-primary"
                   >
-                    {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                    {busy ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Send className="h-4 w-4" />
+                    )}
                     Send reply
                   </button>
                   <a
@@ -183,8 +197,9 @@ export function MessagesPanel({ messages }: { messages: AdminMessage[] }) {
                   >
                     <MailOpen className="h-4 w-4" /> Open in mail app
                   </a>
-                  <span className="flex items-center gap-1.5 text-xs text-zinc-500">
-                    <CornerUpLeft className="h-3.5 w-3.5" /> Reply goes out as an email and is saved on the thread.
+                  <span className="flex items-center gap-1.5 text-xs text-ash-500">
+                    <CornerUpLeft className="h-3.5 w-3.5" /> Reply goes out as an email and is saved
+                    on the thread.
                   </span>
                 </div>
               </>

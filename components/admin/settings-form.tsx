@@ -5,7 +5,11 @@ import { useState } from "react";
 import { AlertCircle, CheckCircle2, Loader2, Save } from "lucide-react";
 import { safeJson } from "@/lib/api-client";
 
-type Group = { title: string; blurb: string; fields: { key: string; label: string; type?: "text" | "textarea" }[] };
+type Group = {
+  title: string;
+  blurb: string;
+  fields: { key: string; label: string; type?: "text" | "textarea" }[];
+};
 
 const GROUPS: Group[] = [
   {
@@ -64,7 +68,7 @@ const GROUPS: Group[] = [
   {
     title: "Studio bookings",
     blurb:
-      "Rules for the /studio booking page. Deposit and fee are percentages; hours use \"10:00-20:00\" format or \"Closed\". Add or edit the bookable services from Bookings in the sidebar.",
+      'Rules for the /studio booking page. Deposit and fee are percentages; hours use "10:00-20:00" format or "Closed". Add or edit the bookable services from Bookings in the sidebar.',
     fields: [
       { key: "studio_tagline", label: "Studio page intro", type: "textarea" },
       { key: "studio_deposit_percent", label: "Deposit (% of session cost)" },
@@ -126,10 +130,11 @@ export function SettingsForm({
   return (
     <form onSubmit={submit} className="space-y-6">
       <div className="surface-card p-5">
-        <h2 className="font-semibold">Integration status</h2>
-        <p className="mt-1 text-xs text-zinc-500">
-          These come from your environment variables (<code className="rounded bg-ink-800 px-1">.env</code>) —
-          see <code className="rounded bg-ink-800 px-1">.env.example</code> for the full list.
+        <h2 className="headline text-sm text-ash-50">Integration status</h2>
+        <p className="mt-1 text-xs text-ash-500">
+          These come from your environment variables (
+          <code className="rounded bg-ink-800 px-1">.env</code>) — see{" "}
+          <code className="rounded bg-ink-800 px-1">.env.example</code> for the full list.
         </p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <StatusRow
@@ -163,8 +168,8 @@ export function SettingsForm({
             badText="Disabled — real payments only"
             invert
           />
-          <div className="rounded-2xl border border-ink-700 bg-ink-850 p-4 text-xs text-zinc-400">
-            <p className="font-semibold text-zinc-300">Storage</p>
+          <div className=" border border-ink-700 bg-ink-850 p-4 text-xs text-ash-400">
+            <p className="font-semibold text-ash-300">Storage</p>
             <p className="mt-1">Uploads: {env.storage}/</p>
             <p>Database: {env.database}</p>
             <p>Site URL: {env.siteUrl || "http://localhost:3000"}</p>
@@ -174,8 +179,8 @@ export function SettingsForm({
 
       {GROUPS.map((group) => (
         <section key={group.title} className="surface-card p-5">
-          <h2 className="font-semibold">{group.title}</h2>
-          <p className="mt-1 text-xs text-zinc-500">{group.blurb}</p>
+          <h2 className="headline text-sm text-ash-50">{group.title}</h2>
+          <p className="mt-1 text-xs text-ash-500">{group.blurb}</p>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             {group.fields.map((field) => (
               <div key={field.key} className={field.type === "textarea" ? "sm:col-span-2" : ""}>
@@ -205,19 +210,23 @@ export function SettingsForm({
       ))}
 
       {state === "error" && (
-        <p className="flex items-center gap-2 rounded-xl border border-red-900/60 bg-red-950/40 px-3 py-2 text-xs text-red-300">
+        <p className="flex items-center gap-2 border border-red-900/60 bg-red-950/40 px-3 py-2 text-xs text-red-300">
           <AlertCircle className="h-3.5 w-3.5" /> {message}
         </p>
       )}
       {state === "saved" && (
-        <p className="flex items-center gap-2 rounded-xl border border-lime-400/30 bg-lime-400/10 px-3 py-2 text-xs text-lime-200">
+        <p className="flex items-center gap-2 border border-accent-400/30 bg-accent-400/10 px-3 py-2 text-xs text-accent-200">
           <CheckCircle2 className="h-3.5 w-3.5" /> {message}
         </p>
       )}
 
       <div className="sticky bottom-4 flex justify-end">
-        <button type="submit" disabled={state === "saving"} className="btn btn-primary btn-lg shadow-xl">
-          {state === "saving" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+        <button type="submit" disabled={state === "saving"} className="btn btn-primary btn-lg ">
+          {state === "saving" ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Save className="h-4 w-4" />
+          )}
           Save settings
         </button>
       </div>
@@ -240,9 +249,11 @@ function StatusRow({
 }) {
   const positive = invert ? !ok : ok;
   return (
-    <div className="rounded-2xl border border-ink-700 bg-ink-850 p-4 text-xs">
-      <p className="font-semibold text-zinc-300">{label}</p>
-      <p className={positive ? "mt-1 text-zinc-400" : "mt-1 text-amber-300"}>{ok ? okText : badText}</p>
+    <div className=" border border-ink-700 bg-ink-850 p-4 text-xs">
+      <p className="font-semibold text-ash-300">{label}</p>
+      <p className={positive ? "mt-1 text-ash-400" : "mt-1 text-amber-300"}>
+        {ok ? okText : badText}
+      </p>
     </div>
   );
 }

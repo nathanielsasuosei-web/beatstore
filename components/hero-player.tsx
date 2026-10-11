@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Pause, Play, ShoppingBag, Sparkles } from "lucide-react";
+import { Pause, Play, ShoppingBag } from "lucide-react";
 import { usePlayer, type Track } from "@/components/player-provider";
 import { formatMoney } from "@/lib/money";
 import { cn, previewIsPlayable } from "@/lib/utils";
@@ -21,8 +21,11 @@ export function HeroPlayer({
 
   if (!beat) {
     return (
-      <div className="surface-card grid place-items-center p-10 text-center text-sm text-zinc-500">
-        No beats published yet. Upload your first beat from the admin dashboard.
+      <div className="border border-dashed border-ink-600 p-10 text-center">
+        <p className="mono-sm text-ash-500">Nothing published yet</p>
+        <p className="mt-2 text-sm text-ash-400">
+          Upload your first beat from the admin dashboard.
+        </p>
       </div>
     );
   }
@@ -43,9 +46,16 @@ export function HeroPlayer({
   const popular = beat.licenses.find((l) => l.popular) ?? beat.licenses[0];
 
   return (
-    <div className="relative">
-      <div className="surface-card relative overflow-hidden p-4 shadow-2xl">
-        <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-ink-800">
+    <div className="reg-mark">
+      <div className="border border-ink-700 bg-ink-850">
+        {/* label strip */}
+        <div className="flex items-center justify-between border-b border-ink-700 px-4 py-2">
+          <p className="mono-sm text-accent">Latest drop</p>
+          <p className="mono-sm nums text-ash-500">{beat.plays.toLocaleString()} plays</p>
+        </div>
+
+        {/* cover */}
+        <div className="relative aspect-square w-full overflow-hidden bg-ink-900">
           {beat.coverImage ? (
             <Image
               src={beat.coverImage}
@@ -56,76 +66,109 @@ export function HeroPlayer({
               className="object-cover"
             />
           ) : (
-            <div className="grid h-full place-items-center text-zinc-600">No artwork</div>
+            <div className="grid h-full place-items-center text-ink-600">No artwork</div>
           )}
-          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink-950 via-ink-950/70 to-transparent p-5 pt-16">
-            <p className="chip chip-accent mb-3 w-fit">
-              <Sparkles className="h-3.5 w-3.5" /> Latest drop
-            </p>
-            <h2 className="text-2xl font-bold tracking-tight text-white">{beat.title}</h2>
-            <p className="mt-1 text-sm text-zinc-300">
-              {[beat.genre, beat.bpm ? `${beat.bpm} BPM` : null, beat.musicalKey].filter(Boolean).join(" · ")}
-            </p>
-          </div>
+
           <button
             type="button"
             onClick={() => toggle(toTrack(beat), queue.map(toTrack))}
             disabled={!canPlay}
             title={canPlay ? undefined : "Preview coming soon"}
             className={cn(
-              "absolute left-1/2 top-[42%] grid h-16 w-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full shadow-2xl transition",
+              "absolute bottom-0 right-0 grid h-14 w-14 place-items-center border-l border-t border-ink-700 transition-colors duration-150",
               !canPlay
-                ? "cursor-not-allowed bg-ink-950/70 text-zinc-500 backdrop-blur"
-                : isPlaying ? "bg-lime-400 text-ink-950" : "bg-ink-950/80 text-white backdrop-blur hover:bg-lime-400 hover:text-ink-950"
+                ? "cursor-not-allowed bg-ink-950/80 text-ash-600"
+                : isPlaying
+                  ? "border-accent bg-accent text-ash-50"
+                  : "bg-ink-950/85 text-ash-50 hover:bg-accent",
             )}
-            aria-label={!canPlay ? "No preview available yet" : isPlaying ? "Pause preview" : "Play preview"}
+            aria-label={
+              !canPlay ? "No preview available yet" : isPlaying ? "Pause preview" : "Play preview"
+            }
           >
-            {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6 translate-x-0.5" />}
+            {isPlaying ? (
+              <Pause className="h-5 w-5" />
+            ) : (
+              <Play className="h-5 w-5 translate-x-px" />
+            )}
           </button>
         </div>
 
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 px-1">
-          <div>
-            <p className="text-xs uppercase tracking-widest text-zinc-500">{popular?.name ?? "Licence"}</p>
-            <p className="text-lg font-bold text-lime-300">{formatMoney(popular?.price ?? 0)}</p>
-          </div>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => toggle(toTrack(beat), queue.map(toTrack))}
-              disabled={!canPlay}
-              className={cn("btn btn-secondary btn-sm", !canPlay && "opacity-50")}
-            >
-              {!canPlay ? "No preview" : isPlaying ? "Pause" : "Preview"}
-            </button>
-            <Link href={`/beats/${beat.slug}`} className="btn btn-primary btn-sm">
-              <ShoppingBag className="h-3.5 w-3.5" /> Buy licence
-            </Link>
+        {/* title block */}
+        <div className="border-t border-ink-700 p-4">
+          <Link href={`/beats/${beat.slug}`} className="block">
+            <h2 className="headline text-xl text-ash-50 hover:text-accent-300">{beat.title}</h2>
+          </Link>
+          <p className="mono-sm nums mt-1 text-ash-500">
+            {[beat.genre, beat.bpm ? `${beat.bpm} BPM` : null, beat.musicalKey]
+              .filter(Boolean)
+              .join(" · ")}
+          </p>
+
+          <div className="mt-4 flex items-end justify-between gap-3 border-t border-ink-700 pt-3">
+            <div>
+              <p className="mono-sm text-ash-500">{popular?.name ?? "Licence"}</p>
+              <p className="headline nums text-lg text-accent-300">
+                {formatMoney(popular?.price ?? 0)}
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => toggle(toTrack(beat), queue.map(toTrack))}
+                disabled={!canPlay}
+                className={cn("btn btn-secondary btn-sm", !canPlay && "opacity-40")}
+              >
+                {!canPlay ? "No preview" : isPlaying ? "Pause" : "Preview"}
+              </button>
+              <Link href={`/beats/${beat.slug}`} className="btn btn-primary btn-sm">
+                <ShoppingBag className="h-3.5 w-3.5" />
+                Licence
+              </Link>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-3">
-        {queue.slice(0, 2).map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            onClick={() => toggle(toTrack(item), queue.map(toTrack))}
-            className="surface-card flex items-center gap-3 p-2.5 text-left transition hover:border-ink-600"
-          >
-            <span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-ink-800">
-              {item.coverImage ? (
-                <Image src={item.coverImage} alt="" fill sizes="40px" className="object-cover" />
-              ) : null}
-            </span>
-            <span className="min-w-0">
-              <span className="block truncate text-xs font-semibold">{item.title}</span>
-              <span className="block text-[11px] text-zinc-500">
-                {isCurrent(item.slug) && playing ? "Playing now" : item.genre ?? "Preview"}
+      {/* up next */}
+      <div className="mt-px border border-ink-700 bg-ink-850">
+        <p className="mono-sm border-b border-ink-700 px-4 py-2 text-ash-500">Up next</p>
+        {queue.slice(0, 3).map((item, i) => {
+          const active = isCurrent(item.slug) && playing;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => toggle(toTrack(item), queue.map(toTrack))}
+              className="flex w-full items-center gap-3 border-b border-ink-700 px-4 py-2.5 text-left transition-colors last:border-b-0 hover:bg-ink-800"
+            >
+              <span className="mono-sm nums w-5 shrink-0 text-ash-600">
+                {String(i + 1).padStart(2, "0")}
               </span>
-            </span>
-          </button>
-        ))}
+              <span className="relative h-9 w-9 shrink-0 overflow-hidden border border-ink-700 bg-ink-900">
+                {item.coverImage ? (
+                  <Image src={item.coverImage} alt="" fill sizes="36px" className="object-cover" />
+                ) : null}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm text-ash-100">{item.title}</span>
+                <span className="mono-sm nums block text-ash-500">
+                  {item.bpm ? `${item.bpm} BPM` : (item.genre ?? "—")}
+                </span>
+              </span>
+              {active ? (
+                <span className="eq text-accent">
+                  <span />
+                  <span />
+                  <span />
+                  <span />
+                </span>
+              ) : (
+                <Play className="h-3.5 w-3.5 shrink-0 text-ash-600" />
+              )}
+            </button>
+          );
+        })}
       </div>
     </div>
   );

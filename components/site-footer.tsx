@@ -1,105 +1,143 @@
 import Link from "next/link";
-import { AtSign, Headphones, Mail, Music2, Phone, PlayCircle } from "lucide-react";
 
 export function SiteFooter({ settings }: { settings: Record<string, string> }) {
   const year = new Date().getFullYear();
 
+  const columns = [
+    {
+      title: "Store",
+      links: [
+        { href: "/beats", label: "All beats" },
+        { href: "/videos", label: "Videos" },
+        { href: "/licensing", label: "Licensing & FAQ" },
+        { href: "/cart", label: "Cart" },
+      ],
+    },
+    {
+      title: "Studio",
+      links: [
+        { href: "/studio", label: "Book a session" },
+        { href: "/about", label: "The producer" },
+        { href: "/contact", label: "Custom work" },
+        { href: "/account", label: "My downloads" },
+      ],
+    },
+  ];
+
   return (
     <footer className="mt-24 border-t border-ink-700 bg-ink-950">
-      <div className="container-page grid gap-10 py-14 md:grid-cols-4">
-        <div className="md:col-span-2">
-          <div className="flex items-center gap-2.5">
-            <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-lime-300 to-emerald-500 text-ink-950">
-              <Headphones className="h-4.5 w-4.5" strokeWidth={2.5} />
-            </span>
-            <span className="font-bold tracking-tight">{settings.site_name}</span>
-          </div>
-          <p className="mt-4 max-w-sm text-sm leading-relaxed text-zinc-400">{settings.tagline}</p>
-          <p className="mt-4 text-xs text-zinc-500">
-            Beats by {settings.producer_name} · Accra, Ghana
-          </p>
-          <div className="mt-5 flex gap-2">
-            {settings.instagram && (
-              <a
-                href={`https://instagram.com/${settings.instagram}`}
-                target="_blank"
-                rel="noreferrer"
-                className="btn btn-secondary btn-sm"
-                aria-label="Instagram"
-              >
-                <AtSign className="h-4 w-4" />
-              </a>
-            )}
-            {settings.youtube && (
-              <a
-                href={
-                  settings.youtube.startsWith("http")
-                    ? settings.youtube
-                    : `https://youtube.com/${settings.youtube}`
-                }
-                target="_blank"
-                rel="noreferrer"
-                className="btn btn-secondary btn-sm"
-                aria-label="YouTube"
-              >
-                <PlayCircle className="h-4 w-4" />
-              </a>
-            )}
-            {settings.tiktok && (
-              <a
-                href={`https://tiktok.com/@${settings.tiktok}`}
-                target="_blank"
-                rel="noreferrer"
-                className="btn btn-secondary btn-sm"
-                aria-label="TikTok"
-              >
-                <Music2 className="h-4 w-4" />
-              </a>
-            )}
-          </div>
-        </div>
+      <div className="container-page py-14">
+        <div className="grid gap-12 lg:grid-cols-[1.2fr_1fr]">
+          <div>
+            <p className="mono-sm text-accent">Colophon</p>
+            <p className="display mt-4 text-[clamp(2.5rem,7vw,5rem)] text-ash-50">
+              {settings.site_name}
+            </p>
+            <p className="mt-5 max-w-md text-sm leading-relaxed text-ash-400">{settings.tagline}</p>
 
-        <div>
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-zinc-500">Store</h3>
-          <ul className="mt-4 space-y-2.5 text-sm text-zinc-400">
-            <li><Link href="/beats" className="hover:text-lime-300">All beats</Link></li>
-            <li><Link href="/videos" className="hover:text-lime-300">Videos</Link></li>
-            <li><Link href="/studio" className="hover:text-lime-300">Book studio time</Link></li>
-            <li><Link href="/licensing" className="hover:text-lime-300">Licensing &amp; FAQ</Link></li>
-            <li><Link href="/cart" className="hover:text-lime-300">Cart</Link></li>
-            <li><Link href="/account" className="hover:text-lime-300">My downloads</Link></li>
-          </ul>
-        </div>
+            <dl className="mt-8 grid max-w-md grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
+              <dt className="mono-sm pt-1 text-ash-500">Producer</dt>
+              <dd className="text-ash-200">{settings.producer_name}</dd>
+              <dt className="mono-sm pt-1 text-ash-500">Based</dt>
+              <dd className="text-ash-200">Accra, Ghana</dd>
+              <dt className="mono-sm pt-1 text-ash-500">Bookings</dt>
+              <dd className="text-ash-200">
+                <a href={`mailto:${settings.support_email}`} className="link-accent">
+                  {settings.support_email}
+                </a>
+              </dd>
+              <dt className="mono-sm pt-1 text-ash-500">Phone</dt>
+              <dd className="text-ash-200">
+                <a
+                  href={`tel:${settings.support_phone.replace(/\s/g, "")}`}
+                  className="link-accent nums"
+                >
+                  {settings.support_phone}
+                </a>
+              </dd>
+            </dl>
 
-        <div>
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-zinc-500">Get in touch</h3>
-          <ul className="mt-4 space-y-2.5 text-sm text-zinc-400">
-            <li>
-              <a href={`mailto:${settings.support_email}`} className="flex items-center gap-2 hover:text-lime-300">
-                <Mail className="h-4 w-4" /> {settings.support_email}
-              </a>
-            </li>
-            <li>
-              <a href={`tel:${settings.support_phone.replace(/\s/g, "")}`} className="flex items-center gap-2 hover:text-lime-300">
-                <Phone className="h-4 w-4" /> {settings.support_phone}
-              </a>
-            </li>
-            <li className="pt-1">
-              <Link href="/contact" className="btn btn-secondary btn-sm">Send a message</Link>
-            </li>
-          </ul>
+            <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2">
+              {settings.instagram && (
+                <a
+                  href={`https://instagram.com/${settings.instagram}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="arrow-link"
+                >
+                  Instagram
+                </a>
+              )}
+              {settings.youtube && (
+                <a
+                  href={
+                    settings.youtube.startsWith("http")
+                      ? settings.youtube
+                      : `https://youtube.com/${settings.youtube}`
+                  }
+                  target="_blank"
+                  rel="noreferrer"
+                  className="arrow-link"
+                >
+                  YouTube
+                </a>
+              )}
+              {settings.tiktok && (
+                <a
+                  href={`https://tiktok.com/@${settings.tiktok}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="arrow-link"
+                >
+                  TikTok
+                </a>
+              )}
+              {settings.whatsapp && (
+                <a
+                  href={`https://wa.me/${settings.whatsapp.replace(/[^\d]/g, "")}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="arrow-link"
+                >
+                  WhatsApp
+                </a>
+              )}
+            </div>
+          </div>
+
+          <div className="grid gap-10 sm:grid-cols-2">
+            {columns.map((col) => (
+              <div key={col.title}>
+                <p className="mono-sm border-b border-ink-700 pb-2 text-ash-500">{col.title}</p>
+                <ul className="mt-3 space-y-2.5">
+                  {col.links.map((link) => (
+                    <li key={link.href}>
+                      <Link
+                        href={link.href}
+                        className="text-sm text-ash-300 transition-colors hover:text-accent"
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      <div className="border-t border-ink-800">
-        <div className="container-page flex flex-col gap-2 py-5 text-xs text-zinc-500 sm:flex-row sm:items-center sm:justify-between">
-          <p>
-            © {year} {settings.site_name}. All beats remain the property of {settings.producer_name} until
-            licensed.
+      <div className="border-t border-ink-700">
+        <div className="container-page flex flex-col gap-3 py-5 sm:flex-row sm:items-center sm:justify-between">
+          <p className="mono-sm text-ash-600">
+            © {year} {settings.site_name} — all beats remain the property of{" "}
+            {settings.producer_name} until licensed.
           </p>
-          <p className="flex items-center gap-3">
-            <span>Mobile Money · Bank transfer · Card</span>
-            <Link href="/admin" className="hover:text-zinc-300">Producer login</Link>
+          <p className="mono-sm flex items-center gap-4 text-ash-600">
+            <span>MoMo · Bank · Card</span>
+            <Link href="/admin" className="transition-colors hover:text-ash-300">
+              Producer login
+            </Link>
           </p>
         </div>
       </div>

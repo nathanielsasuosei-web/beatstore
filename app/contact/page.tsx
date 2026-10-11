@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Clock, Mail, MapPin, MessageSquare, Phone } from "lucide-react";
 import { getSettings } from "@/lib/settings";
 import { getCurrentUser } from "@/lib/auth";
 import { ContactForm } from "@/components/contact-form";
@@ -17,7 +16,7 @@ export default async function ContactPage() {
   return (
     <div className="container-page py-12">
       <SectionHeading
-        eyebrow="Get in touch"
+        index="Get in touch"
         title="Talk to the producer directly"
         blurb="Custom beats, mixing, sync work, licence questions or an order that needs a hand — every message is read and answered by the producer."
       />
@@ -36,54 +35,66 @@ export default async function ContactPage() {
           ]}
         />
 
-        <div className="space-y-4">
-          <div className="surface-card p-5">
-            <h2 className="font-semibold">Direct lines</h2>
-            <ul className="mt-4 space-y-3 text-sm text-zinc-300">
-              <li className="flex items-center gap-3">
-                <Mail className="h-4 w-4 text-lime-400" />
-                <a href={`mailto:${settings.support_email}`} className="hover:text-lime-300">
-                  {settings.support_email}
-                </a>
-              </li>
-              <li className="flex items-center gap-3">
-                <Phone className="h-4 w-4 text-lime-400" />
-                <a href={`tel:${settings.support_phone.replace(/\s/g, "")}`} className="hover:text-lime-300">
-                  {settings.support_phone}
-                </a>
-                <span className="text-xs text-zinc-500">(also WhatsApp: {settings.whatsapp})</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <MapPin className="h-4 w-4 text-lime-400" /> Accra, Ghana
-              </li>
-              <li className="flex items-center gap-3">
-                <Clock className="h-4 w-4 text-lime-400" /> Replies within a day, usually much sooner
-              </li>
-            </ul>
+        <div>
+          <div className="border-t border-ink-600 pt-3">
+            <p className="mono-sm text-ash-500">Direct lines</p>
+            <dl className="mt-4">
+              <div className="flex items-baseline justify-between border-b border-ink-800 py-2.5">
+                <dt className="mono-sm text-ash-500">Email</dt>
+                <dd className="text-sm text-ash-200">
+                  <a href={`mailto:${settings.support_email}`} className="hover:text-accent-300">
+                    {settings.support_email}
+                  </a>
+                </dd>
+              </div>
+              <div className="flex items-baseline justify-between border-b border-ink-800 py-2.5">
+                <dt className="mono-sm text-ash-500">Phone</dt>
+                <dd className="nums text-sm text-ash-200">
+                  <a
+                    href={`tel:${settings.support_phone.replace(/\s/g, "")}`}
+                    className="hover:text-accent-300"
+                  >
+                    {settings.support_phone}
+                  </a>
+                </dd>
+              </div>
+              <div className="flex items-baseline justify-between border-b border-ink-800 py-2.5">
+                <dt className="mono-sm text-ash-500">WhatsApp</dt>
+                <dd className="nums text-sm text-ash-200">{settings.whatsapp}</dd>
+              </div>
+              <div className="flex items-baseline justify-between border-b border-ink-800 py-2.5">
+                <dt className="mono-sm text-ash-500">Studio</dt>
+                <dd className="text-sm text-ash-200">Accra, Ghana</dd>
+              </div>
+              <div className="flex items-baseline justify-between border-b border-ink-800 py-2.5">
+                <dt className="mono-sm text-ash-500">Replies</dt>
+                <dd className="text-sm text-ash-200">Within a day, usually sooner</dd>
+              </div>
+            </dl>
           </div>
 
-          <div className="surface-card p-5">
-            <h2 className="font-semibold">Custom beat requests</h2>
-            <p className="mt-2 text-sm leading-relaxed text-zinc-400">
-              The fastest way to get a quote is to include: two reference tracks, the tempo or vibe you want,
-              whether you need stems, and your deadline. Custom production starts from GH₵600.
+          <div className="mt-10 border-t border-ink-600 pt-3">
+            <p className="mono-sm text-ash-500">Custom beat requests</p>
+            <p className="mt-3 text-sm leading-relaxed text-ash-400">
+              The fastest way to get a quote is to include: two reference tracks, the tempo or vibe
+              you want, whether you need stems, and your deadline. Custom production starts from
+              GH₵600.
             </p>
-            <p className="mt-3 text-sm leading-relaxed text-zinc-400">
-              Already bought a beat and need something changed? Include the order reference (it looks like
-              NSO-XXXXXX) and it gets looked at straight away.
+            <p className="mt-3 text-sm leading-relaxed text-ash-400">
+              Already bought a beat and need something changed? Include the order reference (it
+              looks like NSO-XXXXXX) and it gets looked at straight away.
             </p>
           </div>
 
-          <div className="surface-card p-5">
-            <h2 className="flex items-center gap-2 font-semibold">
-              <MessageSquare className="h-4 w-4 text-lime-400" /> Order help
-            </h2>
-            <p className="mt-2 text-sm leading-relaxed text-zinc-400">
+          <div className="mt-10 border-t border-ink-600 pt-3">
+            <p className="mono-sm text-ash-500">Order help</p>
+            <p className="mt-3 text-sm leading-relaxed text-ash-400">
               Paid but no email? Check spam first, then{" "}
               <Link href="/account" className="link-accent">
                 sign in to your dashboard
               </Link>{" "}
-              — your downloads live there too. Still stuck? Send a message and the files get re-issued.
+              — your downloads live there too. Still stuck? Send a message and the files get
+              re-issued.
             </p>
           </div>
         </div>

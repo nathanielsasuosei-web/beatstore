@@ -17,12 +17,24 @@ export type AdminService = {
 };
 
 /** Add / edit / retire the bookable studio services. */
-export function ServicesManager({ services, currency }: { services: AdminService[]; currency: string }) {
+export function ServicesManager({
+  services,
+  currency,
+}: {
+  services: AdminService[];
+  currency: string;
+}) {
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
   const [flash, setFlash] = useState("");
   const [adding, setAdding] = useState(false);
-  const [draft, setDraft] = useState({ name: "", price: "", minHours: "1", maxHours: "8", description: "" });
+  const [draft, setDraft] = useState({
+    name: "",
+    price: "",
+    minHours: "1",
+    maxHours: "8",
+    description: "",
+  });
 
   async function patch(id: string, values: Record<string, unknown>) {
     setBusy(id);
@@ -91,7 +103,9 @@ export function ServicesManager({ services, currency }: { services: AdminService
   return (
     <div className="space-y-3">
       {flash && (
-        <p className="rounded-xl border border-lime-400/30 bg-lime-400/10 px-3 py-2 text-xs text-lime-200">{flash}</p>
+        <p className=" border border-accent-400/30 bg-accent-400/10 px-3 py-2 text-xs text-accent-200">
+          {flash}
+        </p>
       )}
 
       {services.map((service) => (
@@ -121,9 +135,9 @@ export function ServicesManager({ services, currency }: { services: AdminService
                 className="input w-24"
                 aria-label={`${service.name} price per hour`}
               />
-              <span className="text-xs text-zinc-500">{currency}/hr</span>
+              <span className="text-xs text-ash-500">{currency}/hr</span>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-zinc-500">
+            <div className="flex items-center gap-1.5 text-xs text-ash-500">
               <input
                 type="number"
                 min={1}
@@ -131,7 +145,8 @@ export function ServicesManager({ services, currency }: { services: AdminService
                 defaultValue={service.minHours}
                 onBlur={(e) => {
                   const value = Number(e.target.value);
-                  if (value >= 1 && value !== service.minHours) patch(service.id, { minHours: value });
+                  if (value >= 1 && value !== service.minHours)
+                    patch(service.id, { minHours: value });
                 }}
                 className="input w-16"
                 aria-label={`${service.name} minimum hours`}
@@ -144,7 +159,8 @@ export function ServicesManager({ services, currency }: { services: AdminService
                 defaultValue={service.maxHours}
                 onBlur={(e) => {
                   const value = Number(e.target.value);
-                  if (value >= 1 && value !== service.maxHours) patch(service.id, { maxHours: value });
+                  if (value >= 1 && value !== service.maxHours)
+                    patch(service.id, { maxHours: value });
                 }}
                 className="input w-16"
                 aria-label={`${service.name} maximum hours`}
@@ -169,7 +185,7 @@ export function ServicesManager({ services, currency }: { services: AdminService
               type="button"
               onClick={() => remove(service.id, service.name)}
               disabled={busy === service.id}
-              className="btn btn-ghost btn-sm ml-auto text-zinc-500"
+              className="btn btn-ghost btn-sm ml-auto text-ash-500"
               aria-label={`Delete ${service.name}`}
             >
               <Trash2 className="h-3.5 w-3.5" />
@@ -180,14 +196,15 @@ export function ServicesManager({ services, currency }: { services: AdminService
             placeholder="Short description shown on the studio page…"
             onBlur={(e) => {
               const value = e.target.value.trim();
-              if (value !== (service.description ?? "")) patch(service.id, { description: value || null });
+              if (value !== (service.description ?? ""))
+                patch(service.id, { description: value || null });
             }}
             className="input mt-3 text-sm"
             aria-label={`${service.name} description`}
           />
-          <p className="mt-2 text-xs text-zinc-500">
-            {formatMoney(service.pricePerHour, currency)} per hour · {service.minHours}–{service.maxHours} hrs per
-            session. Edits save when you click away.
+          <p className="mt-2 text-xs text-ash-500">
+            {formatMoney(service.pricePerHour, currency)} per hour · {service.minHours}–
+            {service.maxHours} hrs per session. Edits save when you click away.
           </p>
         </div>
       ))}
@@ -247,7 +264,11 @@ export function ServicesManager({ services, currency }: { services: AdminService
           />
           <div className="flex gap-2">
             <button type="submit" disabled={busy === "new"} className="btn btn-primary btn-sm">
-              {busy === "new" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
+              {busy === "new" ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Plus className="h-3.5 w-3.5" />
+              )}
               Add service
             </button>
             <button type="button" onClick={() => setAdding(false)} className="btn btn-ghost btn-sm">

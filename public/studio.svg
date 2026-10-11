@@ -5,8 +5,8 @@
       <stop offset="100%" stop-color="#08080b"/>
     </linearGradient>
     <linearGradient id="glow" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#a3e635" stop-opacity="0.55"/>
-      <stop offset="100%" stop-color="#a3e635" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#e23108" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#e23108" stop-opacity="0"/>
     </linearGradient>
     <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#2b2b34"/>
@@ -16,7 +16,7 @@
 
   <rect width="800" height="1000" fill="url(#bg)"/>
   <circle cx="400" cy="250" r="330" fill="url(#glow)" opacity="0.35"/>
-  <g opacity="0.14" stroke="#a3e635" stroke-width="1.4" fill="none">
+  <g opacity="0.14" stroke="#e23108" stroke-width="1.4" fill="none">
     <path d="M40 700 L180 640 L310 700 L450 620 L590 690 L760 610"/>
     <path d="M40 760 L200 700 L340 760 L500 690 L640 750 L760 700"/>
   </g>
@@ -40,12 +40,12 @@
       <rect x="596" y="488" width="34" height="34" rx="7"/>
       <rect x="640" y="488" width="48" height="34" rx="7"/>
     </g>
-    <circle cx="150" cy="560" r="17" fill="#a3e635" opacity="0.85"/>
+    <circle cx="150" cy="560" r="17" fill="#e23108" opacity="0.85"/>
     <circle cx="200" cy="560" r="17" fill="#1c1c24" stroke="#33333c"/>
     <circle cx="250" cy="560" r="17" fill="#1c1c24" stroke="#33333c"/>
     <rect x="300" y="546" width="120" height="10" rx="5" fill="#1c1c24" stroke="#33333c"/>
     <rect x="300" y="566" width="200" height="10" rx="5" fill="#1c1c24" stroke="#33333c"/>
-    <g fill="#a3e635" opacity="0.7">
+    <g fill="#e23108" opacity="0.7">
       <rect x="560" y="548" width="6" height="26" rx="3"/>
       <rect x="576" y="536" width="6" height="38" rx="3"/>
       <rect x="592" y="556" width="6" height="18" rx="3"/>
@@ -66,7 +66,7 @@
     <circle cx="605" cy="355" r="34"/>
     <circle cx="605" cy="410" r="20"/>
   </g>
-  <g fill="#a3e635" opacity="0.55">
+  <g fill="#e23108" opacity="0.55">
     <circle cx="195" cy="355" r="10"/>
     <circle cx="605" cy="355" r="10"/>
   </g>
@@ -104,11 +104,11 @@
     <rect x="640" y="700" width="10" height="120" rx="5" fill="#2b2b34"/>
     <rect x="600" y="812" width="90" height="12" rx="6" fill="#2b2b34"/>
     <rect x="620" y="660" width="52" height="52" rx="26" fill="#1c1c24" stroke="#3a3a44"/>
-    <circle cx="646" cy="686" r="12" fill="#a3e635" opacity="0.5"/>
+    <circle cx="646" cy="686" r="12" fill="#e23108" opacity="0.5"/>
   </g>
 
   <!-- headphones -->
-  <g stroke="#a3e635" stroke-width="10" fill="none" opacity="0.85">
+  <g stroke="#e23108" stroke-width="10" fill="none" opacity="0.85">
     <path d="M80 250 a60 60 0 0 1 120 0"/>
   </g>
   <g fill="#1c1c24" stroke="#33333c">

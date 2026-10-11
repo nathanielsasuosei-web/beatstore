@@ -1,16 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  AlertCircle,
-  CalendarDays,
-  CheckCircle2,
-  ChevronRight,
-  Clock,
-  Loader2,
-  Lock,
-  Mic,
-} from "lucide-react";
+import { AlertCircle, CheckCircle2, ChevronRight, Clock, Loader2, Lock, Mic } from "lucide-react";
 import { PAYMENT_METHODS } from "@/lib/constants";
 import { formatHour, quoteBooking, todayISO } from "@/lib/schedule";
 import { formatMoney } from "@/lib/money";
@@ -39,7 +30,13 @@ type Props = {
 const METHODS = ["paystack", "mobile_money", "bank_transfer"] as const;
 type Method = (typeof METHODS)[number];
 
-export function StudioBooking({ services, depositPercent, serviceFeePercent, currency, user }: Props) {
+export function StudioBooking({
+  services,
+  depositPercent,
+  serviceFeePercent,
+  currency,
+  user,
+}: Props) {
   const [serviceId, setServiceId] = useState(services[0]?.id ?? "");
   const service = services.find((s) => s.id === serviceId) ?? services[0];
 
@@ -132,10 +129,12 @@ export function StudioBooking({ services, depositPercent, serviceFeePercent, cur
         depositPercent,
         serviceFeePercent,
       }),
-    [service, hours, depositPercent, serviceFeePercent]
+    [service, hours, depositPercent, serviceFeePercent],
   );
 
-  const ready = Boolean(service && date && startHour !== null && customer.name && customer.email && !submitting);
+  const ready = Boolean(
+    service && date && startHour !== null && customer.name && customer.email && !submitting,
+  );
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
@@ -183,27 +182,34 @@ export function StudioBooking({ services, depositPercent, serviceFeePercent, cur
                 type="button"
                 onClick={() => pickService(option.id)}
                 className={cn(
-                  "rounded-2xl border p-4 text-left transition",
+                  "border p-4 text-left transition",
                   option.id === serviceId
-                    ? "border-lime-400/60 bg-lime-400/[0.07]"
-                    : "border-ink-700 bg-ink-850 hover:border-ink-600"
+                    ? "border-accent-400/60 bg-accent-400/[0.07]"
+                    : "border-ink-700 bg-ink-850 hover:border-ink-600",
                 )}
               >
-                <span className="flex items-center gap-2 text-sm font-semibold">
-                  <Mic className={cn("h-4 w-4", option.id === serviceId ? "text-lime-300" : "text-zinc-500")} />
+                <span className="headline flex items-center gap-2 text-sm text-ash-50">
+                  <Mic
+                    className={cn(
+                      "h-4 w-4",
+                      option.id === serviceId ? "text-accent-300" : "text-ash-500",
+                    )}
+                  />
                   {option.name}
                 </span>
-                <span className="mt-1.5 block text-sm font-bold text-lime-300">
+                <span className="headline nums mt-1.5 block text-accent-300">
                   {formatMoney(option.pricePerHour, currency)}
-                  <span className="text-xs font-medium text-zinc-500">/hr</span>
+                  <span className="text-xs font-medium text-ash-500">/hr</span>
                 </span>
-                <span className="mt-0.5 block text-[11px] text-zinc-500">
+                <span className="mt-0.5 block text-[11px] text-ash-500">
                   {option.minHours}–{option.maxHours} hrs
                 </span>
               </button>
             ))}
           </div>
-          {service.description && <p className="mt-3 text-sm leading-relaxed text-zinc-400">{service.description}</p>}
+          {service.description && (
+            <p className="mt-3 text-sm leading-relaxed text-ash-400">{service.description}</p>
+          )}
         </Step>
 
         <Step number={2} title="Date & duration">
@@ -233,13 +239,14 @@ export function StudioBooking({ services, depositPercent, serviceFeePercent, cur
                 onChange={(e) => pickHours(Number(e.target.value))}
                 className="select"
               >
-                {Array.from({ length: service.maxHours - service.minHours + 1 }, (_, i) => service.minHours + i).map(
-                  (h) => (
-                    <option key={h} value={h}>
-                      {h} hour{h === 1 ? "" : "s"}
-                    </option>
-                  )
-                )}
+                {Array.from(
+                  { length: service.maxHours - service.minHours + 1 },
+                  (_, i) => service.minHours + i,
+                ).map((h) => (
+                  <option key={h} value={h}>
+                    {h} hour{h === 1 ? "" : "s"}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
@@ -247,9 +254,11 @@ export function StudioBooking({ services, depositPercent, serviceFeePercent, cur
 
         <Step number={3} title="Start time">
           {!date ? (
-            <p className="text-sm text-zinc-500">Pick a date first, then the free start times appear here.</p>
+            <p className="text-sm text-ash-500">
+              Pick a date first, then the free start times appear here.
+            </p>
           ) : slotsLoading ? (
-            <p className="flex items-center gap-2 text-sm text-zinc-500">
+            <p className="flex items-center gap-2 text-sm text-ash-500">
               <Loader2 className="h-3.5 w-3.5 animate-spin" /> Checking the calendar…
             </p>
           ) : closedDay || !slots?.length ? (
@@ -266,13 +275,15 @@ export function StudioBooking({ services, depositPercent, serviceFeePercent, cur
                   onClick={() => setStartHour(slot.hour)}
                   title={slot.available ? undefined : "Already booked"}
                   className={cn(
-                    "rounded-xl border px-3.5 py-2 text-sm transition",
-                    slot.available ? "hover:border-lime-400/60" : "cursor-not-allowed opacity-35 line-through",
+                    "border px-3.5 py-2 text-sm transition",
+                    slot.available
+                      ? "hover:border-accent-400/60"
+                      : "cursor-not-allowed opacity-35 line-through",
                     startHour === slot.hour
-                      ? "border-lime-400/70 bg-lime-400/15 text-lime-200"
+                      ? "border-accent-400/70 bg-accent-400/15 text-accent-200"
                       : slot.available
-                        ? "border-ink-700 bg-ink-850 text-zinc-300"
-                        : "border-ink-800 bg-ink-900 text-zinc-600"
+                        ? "border-ink-700 bg-ink-850 text-ash-300"
+                        : "border-ink-800 bg-ink-900 text-ash-600",
                   )}
                 >
                   {formatHour(slot.hour)}
@@ -281,9 +292,10 @@ export function StudioBooking({ services, depositPercent, serviceFeePercent, cur
             </div>
           )}
           {date && startHour !== null && (
-            <p className="mt-3 flex items-center gap-1.5 text-xs text-lime-300">
+            <p className="mt-3 flex items-center gap-1.5 text-xs text-accent-300">
               <CheckCircle2 className="h-3.5 w-3.5" />
-              {formatHour(startHour)} – {formatHour(startHour + hours)} · {hours} hr{hours === 1 ? "" : "s"}
+              {formatHour(startHour)} – {formatHour(startHour + hours)} · {hours} hr
+              {hours === 1 ? "" : "s"}
             </p>
           )}
         </Step>
@@ -302,15 +314,14 @@ export function StudioBooking({ services, depositPercent, serviceFeePercent, cur
 
       {/* ── summary + details ─────────────────────────────── */}
       <div className="space-y-4 lg:sticky lg:top-20 lg:self-start">
-        <div className="surface-card p-5">
-          <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-zinc-300">
-            <CalendarDays className="h-4 w-4 text-lime-400" /> Summary
-          </h3>
-          <p className="mt-3 text-sm font-semibold">{service.name}</p>
-          <p className="mt-0.5 text-xs text-zinc-500">
+        <div className="border border-ink-700 bg-ink-850 p-5">
+          <h3 className="mono-sm text-accent">Summary</h3>
+          <p className="headline mt-3 text-ash-50">{service.name}</p>
+          <p className="mt-0.5 text-xs text-ash-500">
             {date ? (
               <>
-                {date} · {startHour !== null ? formatHour(startHour) : "Pick a start time"} · {hours} hr
+                {date} · {startHour !== null ? formatHour(startHour) : "Pick a start time"} ·{" "}
+                {hours} hr
                 {hours === 1 ? "" : "s"}
               </>
             ) : (
@@ -330,7 +341,7 @@ export function StudioBooking({ services, depositPercent, serviceFeePercent, cur
             </Row>
             <div className="flex items-center justify-between border-t border-ink-800 pt-2.5 text-base font-bold">
               <span>Pay now</span>
-              <span className="text-lime-300">{formatMoney(quote.amountDue, currency)}</span>
+              <span className="text-accent-300">{formatMoney(quote.amountDue, currency)}</span>
             </div>
             <Row label="Balance at the studio" muted>
               {formatMoney(quote.balanceAmount, currency)}
@@ -338,8 +349,8 @@ export function StudioBooking({ services, depositPercent, serviceFeePercent, cur
           </dl>
         </div>
 
-        <div className="surface-card p-5">
-          <h3 className="text-sm font-bold uppercase tracking-wider text-zinc-300">5 · Your details</h3>
+        <div className="border border-ink-700 bg-ink-850 p-5">
+          <h3 className="mono-sm text-accent">05 — Your details</h3>
           <div className="mt-4 space-y-3">
             <div>
               <label className="label" htmlFor="bk-name">
@@ -368,9 +379,9 @@ export function StudioBooking({ services, depositPercent, serviceFeePercent, cur
                 onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
                 placeholder="you@example.com"
               />
-              <p className="mt-1.5 text-[11px] leading-relaxed text-zinc-500">
-                Your confirmation and session details are delivered to this address. Use your account email to see
-                bookings in your dashboard.
+              <p className="mt-1.5 text-[11px] leading-relaxed text-ash-500">
+                Your confirmation and session details are delivered to this address. Use your
+                account email to see bookings in your dashboard.
               </p>
             </div>
             <div>
@@ -387,7 +398,7 @@ export function StudioBooking({ services, depositPercent, serviceFeePercent, cur
             </div>
           </div>
 
-          <h3 className="mt-5 text-sm font-bold uppercase tracking-wider text-zinc-300">Pay with</h3>
+          <h3 className="mono-sm mt-6 border-t border-ink-700 pt-4 text-accent">Pay with</h3>
           <div className="mt-3 space-y-2">
             {METHODS.map((id) => (
               <button
@@ -395,15 +406,17 @@ export function StudioBooking({ services, depositPercent, serviceFeePercent, cur
                 type="button"
                 onClick={() => setMethod(id)}
                 className={cn(
-                  "w-full rounded-2xl border p-3.5 text-left transition",
-                  method === id ? "border-lime-400/60 bg-lime-400/[0.06]" : "border-ink-700 bg-ink-850 hover:border-ink-600"
+                  "w-full border p-3.5 text-left transition-colors",
+                  method === id
+                    ? "border-accent bg-accent-600/10"
+                    : "border-ink-700 hover:bg-ink-800",
                 )}
               >
-                <span className="flex items-center justify-between gap-2 text-sm font-semibold">
+                <span className="headline flex items-center justify-between gap-2 text-sm text-ash-50">
                   {PAYMENT_METHODS[id].label}
-                  {method === id && <CheckCircle2 className="h-4 w-4 shrink-0 text-lime-300" />}
+                  {method === id && <CheckCircle2 className="h-4 w-4 shrink-0 text-accent-300" />}
                 </span>
-                <span className="mt-0.5 block text-xs leading-relaxed text-zinc-500">
+                <span className="mt-0.5 block text-xs leading-relaxed text-ash-500">
                   {PAYMENT_METHODS[id].blurb}
                 </span>
               </button>
@@ -411,7 +424,7 @@ export function StudioBooking({ services, depositPercent, serviceFeePercent, cur
           </div>
 
           {error && (
-            <p className="mt-4 flex items-start gap-2 rounded-xl border border-red-900/60 bg-red-950/40 px-3 py-2 text-xs text-red-300">
+            <p className="mt-4 flex items-start gap-2 border border-red-900/60 bg-red-950/40 px-3 py-2 text-xs text-red-300">
               <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" /> {error}
             </p>
           )}
@@ -428,7 +441,7 @@ export function StudioBooking({ services, depositPercent, serviceFeePercent, cur
               </>
             )}
           </button>
-          <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-[11px] text-zinc-500">
+          <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-[11px] text-ash-500">
             <Clock className="h-3 w-3" /> Your slot is held the moment the deposit lands.
             <ChevronRight className="h-3 w-3" />
           </p>
@@ -438,14 +451,21 @@ export function StudioBooking({ services, depositPercent, serviceFeePercent, cur
   );
 }
 
-function Step({ number, title, children }: { number: number; title: string; children: React.ReactNode }) {
+function Step({
+  number,
+  title,
+  children,
+}: {
+  number: number;
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
-    <section className="surface-card p-5">
-      <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-zinc-300">
-        <span className="grid h-5.5 w-5.5 place-items-center rounded-full bg-lime-400 text-[11px] font-extrabold text-ink-950">
-          {number}
-        </span>
-        {title}
+    <section className="border border-ink-700 bg-ink-850 p-5">
+      <h3 className="mono-sm flex items-center gap-2.5 text-accent">
+        <span>{String(number).padStart(2, "0")}</span>
+        <span className="h-px flex-1 bg-ink-700" />
+        <span className="text-ash-300">{title}</span>
       </h3>
       <div className="mt-4">{children}</div>
     </section>
@@ -463,8 +483,10 @@ function Row({
 }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <dt className={muted ? "text-zinc-500" : "text-zinc-400"}>{label}</dt>
-      <dd className={cn("shrink-0 font-medium", muted ? "text-zinc-400" : "text-zinc-200")}>{children}</dd>
+      <dt className={muted ? "text-ash-500" : "text-ash-400"}>{label}</dt>
+      <dd className={cn("shrink-0 font-medium", muted ? "text-ash-400" : "text-ash-200")}>
+        {children}
+      </dd>
     </div>
   );
 }

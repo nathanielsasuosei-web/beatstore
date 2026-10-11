@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { Award, Coffee, Headphones, Mic2, Radio, SlidersHorizontal } from "lucide-react";
 import { getSettings } from "@/lib/settings";
 import { beatCounts } from "@/lib/data/catalog";
 import { SectionHeading, Stat } from "@/components/section";
@@ -13,22 +12,18 @@ export const metadata: Metadata = {
 
 const SERVICES = [
   {
-    icon: Headphones,
     title: "Beat leasing & exclusive sales",
     text: "The full catalogue, licensed properly with paperwork you can show a distributor.",
   },
   {
-    icon: SlidersHorizontal,
     title: "Mixing & mastering",
     text: "Send your stems and get back a release-ready master for streaming and club play.",
   },
   {
-    icon: Mic2,
     title: "Custom production",
     text: "Built from your reference — arrangement, tempo, instrumentation and a hook that fits your voice.",
   },
   {
-    icon: Radio,
     title: "Sync & commercial work",
     text: "Adverts, film and brand campaigns. Fixed quotes, cleared samples, clean paperwork.",
   },
@@ -51,28 +46,37 @@ export default async function AboutPage() {
 
   return (
     <div className="container-page py-12">
-      <div className="grid gap-10 lg:grid-cols-[1fr_0.85fr]">
+      {/* ── masthead ──────────────────────────────────────────── */}
+      <div className="grid gap-12 lg:grid-cols-[1fr_0.8fr] lg:gap-16">
         <div>
-          <SectionHeading
-            eyebrow="The studio"
-            title={`${settings.producer_name} — producer & mixing engineer`}
-          />
-          <p className="mt-5 whitespace-pre-line text-sm leading-relaxed text-zinc-300">{settings.bio}</p>
-          <p className="mt-4 text-sm leading-relaxed text-zinc-400">
-            The rule in this studio is simple: if a beat can&apos;t carry a chorus on a phone speaker, it
-            doesn&apos;t go in the store. Everything you hear here is mixed, mastered and checked on three
-            systems before it&apos;s published.
+          <p className="mono-sm text-accent">The studio</p>
+          <h1 className="display mt-4 text-[clamp(2.2rem,6vw,3.75rem)] text-ash-50">
+            {settings.producer_name}
+          </h1>
+          <p className="mono-sm mt-3 text-ash-500">Producer & mixing engineer · Accra</p>
+
+          <p className="mt-6 whitespace-pre-line text-[15px] leading-relaxed text-ash-300">
+            {settings.bio}
+          </p>
+          <p className="mt-4 text-[15px] leading-relaxed text-ash-400">
+            The rule in this studio is simple: if a beat can&apos;t carry a chorus on a phone
+            speaker, it doesn&apos;t go in the store. Everything here is mixed, mastered and checked
+            on three systems before it&apos;s published.
           </p>
 
-          <div className="mt-8 grid gap-4 sm:grid-cols-3">
-            <Stat label="Beats published" value={String(counts.published)} hint={`${counts.plays.toLocaleString()} preview plays`} />
+          <div className="mt-10 grid gap-x-8 gap-y-6 border-t border-ink-700 pt-8 sm:grid-cols-3">
+            <Stat
+              label="Beats published"
+              value={String(counts.published)}
+              hint={`${counts.plays.toLocaleString()} preview plays`}
+            />
             <Stat label="Turnaround" value="3–5 days" hint="Custom beats" />
             <Stat label="Based in" value="Accra, GH" hint="Working worldwide" />
           </div>
         </div>
 
-        <div className="surface-card relative overflow-hidden p-4">
-          <div className="relative aspect-4/5 overflow-hidden rounded-2xl bg-ink-800">
+        <figure className="reg-mark border border-ink-700 bg-ink-850 p-4">
+          <div className="relative aspect-4/5 overflow-hidden bg-ink-900">
             <Image
               src="/studio.svg"
               alt="The studio setup"
@@ -82,53 +86,53 @@ export default async function AboutPage() {
               priority
             />
           </div>
-          <div className="flex items-center gap-3 px-2 py-4">
-            <span className="grid h-10 w-10 place-items-center rounded-xl bg-lime-400/10 text-lime-300">
-              <Award className="h-5 w-5" />
-            </span>
-            <p className="text-sm text-zinc-400">
-              8 years producing · 400+ records placed with independent artists across West Africa and the
-              diaspora.
+          <figcaption className="border-t border-ink-700 px-1 py-4">
+            <p className="mono-sm text-accent">Track record</p>
+            <p className="mt-2 text-sm leading-relaxed text-ash-400">
+              8 years producing · 400+ records placed with independent artists across West Africa
+              and the diaspora.
             </p>
-          </div>
-        </div>
+          </figcaption>
+        </figure>
       </div>
 
+      {/* ── services ──────────────────────────────────────────── */}
       <section className="mt-16">
-        <SectionHeading eyebrow="What I do" title="Services" />
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {SERVICES.map((service) => (
-            <div key={service.title} className="surface-card p-5">
-              <span className="grid h-10 w-10 place-items-center rounded-xl bg-lime-400/10 text-lime-300">
-                <service.icon className="h-5 w-5" />
+        <SectionHeading index="01 — Services" title="What I do" />
+        <ol className="mt-6 grid gap-x-10 border-t border-ink-700 sm:grid-cols-2">
+          {SERVICES.map((service, i) => (
+            <li
+              key={service.title}
+              className="flex gap-5 border-b border-ink-700 py-5 sm:[&:nth-last-child(-n+2)]:border-b-0"
+            >
+              <span className="mono-sm nums shrink-0 text-accent">
+                {String(i + 1).padStart(2, "0")}
               </span>
-              <h3 className="mt-4 text-sm font-semibold">{service.title}</h3>
-              <p className="mt-2 text-xs leading-relaxed text-zinc-400">{service.text}</p>
-            </div>
+              <div>
+                <h3 className="headline text-base text-ash-50">{service.title}</h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-ash-400">{service.text}</p>
+              </div>
+            </li>
           ))}
-        </div>
+        </ol>
       </section>
 
-      <section className="mt-16 grid gap-8 lg:grid-cols-2">
-        <div className="surface-card p-6">
-          <h2 className="flex items-center gap-2 font-semibold">
-            <SlidersHorizontal className="h-4 w-4 text-lime-400" /> Studio setup
-          </h2>
-          <ul className="mt-4 grid gap-2 text-sm text-zinc-300 sm:grid-cols-2">
+      {/* ── gear + process ────────────────────────────────────── */}
+      <section className="mt-16 grid gap-12 lg:grid-cols-2 lg:gap-16">
+        <div>
+          <p className="mono-sm border-b border-ink-700 pb-2 text-ash-500">Studio setup</p>
+          <ul className="mt-4 grid gap-x-8 sm:grid-cols-2">
             {GEAR.map((item) => (
-              <li key={item} className="flex gap-2">
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-lime-400" />
+              <li key={item} className="border-b border-ink-800 py-2.5 text-sm text-ash-300">
                 {item}
               </li>
             ))}
           </ul>
         </div>
 
-        <div className="surface-card p-6">
-          <h2 className="flex items-center gap-2 font-semibold">
-            <Coffee className="h-4 w-4 text-lime-400" /> How we work
-          </h2>
-          <ol className="mt-4 space-y-3 text-sm text-zinc-300">
+        <div>
+          <p className="mono-sm border-b border-ink-700 pb-2 text-ash-500">How we work</p>
+          <ol className="mt-4">
             {[
               "You send references, tempo, key and your deadline.",
               "You get a quote and a delivery date the same day.",
@@ -136,9 +140,12 @@ export default async function AboutPage() {
               "Final files (WAV, MP3, stems) plus a licence PDF land in your inbox.",
               "Send the finished vocal and the mix gets polished free on premium+ licences.",
             ].map((step, index) => (
-              <li key={step} className="flex gap-3">
-                <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-lime-400 text-[11px] font-bold text-ink-950">
-                  {index + 1}
+              <li
+                key={step}
+                className="flex gap-4 border-b border-ink-800 py-3 text-sm leading-relaxed text-ash-300"
+              >
+                <span className="mono-sm nums shrink-0 text-accent">
+                  {String(index + 1).padStart(2, "0")}
                 </span>
                 {step}
               </li>

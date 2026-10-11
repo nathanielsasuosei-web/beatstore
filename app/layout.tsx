@@ -1,5 +1,10 @@
-import type { Metadata, Viewport } from "next";
+import "@fontsource-variable/archivo/wdth.css";
+import "@fontsource/ibm-plex-mono/latin-400.css";
+import "@fontsource/ibm-plex-mono/latin-600.css";
+import "@fontsource/instrument-serif/latin-400-italic.css";
 import "./globals.css";
+
+import type { Metadata, Viewport } from "next";
 import { getSettings } from "@/lib/settings";
 import { siteUrl } from "@/lib/utils";
 import { getCurrentUser } from "@/lib/auth";
@@ -11,7 +16,7 @@ import { PlayerProvider } from "@/components/player-provider";
 import { PlayerBar } from "@/components/player-bar";
 
 export const viewport: Viewport = {
-  themeColor: "#0c0c0f",
+  themeColor: "#0b0b0a",
 };
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -55,14 +60,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang="en" className="h-full">
-      <body className="min-h-full flex flex-col bg-ink-900 font-sans">
+      <body className="grain min-h-full flex flex-col bg-ink-950 font-sans text-ash-100 antialiased">
         <PlayerProvider>
           <CartProvider>
             <SiteHeader
               settings={settings}
               user={user ? { name: user.name, role: user.role } : null}
             />
-            <main className="flex-1 pb-24">{children}</main>
+            <main className="flex-1">{children}</main>
             <SiteFooter settings={settings} />
             <CartDrawer />
             <PlayerBar />

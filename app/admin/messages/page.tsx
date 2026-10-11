@@ -10,10 +10,10 @@ export default async function AdminMessagesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Messages</h1>
-        <p className="mt-1 text-sm text-zinc-400">
-          Every enquiry from the contact form, an artist dashboard or an order. Replying sends a real email and
-          keeps the thread here.
+        <h1 className="headline text-2xl text-ash-50">Messages</h1>
+        <p className="mt-1 text-sm text-ash-400">
+          Every enquiry from the contact form, an artist dashboard or an order. Replying sends a
+          real email and keeps the thread here.
         </p>
       </div>
 
@@ -23,7 +23,11 @@ export default async function AdminMessagesPage() {
         <Stat
           label="Delivery mode"
           value={emailMode() === "resend" ? "Resend (live)" : "Preview"}
-          hint={emailMode() === "resend" ? "Emails leave the server" : "Replies are stored in the outbox"}
+          hint={
+            emailMode() === "resend"
+              ? "Emails leave the server"
+              : "Replies are stored in the outbox"
+          }
         />
       </div>
 

@@ -301,9 +301,9 @@ function renderVideo() {
     "scale=1600:1600",
     "zoompan=z='1.06+0.06*sin(on/240)':x='iw/2-(iw/zoom/2)+sin(on/400)*30':y='ih/2-(ih/zoom/2)+cos(on/520)*20':d=1:s=1280x720:fps=30",
     "format=yuv420p",
-    drawtext("NSO BEATS", "h*0.16", 46, "0xa3e635"),
+    drawtext("NSO BEATS", "h*0.16", 46, "0xe23108"),
     drawtext("Soft Life  -  Amapiano  -  112 BPM", "h*0.74", 30, "0xffffff"),
-    drawtext("nsobeats.example", "h*0.81", 22, "0xd4d4d8"),
+    drawtext("nsobeats.example", "h*0.81", 22, "0xd9d5c8"),
   ].join(",");
 
   execFileSync(

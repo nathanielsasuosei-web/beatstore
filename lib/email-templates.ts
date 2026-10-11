@@ -43,18 +43,18 @@ export function orderDeliveryEmail({
   const rows = items
     .map(
       (item) => `
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #27272a;background:#18181b;border-radius:14px;margin:0 0 14px;">
-        <tr><td style="padding:16px 18px 6px;color:#fafafa;font-size:16px;font-weight:700;">${escapeHtml(
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #2c2b25;background:#171614;border-radius:14px;margin:0 0 14px;">
+        <tr><td style="padding:16px 18px 6px;color:#f6f4ee;font-size:16px;font-weight:700;">${escapeHtml(
           item.title
         )}</td></tr>
-        <tr><td style="padding:0 18px 12px;color:#a1a1aa;font-size:13px;">${escapeHtml(
+        <tr><td style="padding:0 18px 12px;color:#918e80;font-size:13px;">${escapeHtml(
           item.licenseName
         )}${item.fileFormat ? ` · ${escapeHtml(item.fileFormat)}` : ""}</td></tr>
         <tr><td style="padding:0 18px 18px;">
           ${emailButton(item.downloadUrl, "Download beat")}
-          ${item.previewUrl ? `<a href="${item.previewUrl}" style="color:#a3e635;font-size:13px;margin-left:10px;">Listen</a>` : ""}
-          <div style="margin-top:10px;font-size:12.5px;color:#71717a;">
-            <a href="${item.licenseUrl}" style="color:#71717a;text-decoration:underline;">Download licence agreement (PDF)</a>
+          ${item.previewUrl ? `<a href="${item.previewUrl}" style="color:#f74d1c;font-size:13px;margin-left:10px;">Listen</a>` : ""}
+          <div style="margin-top:10px;font-size:12.5px;color:#747166;">
+            <a href="${item.licenseUrl}" style="color:#747166;text-decoration:underline;">Download licence agreement (PDF)</a>
           </div>
         </td></tr>
       </table>`
@@ -67,7 +67,7 @@ export function orderDeliveryEmail({
       title: "Your beats are ready 🎧",
       preheader: `${items.length} file${items.length === 1 ? "" : "s"} unlocked for order ${order.reference}`,
       body: `
-        <p style="margin:0 0 14px;color:#fafafa;font-size:17px;font-weight:600;">Hey ${escapeHtml(
+        <p style="margin:0 0 14px;color:#f6f4ee;font-size:17px;font-weight:600;">Hey ${escapeHtml(
           order.name.split(" ")[0] || order.name
         )},</p>
         <p style="margin:0 0 8px;">Payment received and confirmed. Your licence${items.length === 1 ? "" : "s"} ${
@@ -79,10 +79,10 @@ export function orderDeliveryEmail({
           ["Total paid", formatMoney(order.total, order.currency)],
           ["Date", formatDate(order.paidAt ?? order.createdAt, true)],
         ])}
-        <p style="margin:0 0 8px;font-size:13.5px;color:#a1a1aa;">
+        <p style="margin:0 0 8px;font-size:13.5px;color:#918e80;">
           Each link works for ${downloadexpiresDays} days (up to 15 downloads). Got a problem? Just reply to this email and it comes straight to me.
         </p>
-        <p style="margin:16px 0 0;color:#71717a;font-size:13px;">Work with me: send the track when it's done and I'll mix it free with any premium or exclusive licence.</p>
+        <p style="margin:16px 0 0;color:#747166;font-size:13px;">Work with me: send the track when it's done and I'll mix it free with any premium or exclusive licence.</p>
       `,
       cta: { label: "Open my dashboard", url: absoluteUrl("/account") },
       footerNote: `Need help? ${supportEmail}`,
@@ -103,7 +103,7 @@ export function receiptEmail({ order, supportEmail }: { order: OrderSummary; sup
       ["Paid with", order.paymentMethod],
       ["Status", order.status],
     ])}
-    <p style="margin:0;font-size:13px;color:#a1a1aa;">Keep this email as your proof of purchase.</p>
+    <p style="margin:0;font-size:13px;color:#918e80;">Keep this email as your proof of purchase.</p>
   `;
   return {
     subject: `Receipt for ${order.reference}`,
@@ -135,7 +135,7 @@ export function paymentSubmittedBuyerEmail({
         order.reference
       }</strong>.</p>
         <p style="margin:0 0 12px;">A human checks every mobile money and bank transfer, so this usually takes minutes but can take up to a few hours outside business hours. The moment it clears, your download links land in your inbox automatically.</p>
-        <p style="margin:0;font-size:13.5px;color:#a1a1aa;">${escapeHtml(instructions)}</p>
+        <p style="margin:0;font-size:13.5px;color:#918e80;">${escapeHtml(instructions)}</p>
       `,
     }),
   };
@@ -204,7 +204,7 @@ export function welcomeEmail({ name, verifyUrl }: { name: string; verifyUrl: str
         <p style="margin:0 0 12px;">Hey ${escapeHtml(name.split(" ")[0] || name)}, welcome in.</p>
         <p style="margin:0 0 12px;">Your artist account is created. Confirm your email so we can deliver beats and receipts without a hitch:</p>
         ${emailButton(verifyUrl, "Confirm my email")}
-        <p style="margin:14px 0 0;font-size:12.5px;color:#71717a;">Or paste this link: <span style="color:#a1a1aa;">${verifyUrl}</span></p>
+        <p style="margin:14px 0 0;font-size:12.5px;color:#747166;">Or paste this link: <span style="color:#918e80;">${verifyUrl}</span></p>
       `,
     }),
   };
@@ -219,7 +219,7 @@ export function verifyEmailTemplate({ name, verifyUrl }: { name: string; verifyU
       body: `
         <p style="margin:0 0 12px;">Hi ${escapeHtml(name)}, tap the button below to confirm your email address.</p>
         ${emailButton(verifyUrl, "Confirm email")}
-        <p style="margin:14px 0 0;font-size:12.5px;color:#71717a;">This link is valid for 7 days.</p>
+        <p style="margin:14px 0 0;font-size:12.5px;color:#747166;">This link is valid for 7 days.</p>
       `,
     }),
   };
@@ -234,7 +234,7 @@ export function passwordResetEmail({ name, resetUrl }: { name: string; resetUrl:
       body: `
         <p style="margin:0 0 12px;">Hi ${escapeHtml(name)}, we got a request to reset your password.</p>
         ${emailButton(resetUrl, "Choose a new password")}
-        <p style="margin:14px 0 0;font-size:12.5px;color:#a1a1aa;">The link expires in 1 hour. If you didn't ask for this, you can safely ignore this email — your password stays the same.</p>
+        <p style="margin:14px 0 0;font-size:12.5px;color:#918e80;">The link expires in 1 hour. If you didn't ask for this, you can safely ignore this email — your password stays the same.</p>
       `,
     }),
   };
@@ -250,8 +250,8 @@ export function contactAckEmail({ name, subject, body }: { name: string; subject
       preheader: "We'll get back to you shortly",
       body: `
         <p style="margin:0 0 12px;">Hi ${escapeHtml(name.split(" ")[0] || name)}, your message landed. Here's a copy:</p>
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#18181b;border:1px solid #27272a;border-radius:12px;">
-          <tr><td style="padding:16px 18px;color:#d4d4d8;font-size:14px;line-height:1.6;white-space:pre-wrap;">${escapeHtml(
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#171614;border:1px solid #2c2b25;border-radius:12px;">
+          <tr><td style="padding:16px 18px;color:#d9d5c8;font-size:14px;line-height:1.6;white-space:pre-wrap;">${escapeHtml(
             body
           )}</td></tr>
         </table>
@@ -285,8 +285,8 @@ export function newMessageAdminEmail({
           ["Topic", topic],
           ["Subject", subject],
         ])}
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#18181b;border:1px solid #27272a;border-radius:12px;">
-          <tr><td style="padding:16px 18px;color:#d4d4d8;font-size:14px;line-height:1.6;white-space:pre-wrap;">${escapeHtml(
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#171614;border:1px solid #2c2b25;border-radius:12px;">
+          <tr><td style="padding:16px 18px;color:#d9d5c8;font-size:14px;line-height:1.6;white-space:pre-wrap;">${escapeHtml(
             body
           )}</td></tr>
         </table>
@@ -304,12 +304,12 @@ export function replyEmail({ name, subject, replyBody }: { name: string; subject
       preheader: subject,
       body: `
         <p style="margin:0 0 12px;">Hi ${escapeHtml(name.split(" ")[0] || name)},</p>
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#18181b;border:1px solid #27272a;border-radius:12px;">
-          <tr><td style="padding:16px 18px;color:#d4d4d8;font-size:14px;line-height:1.6;white-space:pre-wrap;">${escapeHtml(
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#171614;border:1px solid #2c2b25;border-radius:12px;">
+          <tr><td style="padding:16px 18px;color:#d9d5c8;font-size:14px;line-height:1.6;white-space:pre-wrap;">${escapeHtml(
             replyBody
           )}</td></tr>
         </table>
-        <p style="margin:14px 0 0;color:#a1a1aa;font-size:13.5px;">Reply to this email to continue the conversation.</p>
+        <p style="margin:14px 0 0;color:#918e80;font-size:13.5px;">Reply to this email to continue the conversation.</p>
       `,
     }),
   };
@@ -388,10 +388,10 @@ export function bookingConfirmationEmail({
         : []),
       ["Balance at the studio", formatMoney(booking.balanceAmount, booking.currency)],
     ])}
-    <div style="margin:14px 0;padding:12px 16px;background:#27272a;border-radius:12px;font-size:13px;color:#d4d4d8;line-height:1.6;">
+    <div style="margin:14px 0;padding:12px 16px;background:#2c2b25;border-radius:12px;font-size:13px;color:#d9d5c8;line-height:1.6;">
       ${escapeHtml(policy)}
     </div>
-    <p style="margin:0;font-size:13px;color:#a1a1aa;">Need to move your session? Reply to this email at least 24 hours ahead. — ${escapeHtml(
+    <p style="margin:0;font-size:13px;color:#918e80;">Need to move your session? Reply to this email at least 24 hours ahead. — ${escapeHtml(
       producerName
     )}</p>
   `;
@@ -430,7 +430,7 @@ export function bookingReceivedEmail({
       ["Deposit to pay now", formatMoney(booking.amountDue, booking.currency)],
       ["Balance at the studio", formatMoney(booking.balanceAmount, booking.currency)],
     ])}
-    <p style="margin:14px 0 12px;font-size:13px;color:#a1a1aa;">${escapeHtml(payInstructions)}</p>
+    <p style="margin:14px 0 12px;font-size:13px;color:#918e80;">${escapeHtml(payInstructions)}</p>
     ${emailButton(absoluteUrl(`/studio/pay/${booking.reference}`), "Open payment page")}
   `;
   return {
@@ -503,13 +503,13 @@ export function bookingStatusEmail({
         ? `Your ${booking.serviceName} session on ${booking.dateLabel} (${booking.timeLabel}) has been cancelled.`
         : `Your ${booking.serviceName} session on ${booking.dateLabel} is wrapped — thanks for coming through!`
     }</p>
-    ${note ? `<p style="margin:0 0 12px;font-size:13.5px;color:#d4d4d8;">${escapeHtml(note)}</p>` : ""}
+    ${note ? `<p style="margin:0 0 12px;font-size:13.5px;color:#d9d5c8;">${escapeHtml(note)}</p>` : ""}
     ${emailLines([
       ["Reference", booking.reference],
       ["Session", booking.serviceName],
       ["Was", `${booking.dateLabel} · ${booking.timeLabel}`],
     ])}
-    <p style="margin:12px 0 0;font-size:13px;color:#a1a1aa;">${
+    <p style="margin:12px 0 0;font-size:13px;color:#918e80;">${
       cancelled
         ? "If you already paid a deposit, reply to this email and we'll sort your refund."
         : "Ready for the next one? Book another slot any time."

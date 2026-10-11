@@ -7,8 +7,8 @@ export default function AdminVideosPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Videos</h1>
-        <p className="mt-1 text-sm text-zinc-400">
+        <h1 className="headline text-2xl text-ash-50">Videos</h1>
+        <p className="mt-1 text-sm text-ash-400">
           Paste a YouTube link or upload studio footage. Videos appear on the public Videos page.
         </p>
       </div>

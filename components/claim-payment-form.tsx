@@ -28,10 +28,13 @@ export function ClaimPaymentForm({
         body: JSON.stringify({ reference, ...form }),
       });
       const json = await safeJson(res);
-      if (!res.ok || !json.ok) throw new Error(json.error ?? "Could not submit your payment details.");
+      if (!res.ok || !json.ok)
+        throw new Error(json.error ?? "Could not submit your payment details.");
       setState("sent");
       setDone(true);
-      setMessage("Got it — the producer is checking the payment now. Watch your inbox; the files are released the moment it clears.");
+      setMessage(
+        "Got it — the producer is checking the payment now. Watch your inbox; the files are released the moment it clears.",
+      );
     } catch (error) {
       setState("error");
       setMessage(error instanceof Error ? error.message : "Something went wrong.");
@@ -40,16 +43,16 @@ export function ClaimPaymentForm({
 
   if (done && state !== "error") {
     return (
-      <div className="surface-card p-6">
+      <div className="border border-ink-700 bg-ink-850 p-6">
         <div className="flex items-start gap-3">
-          <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-lime-400" />
+          <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-accent-400" />
           <div>
-            <h2 className="font-semibold">Payment details received</h2>
-            <p className="mt-1 text-sm text-zinc-400">
+            <h2 className="headline text-lg text-ash-50">Payment details received</h2>
+            <p className="mt-1 text-sm text-ash-400">
               {message || "We have your payment details and are verifying them now."}
             </p>
             {payerNote && (
-              <p className="mt-3 rounded-xl border border-ink-700 bg-ink-850 px-3 py-2 text-xs text-zinc-400">
+              <p className="mt-3 border border-ink-700 bg-ink-850 px-3 py-2 text-xs text-ash-400">
                 Submitted: {payerNote}
               </p>
             )}
@@ -60,11 +63,11 @@ export function ClaimPaymentForm({
   }
 
   return (
-    <form onSubmit={submit} className="surface-card p-6">
-      <h2 className="font-semibold">I&apos;ve sent the payment</h2>
-      <p className="mt-1 text-xs text-zinc-500">
-        Enter the transaction ID (MoMo SMS reference) or the bank transfer reference so it can be matched
-        to your order.
+    <form onSubmit={submit} className="border border-ink-700 bg-ink-850 p-6">
+      <h2 className="headline text-lg text-ash-50">I&apos;ve sent the payment</h2>
+      <p className="mt-1 text-xs text-ash-500">
+        Enter the transaction ID (MoMo SMS reference) or the bank transfer reference so it can be
+        matched to your order.
       </p>
 
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -109,12 +112,16 @@ export function ClaimPaymentForm({
       </div>
 
       {state === "error" && (
-        <p className="mt-4 rounded-xl border border-red-900/60 bg-red-950/40 px-3 py-2 text-xs text-red-300">
+        <p className="mt-4 border border-red-900/60 bg-red-950/40 px-3 py-2 text-xs text-red-300">
           {message}
         </p>
       )}
 
-      <button type="submit" disabled={state === "sending"} className="btn btn-primary btn-lg mt-5 w-full">
+      <button
+        type="submit"
+        disabled={state === "sending"}
+        className="btn btn-primary btn-lg mt-5 w-full"
+      >
         {state === "sending" ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" /> Submitting…

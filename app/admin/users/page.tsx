@@ -11,14 +11,18 @@ export default async function AdminUsersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Artists</h1>
-        <p className="mt-1 text-sm text-zinc-400">
+        <h1 className="headline text-2xl text-ash-50">Artists</h1>
+        <p className="mt-1 text-sm text-ash-400">
           Everyone with an account. Promote someone to admin if they help you run the store.
         </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <Stat label="Artist accounts" value={String(artists.length)} hint={`${users.length} total users`} />
+        <Stat
+          label="Artist accounts"
+          value={String(artists.length)}
+          hint={`${users.length} total users`}
+        />
         <Stat label="Lifetime spend" value={formatMoney(totalSpend)} hint="Across all artists" />
         <Stat
           label="Repeat buyers"

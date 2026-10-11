@@ -56,7 +56,7 @@ export function UsersTable({ users }: { users: AdminUser[] }) {
   return (
     <div className="space-y-4">
       <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ash-500" />
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -66,7 +66,9 @@ export function UsersTable({ users }: { users: AdminUser[] }) {
       </div>
 
       {flash && (
-        <p className="rounded-xl border border-lime-400/30 bg-lime-400/10 px-3 py-2 text-xs text-lime-200">{flash}</p>
+        <p className=" border border-accent-400/30 bg-accent-400/10 px-3 py-2 text-xs text-accent-200">
+          {flash}
+        </p>
       )}
 
       <div className="surface-card overflow-x-auto">
@@ -87,13 +89,13 @@ export function UsersTable({ users }: { users: AdminUser[] }) {
               <tr key={user.id}>
                 <td>
                   <div className="text-sm font-medium">{user.stageName || user.name}</div>
-                  <div className="text-xs text-zinc-500">{user.name}</div>
+                  <div className="text-xs text-ash-500">{user.name}</div>
                 </td>
-                <td className="text-xs text-zinc-400">
+                <td className="text-xs text-ash-400">
                   <div>{user.email}</div>
                   <div>{[user.phone, user.country].filter(Boolean).join(" · ")}</div>
                   {user.emailVerified ? (
-                    <span className="mt-1 inline-flex items-center gap-1 text-[11px] text-lime-300">
+                    <span className="mt-1 inline-flex items-center gap-1 text-[11px] text-accent-300">
                       <BadgeCheck className="h-3 w-3" /> verified
                     </span>
                   ) : (
@@ -107,16 +109,20 @@ export function UsersTable({ users }: { users: AdminUser[] }) {
                   )}
                 </td>
                 <td className="text-sm">{user.orderCount}</td>
-                <td className="text-sm font-semibold text-lime-300">{formatMoney(user.spend)}</td>
-                <td className="text-xs text-zinc-500">
+                <td className="text-sm font-semibold text-accent-300">{formatMoney(user.spend)}</td>
+                <td className="text-xs text-ash-500">
                   {formatDate(user.createdAt)}
                   {user.lastLoginAt && <div>seen {formatDate(user.lastLoginAt)}</div>}
                 </td>
                 <td>
                   <span
-                    className={`badge ${user.role === "admin" ? "bg-lime-400/15 text-lime-300" : "bg-ink-700 text-zinc-400"}`}
+                    className={`badge ${user.role === "admin" ? "bg-accent-400/15 text-accent-300" : "bg-ink-700 text-ash-400"}`}
                   >
-                    {user.role === "admin" ? <Shield className="h-3 w-3" /> : <User className="h-3 w-3" />}
+                    {user.role === "admin" ? (
+                      <Shield className="h-3 w-3" />
+                    ) : (
+                      <User className="h-3 w-3" />
+                    )}
                     {user.role}
                   </span>
                 </td>
@@ -125,7 +131,10 @@ export function UsersTable({ users }: { users: AdminUser[] }) {
                     <button
                       type="button"
                       onClick={() =>
-                        act(user.id, { action: "set_role", role: user.role === "admin" ? "artist" : "admin" })
+                        act(user.id, {
+                          action: "set_role",
+                          role: user.role === "admin" ? "artist" : "admin",
+                        })
                       }
                       className="btn btn-secondary btn-sm"
                     >
@@ -134,11 +143,13 @@ export function UsersTable({ users }: { users: AdminUser[] }) {
                     <button
                       type="button"
                       onClick={() => {
-                        if (window.confirm(`Delete ${user.email}? Their orders stay in the books.`)) {
+                        if (
+                          window.confirm(`Delete ${user.email}? Their orders stay in the books.`)
+                        ) {
                           void act(user.id, { action: "delete" });
                         }
                       }}
-                      className="btn btn-ghost btn-sm text-zinc-500 hover:text-red-400"
+                      className="btn btn-ghost btn-sm text-ash-500 hover:text-accent"
                       aria-label="Delete user"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
@@ -149,7 +160,7 @@ export function UsersTable({ users }: { users: AdminUser[] }) {
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={7} className="py-10 text-center text-sm text-zinc-500">
+                <td colSpan={7} className="py-10 text-center text-sm text-ash-500">
                   No users match that search.
                 </td>
               </tr>

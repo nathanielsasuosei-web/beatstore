@@ -28,10 +28,10 @@ export default async function LoginPage({
       <div className="w-full max-w-md">
         <LoginForm redirectTo={params.next} />
         <div
-          className="animate-field-in surface-card mt-4 p-4 text-xs text-zinc-400"
+          className="surface-card mt-4 p-4 text-xs text-ash-400"
           style={{ animationDelay: "420ms" }}
         >
-          <p className="font-semibold text-zinc-300">Demo accounts</p>
+          <p className="font-semibold text-ash-300">Demo accounts</p>
           <p className="mt-1.5">Artist — artist@nsobeats.test / Artist123!</p>
           <p>Producer — admin@nsobeats.test / Admin123!</p>
         </div>

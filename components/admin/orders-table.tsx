@@ -38,7 +38,13 @@ const FILTERS = [
   { id: "refunded", label: "Refunded" },
 ];
 
-export function OrdersTable({ orders, currentFilter }: { orders: AdminOrder[]; currentFilter: string }) {
+export function OrdersTable({
+  orders,
+  currentFilter,
+}: {
+  orders: AdminOrder[];
+  currentFilter: string;
+}) {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -65,7 +71,8 @@ export function OrdersTable({ orders, currentFilter }: { orders: AdminOrder[]; c
       });
       const json = await safeJson(res);
       if (!res.ok || !json.ok) throw new Error(json.error ?? "Action failed");
-      if (action === "mark_paid") setFlash("Marked as paid — the buyer's download email has been sent.");
+      if (action === "mark_paid")
+        setFlash("Marked as paid — the buyer's download email has been sent.");
       if (action === "resend_delivery") setFlash("Delivery email re-sent with fresh links.");
       if (action === "set_status") setFlash(`Status updated to ${json.status}.`);
       router.refresh();
@@ -85,7 +92,7 @@ export function OrdersTable({ orders, currentFilter }: { orders: AdminOrder[]; c
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
         <div className="relative min-w-56 flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ash-500" />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -99,10 +106,10 @@ export function OrdersTable({ orders, currentFilter }: { orders: AdminOrder[]; c
               key={filter.id}
               type="button"
               onClick={() => router.push(`/admin/orders?status=${filter.id}`)}
-              className={`rounded-full border px-3 py-1.5 text-xs transition ${
+              className={` border px-3 py-1.5 text-xs transition ${
                 currentFilter === filter.id
-                  ? "border-lime-400/60 bg-lime-400/15 text-lime-200"
-                  : "border-ink-700 bg-ink-850 text-zinc-400 hover:text-zinc-200"
+                  ? "border-accent-400/60 bg-accent-400/15 text-accent-200"
+                  : "border-ink-700 bg-ink-850 text-ash-400 hover:text-ash-200"
               }`}
             >
               {filter.label}
@@ -112,7 +119,7 @@ export function OrdersTable({ orders, currentFilter }: { orders: AdminOrder[]; c
       </div>
 
       {flash && (
-        <p className="rounded-xl border border-lime-400/30 bg-lime-400/10 px-3 py-2 text-xs text-lime-200">
+        <p className="border border-accent-400/30 bg-accent-400/10 px-3 py-2 text-xs text-accent-200">
           {flash}
         </p>
       )}
@@ -126,37 +133,42 @@ export function OrdersTable({ orders, currentFilter }: { orders: AdminOrder[]; c
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="font-mono text-sm font-semibold text-lime-300">{order.reference}</p>
+                    <p className="font-mono text-sm font-semibold text-accent-300">
+                      {order.reference}
+                    </p>
                     <span
                       className={`badge ${
                         order.status === "paid"
-                          ? "bg-lime-400/15 text-lime-300"
+                          ? "bg-accent-400/15 text-accent-300"
                           : order.status === "awaiting_verification"
                             ? "bg-amber-500/15 text-amber-300"
                             : order.status === "failed" || order.status === "cancelled"
                               ? "bg-red-500/15 text-red-300"
-                              : "bg-ink-700 text-zinc-400"
+                              : "bg-ink-700 text-ash-400"
                       }`}
                     >
                       {status?.label ?? order.status}
                     </span>
-                    <span className="chip">{order.paymentMethod.replace("_", " ")}</span>
+                    <span className="chip">{order.paymentMethod.replace("_", "")}</span>
                   </div>
                   <p className="mt-1.5 text-sm">
-                    {order.name} ·{" "}
-                    <a href={`mailto:${order.email}`} className="text-zinc-400 hover:text-lime-300">
+                    {order.name} ·{""}
+                    <a
+                      href={`mailto:${order.email}`}
+                      className="text-ash-400 hover:text-accent-300"
+                    >
                       {order.email}
                     </a>
                     {order.phone ? ` · ${order.phone}` : ""}
                   </p>
-                  <p className="text-xs text-zinc-500">
+                  <p className="text-xs text-ash-500">
                     {formatDate(order.createdAt, true)}
                     {order.payerNote ? ` · ref: ${order.payerNote}` : ""}
                   </p>
                 </div>
                 <div className="text-right">
                   <p className="text-lg font-bold">{formatMoney(order.total, order.currency)}</p>
-                  <p className="text-xs text-zinc-500">
+                  <p className="text-xs text-ash-500">
                     {order.items.length} item{order.items.length === 1 ? "" : "s"}
                   </p>
                 </div>
@@ -164,9 +176,9 @@ export function OrdersTable({ orders, currentFilter }: { orders: AdminOrder[]; c
 
               <ul className="mt-3 space-y-1 border-t border-ink-700 pt-3 text-xs">
                 {order.items.map((item) => (
-                  <li key={item.id} className="flex justify-between gap-3 text-zinc-400">
+                  <li key={item.id} className="flex justify-between gap-3 text-ash-400">
                     <span>
-                      {item.title} <span className="text-zinc-600">· {item.licenseName}</span>
+                      {item.title} <span className="text-ash-600">· {item.licenseName}</span>
                     </span>
                     <span>{formatMoney(item.price, order.currency)}</span>
                   </li>
@@ -174,7 +186,7 @@ export function OrdersTable({ orders, currentFilter }: { orders: AdminOrder[]; c
               </ul>
 
               {order.note && (
-                <p className="mt-3 rounded-xl border border-ink-700 bg-ink-850 px-3 py-2 text-xs text-zinc-400">
+                <p className="mt-3 border border-ink-700 bg-ink-850 px-3 py-2 text-xs text-ash-400">
                   Customer note: {order.note}
                 </p>
               )}
@@ -187,7 +199,11 @@ export function OrdersTable({ orders, currentFilter }: { orders: AdminOrder[]; c
                     disabled={busy}
                     className="btn btn-primary btn-sm"
                   >
-                    {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
+                    {busy ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                    )}
                     Mark as paid &amp; deliver
                   </button>
                 )}
@@ -231,14 +247,17 @@ export function OrdersTable({ orders, currentFilter }: { orders: AdminOrder[]; c
                     Mark refunded
                   </button>
                 )}
-                <a href={`mailto:${order.email}?subject=Your order ${order.reference}`} className="btn btn-ghost btn-sm">
+                <a
+                  href={`mailto:${order.email}?subject=Your order ${order.reference}`}
+                  className="btn btn-ghost btn-sm"
+                >
                   <Mail className="h-3.5 w-3.5" /> Email buyer
                 </a>
                 <button
                   type="button"
                   onClick={() => remove(order.id)}
                   disabled={busy}
-                  className="btn btn-ghost btn-sm ml-auto text-zinc-500 hover:text-red-400"
+                  className="btn btn-ghost btn-sm ml-auto text-ash-500 hover:text-accent"
                 >
                   <Trash2 className="h-3.5 w-3.5" /> Delete
                 </button>
@@ -247,7 +266,7 @@ export function OrdersTable({ orders, currentFilter }: { orders: AdminOrder[]; c
           );
         })}
         {filtered.length === 0 && (
-          <div className="surface-card grid place-items-center py-14 text-sm text-zinc-500">
+          <div className="surface-card grid place-items-center py-14 text-sm text-ash-500">
             No orders match this filter.
           </div>
         )}

@@ -9,6 +9,7 @@ export default function CartPage() {
     <div className="container-page py-12">
       <SectionHeading
         title="Your cart"
+        index="Checkout"
         blurb="Check the licences you've picked. Prices are confirmed again on the server when you check out."
       />
       <div className="mt-8">

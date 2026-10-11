@@ -27,9 +27,9 @@ export default async function ResetPasswordPage({
         {token ? (
           <ResetForm token={token} />
         ) : (
-          <div className="animate-card-in surface-card p-6 text-center">
+          <div className="surface-card p-6 text-center">
             <h1 className="text-xl font-bold">Reset link missing</h1>
-            <p className="mt-2 text-sm text-zinc-400">
+            <p className="mt-2 text-sm text-ash-400">
               Use the link from your reset email, or request a fresh one.
             </p>
             <Link href="/forgot-password" className="btn btn-primary btn-sm mt-4">

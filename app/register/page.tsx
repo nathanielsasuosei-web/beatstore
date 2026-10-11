@@ -12,6 +12,7 @@ export default async function RegisterPage() {
 
   return (
     <AuthShell
+      mode="register"
       eyebrow="Join the wave"
       title="Create your artist account in under a minute."
       blurb="Free, no spam — just a home for every beat, licence and receipt you pick up."

@@ -20,9 +20,9 @@ export function CartDrawer() {
         type="button"
         aria-label="Close cart"
         onClick={() => setOpen(false)}
-        className="absolute inset-0 bg-black/70 "
+        className="overlay-in absolute inset-0 bg-ink-950/70 backdrop-blur-sm"
       />
-      <aside className="relative flex h-full w-full max-w-md flex-col border-l border-ink-700 bg-ink-950">
+      <aside className="drawer-in glass-strong relative flex h-full w-full max-w-md flex-col border-l border-ink-700">
         <header className="flex items-center justify-between border-b border-ink-700 px-5 py-4">
           <div className="flex items-center gap-2.5">
             <h2 className="headline text-sm text-ash-50">Your cart</h2>

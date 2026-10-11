@@ -32,7 +32,7 @@ export function PlayerBar() {
 
   return (
     <>
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-ink-700 bg-ink-950">
+      <div className="bar-in glass-strong fixed inset-x-0 bottom-0 z-30 border-t border-ink-700">
         {/* scrub track */}
         <div
           onClick={handleSeek}

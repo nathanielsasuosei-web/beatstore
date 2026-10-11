@@ -115,7 +115,7 @@ export const DOWNLOAD_TTL_DAYS = 30;
 export const DOWNLOAD_MAX = 15;
 
 export const DEFAULT_SETTINGS: Record<string, string> = {
-  site_name: "Project 1",
+  site_name: "NSO Beats",
   producer_name: "Nathaniel Sasu Osei",
   tagline: "Afrobeats, drill & amapiano instrumentals — mixed, mastered, ready.",
   bio: "I'm Nathaniel, a producer and mixing engineer from Accra. For the last eight years I've been building beats for artists across West Africa — from street anthems to late-night R&B. Every beat in this store is mixed and mastered, licensed properly, and delivered to your inbox within seconds of payment.",
@@ -154,6 +154,14 @@ export const DEFAULT_SETTINGS: Record<string, string> = {
   hours_thu: "10:00-20:00",
   hours_fri: "10:00-20:00",
   hours_sat: "12:00-20:00",
+  // ── Look & feel — the adjustable colour system (see lib/theme.ts) ──
+  // These four values are the studio default. Visitors can override them for
+  // themselves from the floating Colour panel; nothing here is baked into CSS.
+  theme_accent: "#e23108",
+  theme_surface: "ink",
+  theme_glow: "46",
+  theme_radius: "2",
+  theme_motion: "true",
 };
 
 export const DEMO_ACCOUNTS = {

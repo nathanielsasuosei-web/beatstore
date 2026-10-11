@@ -1,14 +1,17 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AlertCircle, CheckCircle2, Loader2, Save } from "lucide-react";
 import { safeJson } from "@/lib/api-client";
+import { ThemePickerPanel } from "@/components/theme-picker";
+import { useTheme } from "@/components/theme-provider";
+import type { ThemeState } from "@/lib/theme";
 
 type Group = {
   title: string;
   blurb: string;
-  fields: { key: string; label: string; type?: "text" | "textarea" }[];
+  fields: { key: string; label: string; type?: "text" | "textarea" | "theme" }[];
 };
 
 const GROUPS: Group[] = [
@@ -66,6 +69,12 @@ const GROUPS: Group[] = [
     ],
   },
   {
+    title: "Studio colour",
+    blurb:
+      "The default the store opens in for every visitor. Change it here and save — anyone who has picked their own colour keeps it.",
+    fields: [{ key: "theme_accent", label: "Studio colour", type: "theme" }],
+  },
+  {
     title: "Studio bookings",
     blurb:
       'Rules for the /studio booking page. Deposit and fee are percentages; hours use "10:00-20:00" format or "Closed". Add or edit the bookable services from Bookings in the sidebar.',
@@ -84,6 +93,51 @@ const GROUPS: Group[] = [
     ],
   },
 ];
+
+/**
+ * The colour panel on the settings screen.
+ *
+ * It edits the live theme (so the producer sees the change immediately) and
+ * mirrors every change into the form's value map, which the Save button
+ * persists as the shop-wide default. The callback is held in a ref so the
+ * effect only fires when the theme itself changes.
+ */
+function ThemeField({
+  onSync,
+  className,
+}: {
+  onSync: (theme: ThemeState) => void;
+  className?: string;
+}) {
+  const { theme, customised, reset } = useTheme();
+  const sync = useRef(onSync);
+
+  useEffect(() => {
+    sync.current = onSync;
+  }, [onSync]);
+
+  useEffect(() => {
+    sync.current(theme);
+  }, [theme]);
+
+  return (
+    <div className={className}>
+      <div className="glass p-5" style={{ borderRadius: "var(--radius-card)" }}>
+        <ThemePickerPanel />
+      </div>
+      <p className="mono-sm mt-2 text-ash-500">
+        {customised
+          ? "You are previewing a colour saved in this browser. Press Save to make it the studio default, then Studio default in the panel to stop overriding it."
+          : "Save to publish this colour for every visitor."}
+      </p>
+      {customised && (
+        <button type="button" onClick={reset} className="btn btn-secondary btn-sm mt-2">
+          Stop previewing my own colour
+        </button>
+      )}
+    </div>
+  );
+}
 
 export function SettingsForm({
   settings,
@@ -182,7 +236,23 @@ export function SettingsForm({
           <h2 className="headline text-sm text-ash-50">{group.title}</h2>
           <p className="mt-1 text-xs text-ash-500">{group.blurb}</p>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            {group.fields.map((field) => (
+            {group.fields.map((field) =>
+              field.type === "theme" ? (
+                <ThemeField
+                  key={field.key}
+                  className="sm:col-span-2"
+                  onSync={(theme) =>
+                    setValues((values) => ({
+                      ...values,
+                      theme_accent: theme.accent,
+                      theme_surface: theme.surface,
+                      theme_glow: String(theme.glow),
+                      theme_radius: String(theme.radius),
+                      theme_motion: theme.motion ? "true" : "false",
+                    }))
+                  }
+                />
+              ) : (
               <div key={field.key} className={field.type === "textarea" ? "sm:col-span-2" : ""}>
                 <label className="label" htmlFor={`setting-${field.key}`}>
                   {field.label}
@@ -204,7 +274,8 @@ export function SettingsForm({
                   />
                 )}
               </div>
-            ))}
+              ),
+            )}
           </div>
         </section>
       ))}

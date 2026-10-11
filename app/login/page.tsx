@@ -16,6 +16,7 @@ export default async function LoginPage({
 
   return (
     <AuthShell
+      mode="login"
       eyebrow="Welcome back"
       title="Your sound, picked up right where you left off."
       blurb="Sign in and your whole library is waiting — stems, licences and receipts, one tap away."
@@ -28,8 +29,8 @@ export default async function LoginPage({
       <div className="w-full max-w-md">
         <LoginForm redirectTo={params.next} />
         <div
-          className="surface-card mt-4 p-4 text-xs text-ash-400"
-          style={{ animationDelay: "420ms" }}
+          className="rise-sm glass mt-4 p-4 text-xs text-ash-400"
+          style={{ "--d": "420ms" } as React.CSSProperties}
         >
           <p className="font-semibold text-ash-300">Demo accounts</p>
           <p className="mt-1.5">Artist — artist@nsobeats.test / Artist123!</p>

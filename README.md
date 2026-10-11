@@ -13,7 +13,8 @@ Paystack for payments and Resend for email. No native build steps, no ORM binari
 ## What's included
 
 **Public store**
-- Landing page with a featured-beat player, how-it-works, licence comparison and producer bio
+- Landing page with an animated hero — drifting accent aurora, pointer spotlight, masked headline
+  reveal, a spinning record that carries the featured beat, and counters that add themselves up
 - Catalogue with search, genre/mood filters and sort — **every published beat is listed with a playable
   tagged preview** (paged with a "Load more" button, so nothing is hidden no matter how big the store grows)
 - Beat pages with a global sticky audio player, tagged previews, licence picker and facts (BPM, key, duration)
@@ -62,6 +63,58 @@ Paystack for payments and Resend for email. No native build steps, no ORM binari
   **email outbox** (read the exact email every customer received), settings
 - Settings covers the studio too: deposit %, service fee %, opening hours per weekday and the booking policy
 - Everything is protected server-side; admin pages redirect non-admins to their own dashboard
+
+---
+
+## Storefront experience
+
+The shop is built to feel like a record sleeve rather than a template: condensed poster type on
+warm ink, one spot colour, motion used to introduce content — never to decorate it.
+
+**The hero** (`components/hero-stage.tsx`)
+- Accent aurora that drifts behind the page, a fine printed grid, and a spotlight that follows your
+  pointer (CSS variables written on rAF, so scrolling stays smooth)
+- The headline rises out of a mask line by line; the genre line rotates through the genres you
+  actually sell
+- The featured beat sits on a vinyl that spins only while it plays, with a 12-bar visualiser driven
+  by playback state
+- Facts underneath count themselves up the first time they scroll into view
+
+**The navbar** (`components/site-header.tsx`)
+- Glass, with a hairline that lights up in your accent once you scroll
+- The bar compresses, the top strip and ticker fold away, and the bar steps out of the way while
+  you scroll down — it comes straight back when you scroll up
+- One indicator glides between nav links, the cart badge pops on every change, and whatever is
+  playing shows up as a live equaliser you can pause from the bar
+- Reading progress is drawn along the bottom edge
+
+**Colour you can adjust** (`lib/theme.ts`, `components/theme-picker.tsx`)
+- Ten accent presets, a colour wheel, and four backdrop tints (Ink, Obsidian, Slate, Moss) — pick
+  any hex
+- Glow strength, corner radius and a calm-motion toggle, all live
+- The floating **Colour** panel saves a visitor's choice in their browser; the studio default lives
+  in **Admin → Settings → Studio colour** and applies to everyone
+- Nothing is baked into the CSS: the accent ramp (`--accent-200 … 700`), the ink ramp
+  (`--ink-950 … 600`), glass values, radii and motion timings are all custom properties written onto
+  `<html>`, with a no-flash script that re-applies a returning visitor's colour before first paint
+
+**Sign in / create account** (`components/auth-shell.tsx`, `components/auth-forms.tsx`)
+- Split screen: the pitch sheet blurs in, the form rises a beat later, bullets stagger
+- A thumb slides between the Sign in / Create account tabs (they are links, so they work without JS)
+- Focus rails draw under fields, passwords get a reveal toggle and a strength meter, errors shake,
+  and a success tick draws itself before you are redirected
+
+**Producer dashboard — v12** (`app/admin`)
+- Glass sidebar with a rail that glides between items, live badge pops, a running GMT clock and a
+  page title that animates on every navigation
+- Revenue chart with 7 / 30 / 90-day ranges, drawn on mount, with a hover readout and a best-day line
+- KPI tiles that count up, each with a delta against the previous period and an inline sparkline
+- Payment-mix donut, licence-mix and genre bar lists, delivery health (emails sent, links issued,
+  files pulled, links expiring), payments to verify, upcoming sessions, recent orders and the inbox
+- All of it aggregated in SQL (`lib/data/analytics.ts`), not in JavaScript
+
+Every animation is driven by two variables — `--motion-scale` and `--loop-play` — so the calm-motion
+toggle and `prefers-reduced-motion` snap content into place instead of hiding it.
 
 ---
 
@@ -218,7 +271,7 @@ up, and set `NEXT_PUBLIC_SITE_URL` to your public domain (emails use it for link
 
 ```
 app/
-  page.tsx                 landing page (hero player, featured beats, licences, videos)
+  page.tsx                 landing page (animated hero, featured beats, licences, videos)
   beats/                   catalogue + beat detail pages
   videos, licensing, about, contact
   cart, checkout/          cart → checkout → pay / test / success / failed → download
@@ -226,8 +279,19 @@ app/
   account/                 artist dashboard (orders, downloads, profile, messages)
   admin/                   dashboard, beats, videos, orders, messages, users, outbox, settings
   api/                     auth, beats, checkout, payments, webhooks, downloads, media, admin
-components/                UI (player, cart, beat cards, forms) + components/admin/*
+components/
+  site-header.tsx          glass navbar, ticker, account menu
+  hero-stage.tsx           animated hero + featured-beat deck
+  theme-picker.tsx         the Colour panel (visitors + admin settings)
+  theme-provider.tsx       applies theme variables to <html>
+  count-up.tsx             numbers that count into view
+  auth-shell.tsx, auth-forms.tsx   animated sign in / register / reset
+  admin/charts.tsx         revenue chart, KPI tiles, donut, bar lists
+  admin/admin-shell.tsx    sidebar, rail, live header
+  player, cart, beat cards, forms, checkout
 lib/
+  theme.ts               accent + surface ramps, presets, settings bridge
+  data/analytics.ts      dashboard reporting queries
   db.ts                    node:sqlite connection + query helpers
   sql/schema.sql           the whole schema (money = integer minor units, dates = epoch ms)
   data/                    users, catalog (beats/licenses/videos), sales (orders/downloads), inbox
@@ -258,7 +322,7 @@ storage/                   your uploads (git-ignored)
 ## Ideas for a v2
 
 - Delivery to S3/R2 with signed URLs, so uploads survive redeploys
-- Waveform previews and “tagged” auto-preview generation with ffmpeg on upload
 - Email marketing (new-drop broadcasts) and abandoned-cart nudges
 - Paystack split payments for collaborators, plus multi-currency pricing per beat
 - A beat pack/bundle product and discount codes
+- Per-genre accent themes (the theme engine already carries a surface + accent pair)

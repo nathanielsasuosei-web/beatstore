@@ -1,11 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Play } from "lucide-react";
+import { Play } from "lucide-react";
 import { listBeats, listVideos } from "@/lib/data/catalog";
 import { listServices } from "@/lib/data/bookings";
 import { getSettings } from "@/lib/settings";
 import { BeatGrid } from "@/components/beat-card";
-import { HeroPlayer } from "@/components/hero-player";
+import { HeroStage } from "@/components/hero-stage";
 import { SectionHeading, Stat } from "@/components/section";
 import { TIER_META } from "@/lib/constants";
 import { formatMoney } from "@/lib/money";
@@ -21,55 +21,32 @@ export default async function HomePage() {
   const depositPercent = Math.min(Math.max(Number(settings.studio_deposit_percent) || 50, 0), 100);
   const totalPlays = beats.reduce((sum, b) => sum + b.plays, 0);
   const tiers = Object.entries(TIER_META);
+  // genre words for the hero's rotating line, most-common first
+  const genreCounts = new Map<string, number>();
+  for (const item of beats) {
+    if (!item.genre) continue;
+    genreCounts.set(item.genre, (genreCounts.get(item.genre) ?? 0) + 1);
+  }
+  const genres = [...genreCounts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 4)
+    .map(([genre]) => genre);
 
   return (
     <>
-      {/* ── masthead ───────────────────────────────────────── */}
-      <section className="border-b border-ink-700">
-        <div className="container-page grid gap-12 py-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:py-20">
-          <div className="flex flex-col justify-between">
-            <div>
-              <p className="mono-sm text-accent">{settings.announcement}</p>
-              <h1 className="display mt-5 text-[clamp(2.6rem,7vw,4.75rem)] text-ash-50">
-                Beats that already
-                <br />
-                sound like records
-              </h1>
-              <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-ash-300">
-                {settings.tagline} Every instrumental here is mixed and mastered before it goes on
-                sale — so you are mixing a vocal, not fixing a kick drum.
-              </p>
-            </div>
-
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/beats" className="btn btn-primary btn-lg">
-                Browse the catalogue
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link href="/studio" className="btn btn-secondary btn-lg">
-                Book studio time
-              </Link>
-            </div>
-          </div>
-
-          <HeroPlayer beat={hero} queue={showcase} producer={settings.producer_name} />
-        </div>
-
-        {/* facts strip */}
-        <div className="container-page grid grid-cols-2 gap-px border-t border-ink-700 md:grid-cols-4">
-          {[
-            { label: "Beats online", value: String(total) },
-            { label: "Preview plays", value: totalPlays.toLocaleString() },
-            { label: "Delivery", value: "Instant" },
-            { label: "Licence", value: "Signed PDF" },
-          ].map((item) => (
-            <div key={item.label} className="border-t border-ink-700 py-4 md:border-t-0">
-              <p className="mono-sm text-ash-500">{item.label}</p>
-              <p className="display nums mt-1.5 text-2xl text-ash-50">{item.value}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* ── masthead — animated hero ───────────────────────── */}
+      <HeroStage
+        settings={settings}
+        beat={hero ?? null}
+        queue={showcase}
+        genres={genres}
+        stats={[
+          { label: "Beats online", value: total, hint: "published and playable" },
+          { label: "Preview plays", value: totalPlays, hint: "and counting" },
+          { label: "Delivery", display: "Instant", hint: "files emailed on payment" },
+          { label: "Licence", display: "Signed PDF", hint: "with every order" },
+        ]}
+      />
 
       {/* ── 01 · featured ──────────────────────────────────── */}
       <section className="container-page py-16">

@@ -94,3 +94,11 @@ export function parseTags(tags?: string | null): string[] {
     .map((t) => t.trim())
     .filter(Boolean);
 }
+
+/**
+ * Style object for CSS custom properties. React's types don't allow arbitrary
+ * `--*` keys, so every place that sets a variable goes through here.
+ */
+export function cssVars(vars: Record<string, string | number>): React.CSSProperties {
+  return vars as unknown as React.CSSProperties;
+}
